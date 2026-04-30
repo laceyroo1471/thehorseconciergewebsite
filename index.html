@@ -10,16 +10,22 @@
 <style>
   /* ===== DESIGN SYSTEM ===== */
   :root {
+    /* Primary brand */
     --forest:   #000000;
-    --earth:    #1C2B18;
-    --moss:     #2D4427;
-    --sage:     #4A6741;
+    --gold:     #cbb26a;
+    --gold-rgb: 203, 178, 106;
+    --gold-lt:  #dcc895;
+    --gold-dim: #8a7a4d;
+
+    /* Neutrals (no green) — charcoal scale */
+    --earth:    #141414;
+    --moss:     #1f1f1f;
+    --sage:     #2a2a2a;
+    --void:     #0a0a0a;
+
     --cream:    #F5EDDC;
     --ivory:    #EDE5D3;
-    --sand:     #C8B89A;
-    --gold:     #BF9D5A;
-    --gold-lt:  #D4B978;
-    --gold-dim: #8A6E35;
+    --sand:     #b5a882;
     --white:    #FEFCF8;
     --text-dim: rgba(245,237,220,0.55);
     --text-mid: rgba(245,237,220,0.80);
@@ -33,10 +39,10 @@
 
   /* ===== RESET & BASE ===== */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; font-size: 16px; }
+  html { scroll-behavior: smooth; font-size: 16px; background: #000000; }
   body {
     font-family: var(--font-body);
-    background: var(--forest);
+    background: #000000;
     color: var(--cream);
     overflow-x: hidden;
     cursor: none;
@@ -66,7 +72,7 @@
   #cursor-ring {
     position: fixed; z-index: 9999; pointer-events: none;
     width: 36px; height: 36px; border-radius: 50%;
-    border: 1px solid rgba(191,157,90,0.4);
+    border: 1px solid rgba(var(--gold-rgb),0.4);
     transform: translate(-50%, -50%);
     transition: all 0.15s var(--ease-smooth);
   }
@@ -74,7 +80,7 @@
   body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring { width: 52px; height: 52px; opacity: 0.5; }
 
   /* ===== PAGE SYSTEM ===== */
-  .page { display: none; min-height: 100vh; animation: fadeInPage 0.7s var(--ease-expo) forwards; }
+  .page { display: none; min-height: 100vh; background: #000000; animation: fadeInPage 0.7s var(--ease-expo) forwards; }
   .page.active { display: block; }
   @keyframes fadeInPage { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -87,24 +93,24 @@
   }
   nav.scrolled {
     padding: 18px 60px;
-    background: rgba(15,26,14,0.9);
+    background: rgba(0,0,0,0.92);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(191,157,90,0.12);
+    border-bottom: 1px solid rgba(var(--gold-rgb),0.12);
   }
   .nav-logo {
-    font-family: var(--font-display);
-    font-size: 1.15rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    color: var(--cream);
-    display: flex; align-items: center; gap: 10px;
+    display: flex;
+    align-items: center;
+    line-height: 0;
+    transition: opacity 0.25s var(--ease-smooth);
   }
-  .nav-logo-mark {
-    width: 32px; height: 32px;
-    border: 1px solid var(--gold);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.8rem; color: var(--gold);
+  .nav-logo:hover { opacity: 0.88; }
+  .nav-logo-img {
+    height: 44px;
+    width: auto;
+    max-width: min(280px, 52vw);
+    display: block;
+    object-fit: contain;
+    object-position: left center;
   }
   .nav-links {
     display: flex; align-items: center; gap: 40px;
@@ -148,9 +154,9 @@
   .hero-bg {
     position: absolute; inset: 0;
     background: 
-      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(45,68,39,0.5) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 70% 70%, rgba(191,157,90,0.08) 0%, transparent 60%),
-      linear-gradient(165deg, #0a1409 0%, #1C2B18 45%, #0F1A0E 100%);
+      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(var(--gold-rgb),0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 70% 70%, rgba(var(--gold-rgb),0.05) 0%, transparent 60%),
+      linear-gradient(165deg, #000000 0%, #0a0a0a 45%, #000000 100%);
   }
   .hero-equine {
     position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -207,7 +213,7 @@
     transition: all 0.25s var(--ease-smooth);
     display: inline-flex; align-items: center; gap: 8px;
   }
-  .btn-primary:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(191,157,90,0.25); }
+  .btn-primary:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(var(--gold-rgb),0.25); }
   .btn-ghost {
     font-size: 0.72rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
     color: var(--cream);
@@ -233,20 +239,20 @@
 
   /* ===== STATS BAR ===== */
   .stats-bar {
-    border-top: 1px solid rgba(191,157,90,0.15);
-    border-bottom: 1px solid rgba(191,157,90,0.15);
+    border-top: 1px solid rgba(var(--gold-rgb),0.15);
+    border-bottom: 1px solid rgba(var(--gold-rgb),0.15);
     display: grid; grid-template-columns: repeat(3, 1fr);
     text-align: center;
   }
   .stat-item {
     padding: 40px 20px;
-    border-right: 1px solid rgba(191,157,90,0.15);
+    border-right: 1px solid rgba(var(--gold-rgb),0.15);
     position: relative; overflow: hidden;
   }
   .stat-item:last-child { border-right: none; }
   .stat-item::before {
     content: ''; position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(191,157,90,0.03) 0%, transparent 60%);
+    background: linear-gradient(135deg, rgba(var(--gold-rgb),0.03) 0%, transparent 60%);
     transition: opacity 0.3s;
   }
   .stat-item:hover::before { opacity: 3; }
@@ -305,8 +311,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1px;
-    background: rgba(191,157,90,0.12);
-    border: 1px solid rgba(191,157,90,0.12);
+    background: rgba(var(--gold-rgb),0.12);
+    border: 1px solid rgba(var(--gold-rgb),0.12);
     border-radius: 4px;
     overflow: hidden;
     margin-top: 80px;
@@ -329,12 +335,12 @@
   .feature-num {
     font-family: var(--font-display);
     font-size: 4rem; font-weight: 300;
-    color: rgba(191,157,90,0.12);
+    color: rgba(var(--gold-rgb),0.12);
     line-height: 1;
     margin-bottom: 24px;
     transition: color 0.3s;
   }
-  .feature-card:hover .feature-num { color: rgba(191,157,90,0.25); }
+  .feature-card:hover .feature-num { color: rgba(var(--gold-rgb),0.25); }
   .feature-title {
     font-family: var(--font-display);
     font-size: 1.5rem; font-weight: 400;
@@ -350,8 +356,8 @@
   .audience-split {
     display: grid; grid-template-columns: 1fr 1fr;
     gap: 1px;
-    background: rgba(191,157,90,0.12);
-    border: 1px solid rgba(191,157,90,0.12);
+    background: rgba(var(--gold-rgb),0.12);
+    border: 1px solid rgba(var(--gold-rgb),0.12);
     border-radius: 4px; overflow: hidden;
     margin-top: 80px;
   }
@@ -366,7 +372,7 @@
   .audience-tag {
     font-size: 0.65rem; font-weight: 500; letter-spacing: 0.25em;
     text-transform: uppercase; color: var(--gold);
-    border: 1px solid rgba(191,157,90,0.3);
+    border: 1px solid rgba(var(--gold-rgb),0.3);
     display: inline-block; padding: 6px 14px; border-radius: 20px;
     margin-bottom: 32px;
   }
@@ -387,7 +393,7 @@
 
   /* ===== MARQUEE ===== */
   .marquee-wrap {
-    overflow: hidden; border-top: 1px solid rgba(191,157,90,0.12); border-bottom: 1px solid rgba(191,157,90,0.12);
+    overflow: hidden; border-top: 1px solid rgba(var(--gold-rgb),0.12); border-bottom: 1px solid rgba(var(--gold-rgb),0.12);
     padding: 22px 0;
   }
   .marquee-track {
@@ -414,18 +420,35 @@
     border-radius: 4px; overflow: hidden;
     background: var(--earth);
   }
+  .story-visual-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+  }
   .story-visual-inner {
-    position: absolute; inset: 0;
-    background: 
-      radial-gradient(ellipse 70% 80% at 40% 60%, rgba(45,68,39,0.9) 0%, rgba(15,26,14,0.95) 100%);
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.85) 0%,
+      rgba(0,0,0,0.4) 45%,
+      rgba(0,0,0,0.3) 100%
+    );
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 24px; padding: 40px;
   }
-  .story-visual svg { opacity: 0.35; }
   .story-frame-text {
     font-family: var(--font-display);
     font-size: 1.3rem; font-style: italic; font-weight: 300;
-    color: var(--sand); text-align: center; line-height: 1.6;
+    color: var(--cream);
+    text-align: center;
+    line-height: 1.6;
+    text-shadow: 0 2px 28px rgba(0,0,0,0.75);
+    max-width: 320px;
   }
   .story-badge {
     position: absolute; bottom: -20px; right: -20px;
@@ -463,12 +486,12 @@
   /* ===== APP SHOWCASE ===== */
   .app-showcase {
     position: relative; padding: 120px 60px;
-    background: linear-gradient(135deg, var(--earth) 0%, var(--moss) 50%, var(--earth) 100%);
+    background: #000000;
     overflow: hidden;
   }
   .app-showcase::before {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(191,157,90,0.06) 0%, transparent 70%);
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(var(--gold-rgb),0.06) 0%, transparent 70%);
     pointer-events: none;
   }
   .app-showcase-inner {
@@ -482,62 +505,36 @@
   }
   .phone-frame {
     width: 260px;
-    background: #0a120a;
+    background: var(--void);
     border-radius: 36px;
-    border: 1px solid rgba(191,157,90,0.3);
+    border: 1px solid rgba(var(--gold-rgb),0.3);
     padding: 16px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(191,157,90,0.1);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(var(--gold-rgb),0.1);
     position: relative;
   }
   .phone-frame::before {
     content: ''; position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
     width: 80px; height: 6px; border-radius: 3px;
-    background: rgba(191,157,90,0.2);
+    background: rgba(var(--gold-rgb),0.2);
   }
   .phone-screen {
-    border-radius: 24px; overflow: hidden; background: var(--earth);
-    aspect-ratio: 9/19;
-    display: flex; flex-direction: column;
-    padding: 40px 20px 20px;
+    position: relative;
+    width: 100%;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #000;
+    aspect-ratio: 9 / 19;
+    line-height: 0;
   }
-  .phone-app-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 24px;
+  .phone-screen-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: top center;
+    display: block;
   }
-  .phone-app-title {
-    font-family: var(--font-display); font-size: 0.9rem; font-weight: 500; color: var(--cream);
-  }
-  .phone-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
-  .phone-horse-card {
-    background: rgba(45,68,39,0.5);
-    border: 1px solid rgba(191,157,90,0.15);
-    border-radius: 12px; padding: 16px; margin-bottom: 12px;
-  }
-  .phone-horse-name {
-    font-family: var(--font-display); font-size: 1.1rem; font-weight: 400;
-    color: var(--cream); margin-bottom: 4px;
-  }
-  .phone-horse-breed {
-    font-size: 0.65rem; font-weight: 500; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--gold);
-  }
-  .phone-chips {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px;
-  }
-  .phone-chip {
-    font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 4px 10px; border-radius: 20px;
-    border: 1px solid rgba(191,157,90,0.25); color: var(--text-mid);
-  }
-  .phone-log-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-  .phone-log-item {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(15,26,14,0.5);
-    border-radius: 8px; padding: 10px 12px;
-  }
-  .phone-log-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
-  .phone-log-text { font-size: 0.68rem; font-weight: 400; color: var(--text-mid); }
-  .phone-log-date { font-size: 0.58rem; color: var(--text-dim); margin-left: auto; }
   .phone-float-badge {
     position: absolute; top: 30%; right: -30px;
     background: var(--gold);
@@ -546,23 +543,12 @@
   }
   .pfb-num { font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; color: var(--forest); }
   .pfb-label { font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--forest); }
-  .phone-float-badge2 {
-    position: absolute; bottom: 25%; left: -40px;
-    background: var(--earth);
-    border: 1px solid rgba(191,157,90,0.25);
-    border-radius: 12px; padding: 12px 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  }
-  .pfb2-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .pfb2-dot { width: 8px; height: 8px; border-radius: 50%; background: #5ccc5c; }
-  .pfb2-text { font-size: 0.65rem; font-weight: 500; color: var(--cream); }
-  .pfb2-sub { font-size: 0.58rem; color: var(--text-dim); }
 
   /* ===== TESTIMONIAL ===== */
   .testimonials {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-    background: rgba(191,157,90,0.12);
-    border: 1px solid rgba(191,157,90,0.12);
+    background: rgba(var(--gold-rgb),0.12);
+    border: 1px solid rgba(var(--gold-rgb),0.12);
     border-radius: 4px; overflow: hidden;
     margin-top: 80px;
   }
@@ -580,7 +566,7 @@
   .t-attr {
     display: flex; flex-direction: column; gap: 4px;
     padding-top: 24px;
-    border-top: 1px solid rgba(191,157,90,0.15);
+    border-top: 1px solid rgba(var(--gold-rgb),0.15);
   }
   .t-name { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; color: var(--cream); }
   .t-role { font-size: 0.68rem; font-weight: 300; color: var(--gold); letter-spacing: 0.1em; }
@@ -588,8 +574,8 @@
   /* ===== PROVIDERS NETWORK ===== */
   .providers-grid {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
-    background: rgba(191,157,90,0.10);
-    border: 1px solid rgba(191,157,90,0.10);
+    background: rgba(var(--gold-rgb),0.10);
+    border: 1px solid rgba(var(--gold-rgb),0.10);
     border-radius: 4px; overflow: hidden;
     margin-top: 60px;
   }
@@ -615,7 +601,7 @@
   }
   .cta-section::before {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(45,68,39,0.4) 0%, transparent 70%);
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(var(--gold-rgb),0.06) 0%, transparent 70%);
   }
   .cta-section-inner { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
   .download-btns {
@@ -625,7 +611,7 @@
   .store-btn {
     display: flex; align-items: center; gap: 12px;
     background: rgba(245,237,220,0.06);
-    border: 1px solid rgba(191,157,90,0.25);
+    border: 1px solid rgba(var(--gold-rgb),0.25);
     padding: 14px 28px; border-radius: 4px;
     transition: all 0.25s var(--ease-smooth);
   }
@@ -639,7 +625,7 @@
 
   /* ===== FOOTER ===== */
   footer {
-    border-top: 1px solid rgba(191,157,90,0.12);
+    border-top: 1px solid rgba(var(--gold-rgb),0.12);
     padding: 60px;
     display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
     gap: 60px;
@@ -655,12 +641,12 @@
   .footer-socials { display: flex; gap: 16px; margin-top: 8px; }
   .social-link {
     width: 36px; height: 36px; border-radius: 50%;
-    border: 1px solid rgba(191,157,90,0.2);
+    border: 1px solid rgba(var(--gold-rgb),0.2);
     display: flex; align-items: center; justify-content: center;
     font-size: 0.85rem;
     transition: all 0.2s;
   }
-  .social-link:hover { border-color: var(--gold); background: rgba(191,157,90,0.1); }
+  .social-link:hover { border-color: var(--gold); background: rgba(var(--gold-rgb),0.1); }
   .footer-col h4 {
     font-size: 0.62rem; font-weight: 600; letter-spacing: 0.22em;
     text-transform: uppercase; color: var(--gold);
@@ -673,7 +659,7 @@
   }
   .footer-col li a:hover { color: var(--cream); }
   .footer-bottom {
-    border-top: 1px solid rgba(191,157,90,0.08);
+    border-top: 1px solid rgba(var(--gold-rgb),0.08);
     padding: 24px 60px;
     display: flex; align-items: center; justify-content: space-between;
     max-width: 1400px; margin: 0 auto;
@@ -690,20 +676,51 @@
   }
   .page-hero-bg {
     position: absolute; inset: 0;
-    background: linear-gradient(160deg, var(--earth) 0%, var(--moss) 50%, var(--earth) 100%);
+    background: linear-gradient(160deg, #000000 0%, #0f0f0f 50%, #000000 100%);
   }
   .page-hero-bg::after {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(ellipse 60% 80% at 60% 40%, rgba(191,157,90,0.07) 0%, transparent 70%);
+    background: radial-gradient(ellipse 60% 80% at 60% 40%, rgba(var(--gold-rgb),0.07) 0%, transparent 70%);
   }
-  .page-hero-content { position: relative; z-index: 1; }
+  .page-hero-content {
+    position: relative; z-index: 1;
+    width: 100%;
+  }
   .page-hero-content .section-label { margin-bottom: 20px; }
   .page-hero-content .heading-xl { max-width: 700px; }
+
+  /* For Owners hero: headline left, store buttons right */
+  .page-hero-content--split {
+    width: 100%;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px 56px;
+    align-items: center;
+  }
+  .page-hero-copy { min-width: 0; }
+  .page-hero-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 12px;
+  }
+  .page-hero-aside .download-btns {
+    margin-top: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+  }
 
   /* ===== AMBASSADOR CARDS ===== */
   .ambassador-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-    background: rgba(191,157,90,0.1); border: 1px solid rgba(191,157,90,0.1);
+    background: rgba(var(--gold-rgb),0.1); border: 1px solid rgba(var(--gold-rgb),0.1);
     border-radius: 4px; overflow: hidden; margin-top: 60px;
   }
   .ambassador-card {
@@ -712,12 +729,17 @@
   }
   .ambassador-card:hover { background: var(--earth); }
   .amb-avatar {
-    width: 64px; height: 64px; border-radius: 50%;
+    width: 88px; height: 88px; border-radius: 50%;
     background: var(--moss);
-    border: 1px solid rgba(191,157,90,0.25);
+    border: 1px solid rgba(var(--gold-rgb),0.25);
+    overflow: hidden;
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-display); font-size: 1.4rem; color: var(--gold);
-    margin-bottom: 24px;
+    margin-bottom: 24px; flex-shrink: 0;
+  }
+  .amb-avatar img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    display: block;
   }
   .amb-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 400; color: var(--cream); margin-bottom: 6px; }
   .amb-role { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
@@ -727,14 +749,14 @@
     margin-top: 20px;
     font-size: 0.65rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase;
     color: var(--text-dim); padding: 5px 12px;
-    border: 1px solid rgba(191,157,90,0.15); border-radius: 20px;
+    border: 1px solid rgba(var(--gold-rgb),0.15); border-radius: 20px;
   }
   .amb-state::before { content: '📍'; font-size: 0.7rem; }
 
   /* ===== PROVIDER SIGNUP ===== */
   .form-wrap {
     max-width: 680px; margin: 60px auto 0;
-    background: var(--earth); border: 1px solid rgba(191,157,90,0.15);
+    background: var(--earth); border: 1px solid rgba(var(--gold-rgb),0.15);
     border-radius: 4px; padding: 60px;
   }
   .form-group { margin-bottom: 28px; }
@@ -743,8 +765,8 @@
     text-transform: uppercase; color: var(--gold); margin-bottom: 10px;
   }
   .form-input {
-    width: 100%; background: rgba(15,26,14,0.5);
-    border: 1px solid rgba(191,157,90,0.2);
+    width: 100%; background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(var(--gold-rgb),0.2);
     border-radius: 2px; padding: 14px 18px;
     font-family: var(--font-body); font-size: 0.9rem; font-weight: 300;
     color: var(--cream);
@@ -755,8 +777,8 @@
   .form-input::placeholder { color: var(--text-dim); }
   .form-select {
     width: 100%; appearance: none;
-    background: rgba(15,26,14,0.5);
-    border: 1px solid rgba(191,157,90,0.2);
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(var(--gold-rgb),0.2);
     border-radius: 2px; padding: 14px 18px;
     font-family: var(--font-body); font-size: 0.9rem; font-weight: 300;
     color: var(--cream); cursor: none; outline: none;
@@ -773,12 +795,12 @@
     border-radius: 2px; transition: all 0.25s var(--ease-smooth);
     margin-top: 8px;
   }
-  .form-submit:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(191,157,90,0.25); }
+  .form-submit:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(var(--gold-rgb),0.25); }
 
   /* ===== BLOG PAGE ===== */
   .blog-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
-    background: rgba(191,157,90,0.1); border: 1px solid rgba(191,157,90,0.1);
+    background: rgba(var(--gold-rgb),0.1); border: 1px solid rgba(var(--gold-rgb),0.1);
     border-radius: 4px; overflow: hidden; margin-top: 60px;
   }
   .blog-card {
@@ -798,21 +820,52 @@
   .blog-excerpt { font-size: 0.82rem; font-weight: 300; line-height: 1.75; color: var(--text-dim); }
   .blog-meta {
     display: flex; align-items: center; gap: 12px;
-    padding-top: 20px; border-top: 1px solid rgba(191,157,90,0.12);
+    padding-top: 20px; border-top: 1px solid rgba(var(--gold-rgb),0.12);
     font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--text-dim);
   }
   .blog-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gold-dim); }
 
+  /* ===== LEGAL (PRIVACY) ===== */
+  .legal-doc { max-width: 720px; }
+  .legal-doc h2 {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--cream);
+    margin: 44px 0 14px;
+    line-height: 1.25;
+  }
+  .legal-doc h2:first-of-type { margin-top: 24px; }
+  .legal-doc h3 {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 22px 0 10px;
+  }
+  .legal-doc p,
+  .legal-doc li {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.78;
+    color: var(--text-mid);
+  }
+  .legal-doc ul { margin: 10px 0 18px 1.2rem; padding: 0; }
+  .legal-doc li { margin-bottom: 10px; }
+  .legal-doc .legal-meta { font-size: 0.88rem; color: var(--text-dim); margin-bottom: 8px; }
+
   /* ===== MOBILE ===== */
   @media (max-width: 900px) {
     nav { padding: 20px 24px; }
     nav.scrolled { padding: 14px 24px; }
+    .nav-logo-img { height: 36px; max-width: min(200px, 48vw); }
     .nav-links { display: none; }
     .section { padding: 80px 24px; }
     .section-sm { padding: 60px 24px; }
     .stats-bar { grid-template-columns: 1fr; }
-    .stat-item { border-right: none; border-bottom: 1px solid rgba(191,157,90,0.15); }
+    .stat-item { border-right: none; border-bottom: 1px solid rgba(var(--gold-rgb),0.15); }
     .stat-item:last-child { border-bottom: none; }
     .feature-grid { grid-template-columns: 1fr; }
     .audience-split { grid-template-columns: 1fr; }
@@ -829,6 +882,17 @@
     .form-row { grid-template-columns: 1fr; }
     .form-wrap { padding: 40px 24px; }
     .page-hero { padding: 80px 24px 60px; }
+    .page-hero-content--split {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .page-hero-aside { align-items: stretch; }
+    .page-hero-aside .download-btns {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
     .audience-panel { padding: 48px 32px; }
   }
 
@@ -851,9 +915,8 @@
 
 <!-- ===== NAVIGATION ===== -->
 <nav id="mainNav">
-  <a class="nav-logo" href="#" onclick="showPage('home')">
-    <div class="nav-logo-mark">✦</div>
-    The Horse Concierge
+  <a class="nav-logo" href="#" onclick="showPage('home')" aria-label="The Horse Concierge — Home">
+    <img class="nav-logo-img" src="Images/ColorLogo.svg" width="220" height="44" alt="The Horse Concierge">
   </a>
   <ul class="nav-links">
     <li><a href="#" onclick="showPage('home')">Home</a></li>
@@ -861,7 +924,6 @@
     <li><a href="#" onclick="showPage('providers')">For Providers</a></li>
     <li><a href="#" onclick="showPage('story')">Our Story</a></li>
     <li><a href="#" onclick="showPage('ambassadors')">Ambassadors</a></li>
-    <li><a href="#" onclick="showPage('blog')">Journal</a></li>
     <li><a href="#" onclick="showPage('contact')">Contact</a></li>
   </ul>
   <a class="nav-cta" href="#" onclick="showPage('owners')">Download the App</a>
@@ -877,14 +939,14 @@
     <div class="hero-bg"></div>
     <!-- Decorative horse silhouette SVG -->
     <svg class="hero-equine" viewBox="0 0 900 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M180 480 C200 400 240 350 300 300 C320 280 350 260 380 240 C350 220 320 200 310 170 C300 140 320 110 340 90 C360 70 390 60 410 70 C430 80 440 100 435 120 C450 100 480 90 510 95 C540 100 560 120 555 145 C570 130 595 125 615 135 C635 145 645 165 640 185 C660 175 685 175 700 190 C715 205 715 225 705 240 C730 230 760 235 775 255 C790 275 785 300 770 315 C800 305 830 315 840 340 C850 365 835 390 815 400 C830 400 845 410 850 425 C855 440 845 460 830 468 C810 480 785 475 780 465 C770 455 775 440 785 435 C770 440 755 438 748 430 C730 455 700 475 670 480 L600 480 C580 460 570 435 580 415 C560 430 535 438 515 430 C500 455 475 475 450 480 L350 480 C330 460 330 435 345 418 C330 428 310 432 295 425 C280 418 278 400 290 388 C275 395 255 395 245 385 C235 375 238 358 248 350 C235 360 215 360 205 348 C195 336 200 315 215 308 C200 315 185 315 178 304 C171 293 175 275 190 268 C175 275 160 272 155 260 C150 248 158 232 175 228 C158 235 140 228 137 215 C134 202 145 187 162 185 C145 190 128 185 124 172 C120 159 133 143 152 142 C135 148 118 140 116 125 C114 110 130 93 150 95 C130 95 115 82 116 67 C117 52 136 40 158 45 C140 42 128 28 132 14 C136 0 157 -8 175 1 C168 10 166 24 175 35 C180 22 198 12 215 18 C200 28 195 45 200 60 C215 45 242 38 260 50 C245 60 242 80 252 95 C265 80 292 75 305 90 C290 95 282 112 290 128 C295 110 318 100 333 110 C315 118 310 138 320 152 C332 135 358 128 370 142 C352 148 348 168 358 182 C374 162 403 155 413 172 C393 178 390 200 400 215" fill="none" stroke="rgba(191,157,90,0.6)" stroke-width="2"/>
+      <path d="M180 480 C200 400 240 350 300 300 C320 280 350 260 380 240 C350 220 320 200 310 170 C300 140 320 110 340 90 C360 70 390 60 410 70 C430 80 440 100 435 120 C450 100 480 90 510 95 C540 100 560 120 555 145 C570 130 595 125 615 135 C635 145 645 165 640 185 C660 175 685 175 700 190 C715 205 715 225 705 240 C730 230 760 235 775 255 C790 275 785 300 770 315 C800 305 830 315 840 340 C850 365 835 390 815 400 C830 400 845 410 850 425 C855 440 845 460 830 468 C810 480 785 475 780 465 C770 455 775 440 785 435 C770 440 755 438 748 430 C730 455 700 475 670 480 L600 480 C580 460 570 435 580 415 C560 430 535 438 515 430 C500 455 475 475 450 480 L350 480 C330 460 330 435 345 418 C330 428 310 432 295 425 C280 418 278 400 290 388 C275 395 255 395 245 385 C235 375 238 358 248 350 C235 360 215 360 205 348 C195 336 200 315 215 308 C200 315 185 315 178 304 C171 293 175 275 190 268 C175 275 160 272 155 260 C150 248 158 232 175 228 C158 235 140 228 137 215 C134 202 145 187 162 185 C145 190 128 185 124 172 C120 159 133 143 152 142 C135 148 118 140 116 125 C114 110 130 93 150 95 C130 95 115 82 116 67 C117 52 136 40 158 45 C140 42 128 28 132 14 C136 0 157 -8 175 1 C168 10 166 24 175 35 C180 22 198 12 215 18 C200 28 195 45 200 60 C215 45 242 38 260 50 C245 60 242 80 252 95 C265 80 292 75 305 90 C290 95 282 112 290 128 C295 110 318 100 333 110 C315 118 310 138 320 152 C332 135 358 128 370 142 C352 148 348 168 358 182 C374 162 403 155 413 172 C393 178 390 200 400 215" fill="none" stroke="rgba(203,178,106,0.6)" stroke-width="2"/>
     </svg>
     <div class="hero-content">
       <div class="hero-eyebrow">Built for Equestrians</div>
       <h1 class="hero-title">
         Every horse deserves<br><em>exceptional care.</em>
       </h1>
-      <p class="hero-sub">The complete platform for horse owners and their care team. One place for every record, every provider, every moment that matters.</p>
+      <p class="hero-sub">The complete platform for horse owners and their care team. One place for every record, every professional, every moment that matters.</p>
       <div class="hero-actions">
         <a class="btn-primary" href="#" onclick="showPage('owners')">
           Download the App
@@ -903,15 +965,15 @@
   <div class="stats-bar">
     <div class="stat-item reveal">
       <div class="stat-num">4,000+</div>
-      <div class="stat-label">Listed Providers Nationwide</div>
+      <div class="stat-label">Horse Services Nationwide</div>
     </div>
     <div class="stat-item reveal reveal-delay-1">
       <div class="stat-num">3rd Gen</div>
       <div class="stat-label">Horsewoman Founded</div>
     </div>
     <div class="stat-item reveal reveal-delay-2">
-      <div class="stat-num">All 50</div>
-      <div class="stat-label">States Represented</div>
+      <div class="stat-num">49 States</div>
+      <div class="stat-label">Represented</div>
     </div>
   </div>
 
@@ -946,7 +1008,7 @@
       </div>
       <div>
         <div class="gold-divider reveal"></div>
-        <p class="body-text reveal reveal-delay-1">Horse ownership is a beautiful complexity. Farrier cycles, vet records, supplement logs, trainer notes — scattered across old texts, email threads, and memory. The Horse Concierge brings every thread together into a single, elegant record that moves with your horse, wherever they go.</p>
+        <p class="body-text reveal reveal-delay-1">Horse ownership is a beautifully complex. Farrier cycles, vet records, supplement logs, trainer notes — scattered across old texts, email threads, and memory. The Horse Concierge brings every thread together into a single, elegant record that moves with your horse, wherever they go.</p>
         <p class="body-text reveal reveal-delay-2" style="margin-top:24px;">Built by a third-generation horsewoman who understood that the people who care for your horse deserve the same level of information you carry in your head.</p>
       </div>
     </div>
@@ -956,12 +1018,12 @@
       <div class="feature-card reveal">
         <div class="feature-num">01</div>
         <div class="feature-title">Complete Care Records</div>
-        <p class="feature-text">Every vet visit, farrier cycle, feed change, and injury note — logged in one digital record that travels with your horse for life.</p>
+        <p class="feature-text">Every vet visit, ride, farrier cycle, feed change, and injury note — logged in one digital record that travels with your horse for life.</p>
       </div>
       <div class="feature-card reveal reveal-delay-1">
         <div class="feature-num">02</div>
         <div class="feature-title">Trusted Provider Directory</div>
-        <p class="feature-text">4,000+ verified farriers, vets, trainers, and specialists. Searchable by location. No more word-of-mouth scrambles when you need someone fast.</p>
+        <p class="feature-text">4,000+ verified farriers, vets, trainers, and specialists with ratings and reviews. Searchable by location. No more word-of-mouth scrambles when you need someone fast.</p>
       </div>
       <div class="feature-card reveal reveal-delay-2">
         <div class="feature-num">03</div>
@@ -985,9 +1047,9 @@
         <p class="body-text" style="margin-top: 16px;">Stop juggling scattered records and start owning the full story of your horse's care.</p>
         <ul class="audience-list">
           <li>Track every farrier and vet appointment with ease</li>
-          <li>Log feed, supplements, and health changes in seconds</li>
+          <li>Log rides, feed, supplements, and health changes in seconds</li>
           <li>Keep a single record that follows your horse everywhere</li>
-          <li>Share live updates with your care team, no group text needed</li>
+          <li>Share updates with your care team, no group text needed</li>
         </ul>
         <a class="btn-primary" href="#" onclick="showPage('owners')">Get the App</a>
       </div>
@@ -1012,7 +1074,7 @@
     <h2 class="heading-xl reveal">Stories from the barn.</h2>
     <div class="testimonials">
       <div class="testimonial-card reveal">
-        <p class="t-quote">"I used to keep everything in a notebook I could never find. Now my vet has the same information I do before she even pulls into the barn."</p>
+        <p class="t-quote">"I used to keep everything in a notebook or in my notes on my phone. Now my farrier has the same information I do before he even pulls into the barn."</p>
         <div class="t-attr">
           <div class="t-name">Sarah M.</div>
           <div class="t-role">Horse Owner · Kentucky</div>
@@ -1029,7 +1091,7 @@
         <p class="t-quote">"Finally — an app that thinks the way horse people think. Not a generic health tracker, but something built for how we actually manage care."</p>
         <div class="t-attr">
           <div class="t-name">Clara T.</div>
-          <div class="t-role">Equine Vet · Colorado</div>
+          <div class="t-role">Horse Owner · Colorado</div>
         </div>
       </div>
     </div>
@@ -1063,53 +1125,12 @@
       <div class="phone-mockup reveal reveal-delay-1">
         <div class="phone-frame">
           <div class="phone-screen">
-            <div class="phone-app-bar">
-              <div class="phone-app-title">My Horses</div>
-              <div class="phone-dot"></div>
-            </div>
-            <div class="phone-horse-card">
-              <div class="phone-horse-name">Midnight Storm</div>
-              <div class="phone-horse-breed">Thoroughbred · 9 yrs</div>
-              <div class="phone-chips">
-                <div class="phone-chip">Active</div>
-                <div class="phone-chip">Competition</div>
-                <div class="phone-chip">Pasture</div>
-              </div>
-            </div>
-            <div class="phone-horse-card" style="opacity:0.5">
-              <div class="phone-horse-name">Copper</div>
-              <div class="phone-horse-breed">Quarter Horse · 14 yrs</div>
-            </div>
-            <div style="margin-top: 16px; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(191,157,90,0.7); margin-bottom: 10px;">Recent Activity</div>
-            <div class="phone-log-list">
-              <div class="phone-log-item">
-                <div class="phone-log-dot"></div>
-                <div class="phone-log-text">Farrier visit — all 4</div>
-                <div class="phone-log-date">2d ago</div>
-              </div>
-              <div class="phone-log-item">
-                <div class="phone-log-dot" style="background: #5ccc5c;"></div>
-                <div class="phone-log-text">Vet check — clear</div>
-                <div class="phone-log-date">1w ago</div>
-              </div>
-              <div class="phone-log-item">
-                <div class="phone-log-dot" style="background: #cc8855;"></div>
-                <div class="phone-log-text">Feed adjusted</div>
-                <div class="phone-log-date">2w ago</div>
-              </div>
-            </div>
+            <img class="phone-screen-img" src="Images/Homescreen%20shot.png" alt="The Horse Concierge app home screen">
           </div>
         </div>
         <div class="phone-float-badge">
           <div class="pfb-num">4K+</div>
           <div class="pfb-label">Providers</div>
-        </div>
-        <div class="phone-float-badge2">
-          <div class="pfb2-row">
-            <div class="pfb2-dot"></div>
-            <div class="pfb2-text">Team Synced</div>
-          </div>
-          <div class="pfb2-sub">3 members viewing</div>
         </div>
       </div>
     </div>
@@ -1119,12 +1140,8 @@
   <section class="section">
     <div class="story-layout">
       <div class="story-visual">
+        <img class="story-visual-photo" src="Images/lacey.jpg" alt="Lacey Gotshall, founder of The Horse Concierge">
         <div class="story-visual-inner">
-          <svg width="180" height="180" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="100" r="90" stroke="rgba(191,157,90,0.3)" stroke-width="1"/>
-            <circle cx="100" cy="100" r="70" stroke="rgba(191,157,90,0.15)" stroke-width="1"/>
-            <path d="M60 140 C70 110 90 90 110 80 C100 70 85 60 80 45 C75 30 85 15 95 10 C105 5 118 10 120 25 C125 10 140 5 155 12 C170 19 175 35 165 50 C178 45 192 50 195 65 C198 80 188 92 178 96 C188 92 200 95 200 110 C200 125 188 132 178 128" stroke="rgba(191,157,90,0.5)" stroke-width="1.5" fill="none"/>
-          </svg>
           <div class="story-frame-text">"Built from lived experience,<br>for the way we actually<br>live with horses."</div>
         </div>
         <div class="story-badge">
@@ -1136,17 +1153,16 @@
         <div class="section-label reveal">Our Story</div>
         <h2 class="heading-xl reveal">Born from the<br>barn, not a<br><em>boardroom.</em></h2>
         <div class="gold-divider reveal"></div>
-        <div class="story-quote reveal">"I knew what horse people needed because I was one. Every gap in the app wasn't a feature request — it was something I'd lived."</div>
+        <div class="story-quote reveal">"I knew what horse people needed because I am one. Everything in the app wasn't a feature request — it was something I lived."</div>
         <div class="story-attr reveal">Lacey Gotshall · Founder & Third-Generation Horsewoman</div>
-        <p class="body-text reveal reveal-delay-1">The Horse Concierge wasn't built in a tech hub. It was built in the realities of barn life — early mornings, emergency vet calls, and the maddening search for the last farrier's notes. Every feature solves a real problem that real horse people face every day.</p>
-        <a class="btn-ghost" href="#" onclick="showPage('story')" style="display:inline-block; margin-top:40px;">Read the Full Story</a>
+        <p class="body-text reveal reveal-delay-1">"The Horse Concierge wasn't built in a tech hub. It was built in the realities of barn life — managing my horses health and the professionals that help them."        <a class="btn-ghost" href="#" onclick="showPage('story')" style="display:inline-block; margin-top:40px;">Read the Full Story</a>
       </div>
     </div>
   </section>
 
   <!-- PROVIDERS CTA -->
   <section class="section" style="padding-top:0;">
-    <div class="section-label reveal">For Providers</div>
+    <div class="section-label reveal">For Providers and Professionals</div>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;" class="reveal">
       <div>
         <h2 class="heading-xl">Join 4,000+<br>professionals<br>across the <em>US.</em></h2>
@@ -1213,9 +1229,9 @@
   <footer>
     <div class="footer-brand">
       <div class="footer-logo">The Horse Concierge™</div>
-      <p class="footer-tagline">Everything you and your horse needs in one place. Built by a horsewoman, backed by thousands of providers across the United States.</p>
+      <p class="footer-tagline">Everything you and your horse needs in one place. Built by a horsewoman, backed by thousands of professionals across the United States.</p>
       <div class="footer-socials">
-        <a class="social-link" href="https://www.tiktok.com/@horseconcierge" target="_blank">T</a>
+        <a class="social-link" href="https://www.tiktok.com/@thehorseconcierge" target="_blank">T</a>
         <a class="social-link" href="https://www.instagram.com/the_horse_concierge/" target="_blank">I</a>
         <a class="social-link" href="https://www.facebook.com/profile.php?id=61575807532446" target="_blank">F</a>
       </div>
@@ -1226,7 +1242,6 @@
         <li><a href="#" onclick="showPage('owners')">For Owners</a></li>
         <li><a href="#" onclick="showPage('providers')">For Providers</a></li>
         <li><a href="#" onclick="showPage('ambassadors')">Ambassadors</a></li>
-        <li><a href="#" onclick="showPage('blog')">Behind the Barn Door</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1234,8 +1249,7 @@
       <ul>
         <li><a href="#" onclick="showPage('story')">Our Story</a></li>
         <li><a href="#" onclick="showPage('contact')">Contact</a></li>
-        <li><a href="#">Media & Press</a></li>
-        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#" onclick="showPage('privacy')">Privacy Policy</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1258,9 +1272,29 @@
 <div class="page" id="page-owners">
   <div class="page-hero">
     <div class="page-hero-bg"></div>
-    <div class="page-hero-content">
-      <div class="section-label">For Horse Owners</div>
-      <h1 class="heading-xl">Everything your horse needs.<br><em>Finally in one place.</em></h1>
+    <div class="page-hero-content page-hero-content--split">
+      <div class="page-hero-copy">
+        <div class="section-label">For Horse Owners</div>
+        <h1 class="heading-xl">Everything your horse needs.<br><em>Finally in one place.</em></h1>
+      </div>
+      <div class="page-hero-aside">
+        <div class="download-btns">
+          <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">
+            <div class="store-btn-icon">🍎</div>
+            <div>
+              <div class="store-btn-text-top">Download on the</div>
+              <div class="store-btn-text-main">App Store</div>
+            </div>
+          </a>
+          <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.thehorseconcierge.app" target="_blank" rel="noopener noreferrer">
+            <div class="store-btn-icon">▶</div>
+            <div>
+              <div class="store-btn-text-top">Get it on</div>
+              <div class="store-btn-text-main">Google Play</div>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
   <section class="section">
@@ -1283,9 +1317,9 @@
           <p class="feature-text">Track every feed change and supplement addition with timestamps. Know exactly what your horse is eating and when it changed.</p>
         </div>
         <div class="feature-card reveal reveal-delay-2">
-          <div class="feature-num">🩹</div>
-          <div class="feature-title">Injury & Health Notes</div>
-          <p class="feature-text">Document injuries, setbacks, and recoveries with photos and notes. Build a health timeline that tells the whole story.</p>
+          <div class="feature-num">🏇</div>
+          <div class="feature-title">Health & Exercise Notes</div>
+          <p class="feature-text">Document rides, setbacks, and recoveries with photos and notes. Build a health timeline that tells the whole story.</p>
         </div>
         <div class="feature-card reveal reveal-delay-3">
           <div class="feature-num">👥</div>
@@ -1316,7 +1350,7 @@
       </div>
     </div>
   </div>
-  <footer style="border-top: 1px solid rgba(191,157,90,0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
     <div style="font-size:0.7rem; color:var(--text-dim);">© 2025 All rights reserved.</div>
   </footer>
@@ -1346,7 +1380,22 @@
           <li class="reveal reveal-delay-2">Connect with owners who arrive better prepared</li>
           <li class="reveal reveal-delay-3">Listing is free — join 4,000+ professionals nationwide</li>
         </ul>
-        <a class="btn-primary" href="#" style="margin-top:40px; display:inline-flex;" onclick="document.getElementById('provider-form-section').scrollIntoView({behavior:'smooth'})">List Your Services Free</a>
+        <div class="download-btns" style="margin-top:40px; justify-content:flex-start;">
+          <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">
+            <div class="store-btn-icon">🍎</div>
+            <div>
+              <div class="store-btn-text-top">Download on the</div>
+              <div class="store-btn-text-main">App Store</div>
+            </div>
+          </a>
+          <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.thehorseconcierge.app" target="_blank" rel="noopener noreferrer">
+            <div class="store-btn-icon">▶</div>
+            <div>
+              <div class="store-btn-text-top">Get it on</div>
+              <div class="store-btn-text-main">Google Play</div>
+            </div>
+          </a>
+        </div>
       </div>
       <div class="feature-grid" style="margin-top:0; grid-template-columns: 1fr;">
         <div class="feature-card reveal">
@@ -1368,63 +1417,30 @@
     </div>
   </section>
 
-  <!-- SIGNUP FORM -->
-  <div id="provider-form-section" style="padding: 0 60px 120px; max-width: 1400px; margin: 0 auto;">
-    <div class="section-label reveal" style="justify-content:center;">Join the Network</div>
-    <h2 class="heading-xl reveal" style="text-align:center; margin-bottom:8px;">List Your Services</h2>
-    <p class="body-text reveal" style="text-align:center; margin: 16px auto 0; max-width:500px;">Create your free provider profile and start connecting with organized, prepared horse owners in your area.</p>
-    <div class="form-wrap reveal reveal-delay-1">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">First Name</label>
-          <input class="form-input" type="text" placeholder="Jane">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Last Name</label>
-          <input class="form-input" type="text" placeholder="Smith">
-        </div>
+  <div class="cta-section">
+    <div class="cta-section-inner">
+      <div class="section-label reveal" style="justify-content:center;">Join the network</div>
+      <h2 class="heading-xl reveal">Download the app to <em>list for free</em><br>and claim your listing.</h2>
+      <p class="body-text reveal reveal-delay-1" style="margin: 24px auto 0; max-width: 560px; text-align: center;">Add your business in The Horse Concierge — listings are free. New profiles go through the same quick review you already use in the app. Once you’re live, manage your listing, respond to reviews, and see connected owners’ horse details from your phone.</p>
+      <div class="download-btns reveal reveal-delay-2">
+        <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">
+          <div class="store-btn-icon">🍎</div>
+          <div>
+            <div class="store-btn-text-top">Download on the</div>
+            <div class="store-btn-text-main">App Store</div>
+          </div>
+        </a>
+        <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.thehorseconcierge.app" target="_blank" rel="noopener noreferrer">
+          <div class="store-btn-icon">▶</div>
+          <div>
+            <div class="store-btn-text-top">Get it on</div>
+            <div class="store-btn-text-main">Google Play</div>
+          </div>
+        </a>
       </div>
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input class="form-input" type="email" placeholder="jane@example.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Phone Number</label>
-        <input class="form-input" type="tel" placeholder="+1 (555) 000-0000">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Service Type</label>
-        <select class="form-select">
-          <option value="">Select your specialty</option>
-          <option>Farrier / Hoof Care</option>
-          <option>Equine Veterinarian</option>
-          <option>Trainer / Riding Instructor</option>
-          <option>Equine Dentist</option>
-          <option>Equine Massage Therapist</option>
-          <option>Chiropractor</option>
-          <option>Acupuncturist</option>
-          <option>Feed / Nutrition Specialist</option>
-          <option>Other Specialist</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">State</label>
-          <input class="form-input" type="text" placeholder="Texas">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Years of Experience</label>
-          <input class="form-input" type="number" placeholder="10">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Brief Bio</label>
-        <textarea class="form-input" rows="4" style="resize:vertical;" placeholder="Tell owners a bit about your background and what makes your approach special..."></textarea>
-      </div>
-      <button class="form-submit" onclick="alert('Thank you! Your provider profile request has been received. We\'ll be in touch within 48 hours.')">Create My Free Profile →</button>
     </div>
   </div>
-  <footer style="border-top: 1px solid rgba(191,157,90,0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
     <a href="#" onclick="showPage('home')" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Back to Home</a>
   </footer>
@@ -1474,7 +1490,7 @@
       </div>
     </div>
   </section>
-  <footer style="border-top: 1px solid rgba(191,157,90,0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
     <a href="#" onclick="showPage('home')" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Back to Home</a>
   </footer>
@@ -1493,49 +1509,64 @@
   </div>
   <section class="section">
     <div class="section-label reveal">Our Network</div>
-    <p class="body-text reveal" style="max-width:680px; margin-bottom:0;">Our ambassadors are equestrians, professionals, and horse lovers who believe in what we're building and help spread the word across barns, events, and communities throughout the United States.</p>
+    <p class="body-text reveal" style="max-width:680px;">Our ambassadors are verified representatives who help spread the word across barns, events, and communities. Each has been selected for deep connections within the local equestrian community and a commitment to helping horse owners find trusted care.</p>
+    <p class="body-text reveal reveal-delay-1" style="max-width:680px; margin-top:16px; font-size:0.88rem; color:var(--text-mid);">If someone claims to be an ambassador but is not listed here, they are not officially affiliated. To verify: <a href="mailto:info@thehorseconcierge.com" style="color:var(--gold); text-decoration:underline; text-underline-offset:3px;">info@thehorseconcierge.com</a></p>
     <div class="ambassador-grid">
       <div class="ambassador-card reveal">
-        <div class="amb-avatar">R</div>
-        <div class="amb-name">Rachel Donovan</div>
-        <div class="amb-role">Barrel Racing Competitor</div>
-        <p class="amb-bio">Rachel has been competing on the NBHA circuit for 12 years. She uses the Horse Concierge to manage care for her string of four performance horses.</p>
-        <div class="amb-state">Texas</div>
+        <div class="amb-avatar"><img src="Images/Chad%20Diment.png" width="176" height="176" alt="Chad Diment" loading="lazy" decoding="async"></div>
+        <div class="amb-name">Chad Diment</div>
+        <div class="amb-role">Category Ambassador · Farrier</div>
+        <p class="amb-bio">Verified ambassador representing The Horse Concierge in the farrier community and helping owners connect with quality hoof care.</p>
+        <div class="amb-state">United States</div>
       </div>
       <div class="ambassador-card reveal reveal-delay-1">
-        <div class="amb-avatar">M</div>
-        <div class="amb-name">Marcus Webb</div>
-        <div class="amb-role">Certified Farrier · 18 yrs</div>
-        <p class="amb-bio">Marcus operates a busy farrier practice across three counties. He advocates for the app because informed owners make his job dramatically better.</p>
-        <div class="amb-state">Kentucky</div>
+        <div class="amb-avatar"><img src="Images/Nathan%20Loper.png" width="176" height="176" alt="Nathan Loper" loading="lazy" decoding="async"></div>
+        <div class="amb-name">Nathan Loper</div>
+        <div class="amb-role">Category Ambassador · Transport</div>
+        <p class="amb-bio">Verified ambassador for equine transport—supporting owners who need safe, reliable hauls and professional connections.</p>
+        <div class="amb-state">United States</div>
       </div>
       <div class="ambassador-card reveal reveal-delay-2">
-        <div class="amb-avatar">A</div>
-        <div class="amb-name">Andrea Solís</div>
-        <div class="amb-role">Hunter/Jumper Trainer</div>
-        <p class="amb-bio">Andrea trains amateur and junior riders at a show barn. Shared horse records have transformed how she and her clients communicate about each horse.</p>
-        <div class="amb-state">Florida</div>
+        <div class="amb-avatar"><img src="Images/Sherry%20Strozza.jpg" width="176" height="176" alt="Sherry Strozza" loading="lazy" decoding="async"></div>
+        <div class="amb-name">Sherry Strozza</div>
+        <div class="amb-role">Western PA Ambassador · Lead Developer</div>
+        <p class="amb-bio">Regional ambassador for Western Pennsylvania and technical lead—bridging barn-ready product with real-world equestrian needs.</p>
+        <div class="amb-state">Pennsylvania</div>
       </div>
       <div class="ambassador-card reveal">
-        <div class="amb-avatar">T</div>
-        <div class="amb-name">Thomas Hale</div>
-        <div class="amb-role">Equine Veterinarian</div>
-        <p class="amb-bio">Dr. Hale specializes in sport horse medicine. He's seen firsthand how proper record-keeping changes the quality of care horses receive.</p>
-        <div class="amb-state">Colorado</div>
+        <div class="amb-avatar"><img src="Images/lacey.jpg" width="176" height="176" alt="Lacey Gotshall" loading="lazy" decoding="async"></div>
+        <div class="amb-name">Lacey Gotshall</div>
+        <div class="amb-role">Founder · CEO</div>
+        <p class="amb-bio">Third-generation horsewoman who built The Horse Concierge to give every horse a single, portable home for records and care.</p>
+        <div class="amb-state">United States</div>
       </div>
       <div class="ambassador-card reveal reveal-delay-1">
-        <div class="amb-avatar">L</div>
-        <div class="amb-name">Lindsay Park</div>
-        <div class="amb-role">Dressage Rider & Coach</div>
-        <p class="amb-bio">Lindsay coaches riders from Training through Grand Prix. She requires all clients to use the app so she can monitor their horses' wellbeing year-round.</p>
-        <div class="amb-state">Virginia</div>
+        <div class="amb-avatar"><img src="Images/Kenny%20Greer.jpg" width="176" height="176" alt="Kenny Greer" loading="lazy" decoding="async"></div>
+        <div class="amb-name">Kenny Greer</div>
+        <div class="amb-role">Regional Ambassador · Ocala, FL</div>
+        <p class="amb-bio">Verified regional ambassador in the Ocala equestrian community—helping owners discover trusted professionals through the app.</p>
+        <div class="amb-state">Florida</div>
       </div>
       <div class="ambassador-card reveal reveal-delay-2">
-        <div class="amb-avatar">D</div>
-        <div class="amb-name">Dylan Marsh</div>
-        <div class="amb-role">Ranch Manager</div>
-        <p class="amb-bio">Dylan oversees 40+ horses on a working ranch in Montana. The Horse Concierge replaced a filing cabinet and a whiteboard that nobody could ever find.</p>
-        <div class="amb-state">Montana</div>
+        <div class="amb-avatar"><img src="Images/Ellen%20Melton.jpg" width="176" height="176" alt="Ellen Melton" loading="lazy" decoding="async"></div>
+        <div class="amb-name">Ellen Melton</div>
+        <div class="amb-role">Regional Ambassador · Central NC</div>
+        <p class="amb-bio">Verified regional ambassador for Central North Carolina—connecting horse people with vetted care and The Horse Concierge in the region.</p>
+        <div class="amb-state">North Carolina</div>
+      </div>
+      <div class="ambassador-card reveal">
+        <div class="amb-avatar"><img src="Images/Rene%20Boyd.jpg" width="176" height="176" alt="Rene Boyd" loading="lazy" decoding="async"></div>
+        <div class="amb-name">Rene Boyd</div>
+        <div class="amb-role">Regional Ambassador · WV Panhandle</div>
+        <p class="amb-bio">Verified regional ambassador for the West Virginia panhandle—supporting owners and professionals in the local horse community.</p>
+        <div class="amb-state">West Virginia</div>
+      </div>
+      <div class="ambassador-card reveal reveal-delay-1">
+        <div class="amb-avatar"><img src="Images/Alecia%20Geddings.jpg" width="176" height="176" alt="Alecia Davis Geddings" loading="lazy" decoding="async"></div>
+        <div class="amb-name">Alecia Davis Geddings</div>
+        <div class="amb-role">Regional Ambassador · Eastern NC</div>
+        <p class="amb-bio">Verified regional ambassador for Eastern North Carolina—helping riders and barns find trusted care through The Horse Concierge.</p>
+        <div class="amb-state">North Carolina</div>
       </div>
     </div>
     <div class="cta-section" style="padding: 80px 0 0;">
@@ -1546,14 +1577,14 @@
       </div>
     </div>
   </section>
-  <footer style="border-top: 1px solid rgba(191,157,90,0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
     <a href="#" onclick="showPage('home')" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Back to Home</a>
   </footer>
 </div>
 
 <!-- ============================= -->
-<!-- PAGE: BLOG / JOURNAL          -->
+<!-- PAGE: BLOG / JOURNAL (hidden from nav; showPage redirects blog → home) -->
 <!-- ============================= -->
 <div class="page" id="page-blog">
   <div class="page-hero">
@@ -1641,7 +1672,7 @@
       </div>
     </div>
   </section>
-  <footer style="border-top: 1px solid rgba(191,157,90,0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
     <a href="#" onclick="showPage('home')" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Back to Home</a>
   </footer>
@@ -1677,7 +1708,7 @@
           <div class="reveal reveal-delay-2">
             <div class="section-label" style="margin-bottom:8px;">Follow Along</div>
             <div class="footer-socials" style="margin-top:16px;">
-              <a class="social-link" href="https://www.tiktok.com/@horseconcierge" target="_blank">TikTok</a>
+              <a class="social-link" href="https://www.tiktok.com/@thehorseconcierge" target="_blank">TikTok</a>
               <a class="social-link" href="https://www.instagram.com/the_horse_concierge/" target="_blank">Instagram</a>
               <a class="social-link" href="https://www.facebook.com/profile.php?id=61575807532446" target="_blank">Facebook</a>
             </div>
@@ -1685,40 +1716,161 @@
         </div>
       </div>
       <div class="form-wrap reveal reveal-delay-1" style="margin:0;">
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">First Name</label>
-            <input class="form-input" type="text" placeholder="Jane">
+        <form action="https://formsubmit.co/info@thehorseconcierge.com" method="POST">
+          <input type="hidden" name="_subject" value="Website contact — The Horse Concierge">
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="contact-first">First Name</label>
+              <input class="form-input" id="contact-first" name="first_name" type="text" placeholder="Jane" autocomplete="given-name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contact-last">Last Name</label>
+              <input class="form-input" id="contact-last" name="last_name" type="text" placeholder="Smith" autocomplete="family-name" required>
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Last Name</label>
-            <input class="form-input" type="text" placeholder="Smith">
+            <label class="form-label" for="contact-email">Email Address</label>
+            <input class="form-input" id="contact-email" name="email" type="email" placeholder="jane@example.com" autocomplete="email" required>
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <input class="form-input" type="email" placeholder="jane@example.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">I am a…</label>
-          <select class="form-select">
-            <option>Horse Owner</option>
-            <option>Provider / Professional</option>
-            <option>Ambassador Applicant</option>
-            <option>Press / Media</option>
-            <option>Investor</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Message</label>
-          <textarea class="form-input" rows="5" style="resize:vertical;" placeholder="Tell us what's on your mind..."></textarea>
-        </div>
-        <button class="form-submit" onclick="alert('Message received! We typically respond within 24–48 hours.')">Send Message →</button>
+          <div class="form-group">
+            <label class="form-label" for="contact-role">I am a…</label>
+            <select class="form-select" id="contact-role" name="role" required>
+              <option value="" disabled selected>Select one…</option>
+              <option value="Horse Owner">Horse Owner</option>
+              <option value="Provider / Professional">Provider / Professional</option>
+              <option value="Ambassador Applicant">Ambassador Applicant</option>
+              <option value="Press / Media">Press / Media</option>
+              <option value="Investor">Investor</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-message">Message</label>
+            <textarea class="form-input" id="contact-message" name="message" rows="5" style="resize:vertical;" placeholder="Tell us what's on your mind..." required></textarea>
+          </div>
+          <button type="submit" class="form-submit">Send Message →</button>
+          <p style="margin-top:20px; font-size:0.72rem; font-weight:300; line-height:1.6; color:var(--text-dim);">Submissions are delivered to <a href="mailto:info@thehorseconcierge.com" style="color:var(--gold); text-decoration:underline; text-underline-offset:3px;">info@thehorseconcierge.com</a>. If this is your first form submission, check that inbox for a one-time activation link from the form provider.</p>
+        </form>
       </div>
     </div>
   </section>
-  <footer style="border-top: 1px solid rgba(191,157,90,0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
+    <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
+    <a href="#" onclick="showPage('home')" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Back to Home</a>
+  </footer>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: PRIVACY POLICY          -->
+<!-- ============================= -->
+<div class="page" id="page-privacy">
+  <div class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-content">
+      <div class="section-label">Legal</div>
+      <h1 class="heading-xl">Privacy <em>Policy</em></h1>
+    </div>
+  </div>
+  <section class="section">
+    <div class="legal-doc reveal">
+      <p class="legal-meta">Privacy Policy for The Horse Concierge</p>
+      <p class="legal-meta" style="margin-top:0;"><strong style="color:var(--cream); font-weight:500;">Effective date:</strong> January 8, 2026</p>
+      <p class="body-text reveal" style="max-width:none; margin-top:28px;">The Horse Concierge (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) respects your privacy. This Privacy Policy explains how information is collected, used, and protected when you use The Horse Concierge mobile application (the &ldquo;App&rdquo;) and related services available through the Apple App Store and Google Play Store.</p>
+
+      <h2 class="reveal reveal-delay-1">1. Information We Collect</h2>
+      <h3 class="reveal reveal-delay-1">Personal Information (Provided by Users)</h3>
+      <ul class="reveal reveal-delay-1">
+        <li>Name, email address, and phone number for account creation and authentication</li>
+        <li>Information voluntarily added to horse profiles, care records, listings, or submissions (such as photos, notes, descriptions, and event details)</li>
+      </ul>
+      <h3 class="reveal reveal-delay-1">Provider &amp; Business Information</h3>
+      <ul class="reveal reveal-delay-1">
+        <li>Business names, contact details, websites, service descriptions, and event information submitted by service providers or organizers for display within the App</li>
+      </ul>
+      <h3 class="reveal reveal-delay-1">App Usage Data</h3>
+      <ul class="reveal reveal-delay-1">
+        <li>Aggregated usage data such as screen views, session counts, and feature engagement collected through Firebase Analytics to improve App performance and functionality</li>
+      </ul>
+      <h3 class="reveal reveal-delay-1">Subscription &amp; Payment Information</h3>
+      <ul class="reveal reveal-delay-1">
+        <li>Subscription purchases are processed exclusively by Apple (App Store) or Google (Play Store)</li>
+        <li>We do not collect, store, or have access to full payment or billing details</li>
+        <li>Apple or Google may collect payment-related information in accordance with their own privacy policies</li>
+      </ul>
+
+      <h2 class="reveal">2. How We Use Information</h2>
+      <p class="reveal">We use collected information to:</p>
+      <ul class="reveal">
+        <li>Authenticate accounts and provide access to App features</li>
+        <li>Enable Marketplace and provider directory functionality</li>
+        <li>Display user- and provider-submitted content within the App</li>
+        <li>Facilitate communication related to listings and services</li>
+        <li>Improve App performance, reliability, and feature development</li>
+        <li>Monitor aggregate usage trends and system health</li>
+      </ul>
+      <p class="reveal">We do not sell or share personal information with third-party marketers or advertisers.</p>
+
+      <h2 class="reveal">3. Advertising</h2>
+      <p class="reveal">Advertisements displayed in the App are:</p>
+      <ul class="reveal">
+        <li>Static or region-based</li>
+        <li>Not targeted to individual users</li>
+        <li>Not driven by personal behavior, tracking, or profiling</li>
+      </ul>
+
+      <h2 class="reveal">4. Data Storage &amp; Security</h2>
+      <ul class="reveal">
+        <li>Data is stored securely using Google Firebase infrastructure</li>
+        <li>We apply reasonable administrative, technical, and organizational safeguards</li>
+        <li>No system is completely secure; users are responsible for the accuracy of the information they submit</li>
+      </ul>
+
+      <h2 class="reveal">5. User Accounts &amp; Access Controls</h2>
+      <ul class="reveal">
+        <li>Accounts store only the information necessary to support App functionality</li>
+        <li>Regional administrators (&ldquo;Ambassadors&rdquo;) may be granted limited, role-based access for moderation and support purposes</li>
+        <li>Administrative access is restricted, monitored, and reviewed</li>
+      </ul>
+
+      <h2 class="reveal">6. Account Deletion &amp; Data Retention</h2>
+      <ul class="reveal">
+        <li>Users may request account deletion by contacting <a href="mailto:info@thehorseconcierge.com" style="color:var(--gold); text-decoration:underline; text-underline-offset:3px;">info@thehorseconcierge.com</a></li>
+        <li>Upon verified request, personal account data will be deleted or anonymized unless retention is required for legal or operational reasons</li>
+        <li>Some aggregated or non-identifiable data may be retained for analytics and system integrity</li>
+      </ul>
+
+      <h2 class="reveal">7. Children&rsquo;s Privacy</h2>
+      <p class="reveal">The App is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If such information is discovered, it will be deleted promptly.</p>
+
+      <h2 class="reveal">8. Third-Party Services</h2>
+      <p class="reveal">We use the following third-party services:</p>
+      <ul class="reveal">
+        <li>Google Firebase (authentication, data storage, analytics)</li>
+        <li>Apple App Store / Google Play Store (subscription processing)</li>
+      </ul>
+      <p class="reveal">These services operate under their own privacy policies and may process limited data necessary to provide their services.</p>
+
+      <h2 class="reveal">9. User Rights</h2>
+      <p class="reveal">Depending on location, users may have the right to:</p>
+      <ul class="reveal">
+        <li>Access, update, or delete personal information</li>
+        <li>Request a copy of stored data</li>
+        <li>Withdraw consent for certain data processing (which may limit App functionality)</li>
+      </ul>
+      <p class="reveal">Requests can be submitted to <a href="mailto:info@thehorseconcierge.com" style="color:var(--gold); text-decoration:underline; text-underline-offset:3px;">info@thehorseconcierge.com</a>.</p>
+
+      <h2 class="reveal">10. Changes to This Policy</h2>
+      <p class="reveal">We may update this Privacy Policy periodically. Updates will be posted within the App and on our website. Continued use of the App after changes constitutes acceptance of the revised policy.</p>
+
+      <h2 class="reveal">11. Contact Us</h2>
+      <p class="reveal"><a href="mailto:info@thehorseconcierge.com" style="color:var(--gold); text-decoration:underline; text-underline-offset:3px;">info@thehorseconcierge.com</a></p>
+
+      <div class="gold-divider reveal" style="margin-top:48px;"></div>
+      <p class="reveal" style="font-size:0.82rem; font-weight:300; color:var(--text-dim); max-width:540px;">The Horse Concierge™ is a trademark of Lacey Gotshall, all rights reserved. Trademark pending.</p>
+    </div>
+  </section>
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
     <a href="#" onclick="showPage('home')" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Back to Home</a>
   </footer>
@@ -1746,6 +1898,7 @@
 
   // PAGE NAVIGATION
   function showPage(name) {
+    if (name === 'blog') name = 'home';
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('page-' + name);
     if (target) {
