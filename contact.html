@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — The Horse Concierge</title>
+<meta name="description" content="Reach The Horse Concierge for owner questions, provider listings, press, and ambassador inquiries.">
+<link rel="canonical" href="https://www.thehorseconcierge.com/contact">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<meta property="og:title" content="Contact — The Horse Concierge">
+<meta property="og:description" content="Reach The Horse Concierge for owner questions, provider listings, press, and ambassador inquiries.">
+<meta property="og:url" content="https://www.thehorseconcierge.com/contact">
+<meta property="og:type" content="website">
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html" aria-label="The Horse Concierge — Home">
+    <img class="nav-logo-img" src="Images/ColorLogo.svg" width="220" height="44" alt="The Horse Concierge">
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="owners.html">For Owners</a></li>
+    <li><a href="providers.html">For Providers</a></li>
+    <li><a href="story.html">Our Story</a></li>
+    <li><a href="ambassadors.html">Ambassadors</a></li>
+    <li><a href="contact.html" class="nav-active">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="owners.html">Download the App</a>
+</nav>
+
+<main id="main-content">
+<div class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-content">
+      <div class="section-label">Contact</div>
+      <h1 class="heading-xl">Let's talk horses,<br><em>tech, and beyond.</em></h1>
+    </div>
+  </div>
+  <section class="section">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items:start;">
+      <div>
+        <div class="section-label reveal">Get in Touch</div>
+        <h2 class="heading-lg reveal">We'd love to<br><em>hear from you.</em></h2>
+        <div class="gold-divider reveal"></div>
+        <p class="body-text reveal">Whether you're a horse owner with a question, a provider wanting to list your services, a journalist working on a story, or someone who just wants to talk horses — we're always here.</p>
+        <div style="margin-top:48px; display:flex; flex-direction:column; gap:24px;">
+          <div class="reveal">
+            <div class="section-label" style="margin-bottom:8px;">Media & Press</div>
+            <p style="font-size:0.9rem; font-weight:300; color:var(--text-mid);">For media inquiries, interview requests, and press information — we'd be glad to share the story.</p>
+          </div>
+          <div class="reveal reveal-delay-1">
+            <div class="section-label" style="margin-bottom:8px;">Ambassador Inquiries</div>
+            <p style="font-size:0.9rem; font-weight:300; color:var(--text-mid);">Passionate about what we're building? Tell us your story and how you see yourself as part of our community.</p>
+          </div>
+          <div class="reveal reveal-delay-2">
+            <div class="section-label" style="margin-bottom:8px;">Follow Along</div>
+            <div class="footer-socials" style="margin-top:16px;">
+              <a class="social-link" href="https://www.tiktok.com/@thehorseconcierge" target="_blank">TikTok</a>
+              <a class="social-link" href="https://www.instagram.com/the_horse_concierge/" target="_blank">Instagram</a>
+              <a class="social-link" href="https://www.facebook.com/profile.php?id=61575807532446" target="_blank">Facebook</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-wrap reveal reveal-delay-1" style="margin:0;">
+        <form action="https://formsubmit.co/info@thehorseconcierge.com" method="POST">
+          <input type="hidden" name="_subject" value="Website contact — The Horse Concierge">
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="contact-first">First Name</label>
+              <input class="form-input" id="contact-first" name="first_name" type="text" placeholder="Jane" autocomplete="given-name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contact-last">Last Name</label>
+              <input class="form-input" id="contact-last" name="last_name" type="text" placeholder="Smith" autocomplete="family-name" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-email">Email Address</label>
+            <input class="form-input" id="contact-email" name="email" type="email" placeholder="jane@example.com" autocomplete="email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-role">I am a…</label>
+            <select class="form-select" id="contact-role" name="role" required>
+              <option value="" disabled selected>Select one…</option>
+              <option value="Horse Owner">Horse Owner</option>
+              <option value="Provider / Professional">Provider / Professional</option>
+              <option value="Ambassador Applicant">Ambassador Applicant</option>
+              <option value="Press / Media">Press / Media</option>
+              <option value="Investor">Investor</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-message">Message</label>
+            <textarea class="form-input" id="contact-message" name="message" rows="5" style="resize:vertical;" placeholder="Tell us what's on your mind..." required></textarea>
+          </div>
+          <button type="submit" class="form-submit">Send Message →</button>
+          <p style="margin-top:20px; font-size:0.72rem; font-weight:300; line-height:1.6; color:var(--text-dim);">Submissions are delivered to <a href="mailto:info@thehorseconcierge.com" style="color:var(--gold); text-decoration:underline; text-underline-offset:3px;">info@thehorseconcierge.com</a>. If this is your first form submission, check that inbox for a one-time activation link from the form provider.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center;">
+    <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
+    <a href="index.html" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Back to Home</a>
+  </footer>
+</main>
+
+<script src="js/main.js"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
