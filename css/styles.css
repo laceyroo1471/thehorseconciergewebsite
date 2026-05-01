@@ -74,7 +74,8 @@
   /* ===== NAV ===== */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between;
+    gap: clamp(12px, 2vw, 28px);
     padding: 28px 60px;
     transition: all 0.5s var(--ease-smooth);
   }
@@ -100,8 +101,13 @@
     object-position: left center;
   }
   .nav-links {
-    display: flex; align-items: center; gap: 40px;
+    display: flex; flex-wrap: nowrap; align-items: center; justify-content: center;
+    gap: clamp(16px, 2.5vw, 40px);
     list-style: none;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
   }
   .nav-links a {
     font-size: 0.72rem;
@@ -126,6 +132,8 @@
     color: var(--forest);
     background: var(--gold);
     padding: 10px 22px; border-radius: 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
     transition: background 0.25s, transform 0.2s;
   }
   .nav-cta:hover { background: var(--gold-lt); transform: translateY(-1px); }
