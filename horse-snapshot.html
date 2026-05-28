@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horse Snapshot — The Horse Concierge</title>
+<meta name="description" content="A lightweight preview of your horse on the web. Full experience in The Horse Concierge app.">
+<link rel="canonical" href="https://www.thehorseconcierge.com/horse-snapshot">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=20260526">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="Horse Snapshot — The Horse Concierge">
+<meta property="og:url" content="https://www.thehorseconcierge.com/horse-snapshot">
+<meta property="og:type" content="website">
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html" aria-label="The Horse Concierge — Home">
+    <img class="nav-logo-img" src="Images/ColorLogo.svg" width="220" height="44" alt="The Horse Concierge">
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="owners.html">For Owners</a></li>
+    <li><a href="providers.html">For Providers</a></li>
+    <li><a href="story.html">Our Story</a></li>
+    <li><a href="ambassadors.html">Ambassadors</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="owners.html">Download the App</a>
+</nav>
+
+<main id="main-content" class="snapshot-page">
+  <div id="snapshot-view-loading" class="snapshot-state section snapshot-state--top">
+    <p class="body-text">Loading your horse…</p>
+  </div>
+
+  <div id="snapshot-view-empty" class="snapshot-state section snapshot-state--top" hidden>
+    <p class="body-text">No horse profile found for this account yet.</p>
+    <a class="btn-primary" href="start-horse-profile.html">Start your horse profile</a>
+  </div>
+
+  <div id="snapshot-view-error" class="snapshot-state section snapshot-state--top" hidden>
+    <p id="snapshot-error-msg" class="body-text"></p>
+    <p class="body-text snapshot-error-hint">In Firebase Console: <strong>Authentication</strong> shows your user and UID. <strong>Firestore</strong> shows horse documents — not the UID by itself.</p>
+    <a class="btn-primary" href="start-horse-profile.html" style="margin-top:16px; display:inline-flex;">Back to start profile</a>
+  </div>
+
+  <div id="snapshot-view-main" class="snapshot-shell section" hidden>
+
+    <div class="snapshot-hero-grid">
+      <div class="snapshot-hero-left">
+        <div class="section-label">Signed in</div>
+        <h1 class="heading-lg snapshot-shell__title">Horse <em>Snapshot</em></h1>
+        <p class="snapshot-app-lead">Download the app for the full experience.</p>
+        <div class="download-btns snapshot-hero-stores">
+          <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">
+            <div class="store-btn-icon">🍎</div>
+            <div>
+              <div class="store-btn-text-top">Download on the</div>
+              <div class="store-btn-text-main">App Store</div>
+            </div>
+          </a>
+          <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.thehorseconcierge.app" target="_blank" rel="noopener noreferrer">
+            <div class="store-btn-icon">▶</div>
+            <div>
+              <div class="store-btn-text-top">Get it on</div>
+              <div class="store-btn-text-main">Google Play</div>
+            </div>
+          </a>
+        </div>
+        <p id="snapshot-account-line" class="body-text snapshot-account-line" hidden></p>
+        <div class="snapshot-hero-nav-actions">
+          <a class="btn-primary snapshot-priority-card__head-cta" href="find-providers.html">Find providers</a>
+          <button type="button" class="btn-ghost" id="snapshot-sign-out">Sign out</button>
+        </div>
+      </div>
+
+      <div class="snapshot-hero-right">
+        <article class="snapshot-horse-card snapshot-horse-card--panel" aria-label="Your horse">
+          <div class="snapshot-horse-card__media">
+            <img id="snapshot-horse-photo" class="snapshot-horse-card__img" alt="" width="320" height="240" hidden>
+            <div id="snapshot-horse-photo-ph" class="snapshot-horse-card__ph" aria-hidden="true">No photo</div>
+          </div>
+          <div class="snapshot-horse-card__body">
+            <h2 id="snapshot-horse-name" class="snapshot-horse-card__name">—</h2>
+            <p id="snapshot-horse-meta" class="snapshot-horse-card__meta">—</p>
+          </div>
+        </article>
+        <button type="button" class="btn-primary snapshot-add-horse-promo snapshot-add-horse-promo--under-horse" data-thc-action="paywall">Add another horse</button>
+      </div>
+    </div>
+
+    <p class="snapshot-browser-hint">Quick notes below save only in this browser — not synced to the app.</p>
+
+    <div class="snapshot-priority-2x2">
+      <div class="snapshot-priority-card">
+        <form id="snapshot-form-farrier" class="snapshot-priority-card__form">
+          <div class="snapshot-priority-card__head">
+            <h3 class="snapshot-priority-card__title">Farrier</h3>
+            <button type="submit" class="btn-primary snapshot-priority-card__head-cta">Add last farrier visit</button>
+          </div>
+          <p id="snapshot-farrier-display" class="snapshot-priority-card__saved" hidden></p>
+          <p id="snapshot-farrier-days" class="snapshot-priority-card__days-line">— Days since Last Farrier Visit</p>
+          <div class="snapshot-mini-form">
+            <label class="form-label" for="snapshot-farrier-date">Date</label>
+            <input class="form-input" type="date" id="snapshot-farrier-date" name="farrier-date">
+          </div>
+        </form>
+      </div>
+
+      <div class="snapshot-priority-card">
+        <form id="snapshot-form-feed" class="snapshot-priority-card__form">
+          <div class="snapshot-priority-card__head">
+            <h3 class="snapshot-priority-card__title">Feed</h3>
+            <button type="submit" class="btn-primary snapshot-priority-card__head-cta">Add feed</button>
+          </div>
+          <p id="snapshot-feed-display" class="snapshot-priority-card__saved" hidden></p>
+          <p id="snapshot-feed-days" class="snapshot-priority-card__days-line">— Days since last feed change</p>
+          <div class="snapshot-mini-form">
+            <label class="form-label" for="snapshot-feed-date">Date</label>
+            <input class="form-input" type="date" id="snapshot-feed-date" name="feed-date">
+            <label class="form-label" for="snapshot-feed-note">Note <span class="form-label-optional">(optional)</span></label>
+            <input class="form-input" type="text" id="snapshot-feed-note" name="feed-note" maxlength="500" placeholder="e.g. switched to senior feed">
+          </div>
+        </form>
+      </div>
+
+      <div class="snapshot-priority-card">
+        <form id="snapshot-form-next" class="snapshot-priority-card__form">
+          <div class="snapshot-priority-card__head">
+            <h3 class="snapshot-priority-card__title">Next appointment</h3>
+            <button type="submit" class="btn-primary snapshot-priority-card__head-cta">Add next appointment</button>
+          </div>
+          <p id="snapshot-next-display" class="snapshot-priority-card__saved" hidden></p>
+          <button type="button" class="btn-ghost snapshot-priority-card__link" id="snapshot-next-add-another" data-thc-action="schedule-limit" hidden>Add another upcoming event</button>
+          <div class="snapshot-mini-form">
+            <label class="form-label" for="snapshot-next-date">Date</label>
+            <input class="form-input" type="date" id="snapshot-next-date" name="next-date">
+            <label class="form-label" for="snapshot-next-type">Type</label>
+            <select class="form-select" id="snapshot-next-type" name="next-type">
+              <option value="">Select</option>
+              <option value="Farrier">Farrier</option>
+              <option value="Vet">Vet</option>
+              <option value="Dental">Dental</option>
+              <option value="Bodywork">Bodywork</option>
+              <option value="Other">Other</option>
+            </select>
+            <label class="form-label" for="snapshot-next-note">Note <span class="form-label-optional">(optional)</span></label>
+            <input class="form-input" type="text" id="snapshot-next-note" name="next-note" maxlength="500">
+          </div>
+        </form>
+      </div>
+
+      <div class="snapshot-priority-card snapshot-priority-card--ride">
+        <div class="snapshot-priority-card__head">
+          <h3 class="snapshot-priority-card__title">Ride history</h3>
+          <button type="button" class="btn-primary snapshot-priority-card__head-cta" data-thc-action="paywall">Track ride</button>
+        </div>
+        <div class="snapshot-ride-stats">
+          <p class="snapshot-priority-card__stat-line snapshot-priority-card__stat-line--ride">— Miles rode</p>
+          <p class="snapshot-priority-card__stat-line snapshot-priority-card__stat-line--ride">— Time rode</p>
+        </div>
+      </div>
+    </div>
+
+    <section class="snapshot-app-tracks" aria-label="Features available in the app">
+      <div class="snapshot-tile-grid snapshot-tile-grid--app-tracks" role="list">
+        <button type="button" class="snapshot-tile" data-thc-action="app">Schedule Event</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Edit Horse Profile</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Log Injury</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Track Ride</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Ride History</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">List for Sale</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Feed Schedule</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Supplements &amp; Medications</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Exercise Log</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Turnout Schedule</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Care Team</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Tack &amp; Equipment</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Documents</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Activity Log</button>
+        <button type="button" class="snapshot-tile" data-thc-action="app">Full Care History</button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<dialog id="thc-dialog-app" class="thc-dialog">
+  <div class="thc-dialog__inner">
+    <button type="button" class="thc-dialog-close" aria-label="Close">&times;</button>
+    <h2 class="thc-dialog__title">Manage your horse in the app</h2>
+    <p class="thc-dialog__text">Add details, track changes, and keep everything in one place</p>
+    <div class="download-btns thc-dialog__stores">
+      <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">
+        <div class="store-btn-icon">🍎</div>
+        <div>
+          <div class="store-btn-text-top">Download on the</div>
+          <div class="store-btn-text-main">App Store</div>
+        </div>
+      </a>
+      <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.thehorseconcierge.app" target="_blank" rel="noopener noreferrer">
+        <div class="store-btn-icon">▶</div>
+        <div>
+          <div class="store-btn-text-top">Get it on</div>
+          <div class="store-btn-text-main">Google Play</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="thc-dialog-schedule" class="thc-dialog">
+  <div class="thc-dialog__inner">
+    <button type="button" class="thc-dialog-close" aria-label="Close">&times;</button>
+    <h2 class="thc-dialog__title">Manage your horse’s schedule in the app</h2>
+    <p class="thc-dialog__text">Plan multiple visits, reminders, and your full calendar in one place.</p>
+    <div class="download-btns thc-dialog__stores">
+      <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">
+        <div class="store-btn-icon">🍎</div>
+        <div>
+          <div class="store-btn-text-top">Download on the</div>
+          <div class="store-btn-text-main">App Store</div>
+        </div>
+      </a>
+      <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.thehorseconcierge.app" target="_blank" rel="noopener noreferrer">
+        <div class="store-btn-icon">▶</div>
+        <div>
+          <div class="store-btn-text-top">Get it on</div>
+          <div class="store-btn-text-main">Google Play</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</dialog>
+
+<footer class="snapshot-footer">
+  <div class="snapshot-footer__brand">The Horse Concierge™</div>
+  <a href="owners.html" class="snapshot-footer__link">For Owners</a>
+</footer>
+
+<script src="js/main.js?v=20260523"></script>
+<script src="js/thc-gating.js?v=20260523"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/horse-snapshot-compat.js?v=20260527"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

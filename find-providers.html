@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find a Provider — The Horse Concierge</title>
+<meta name="description" content="Search trusted equine professionals. Create a free account or use the app for full contact details.">
+<link rel="canonical" href="https://www.thehorseconcierge.com/find-providers">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=20260520">
+<meta property="og:title" content="Find a Provider — The Horse Concierge">
+<meta property="og:url" content="https://www.thehorseconcierge.com/find-providers">
+<meta property="og:type" content="website">
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html" aria-label="The Horse Concierge — Home">
+    <img class="nav-logo-img" src="Images/ColorLogo.svg" width="220" height="44" alt="The Horse Concierge">
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="owners.html">For Owners</a></li>
+    <li><a href="providers.html">For Providers</a></li>
+    <li><a href="story.html">Our Story</a></li>
+    <li><a href="ambassadors.html">Ambassadors</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="owners.html">Download the App</a>
+</nav>
+
+<main id="main-content">
+  <div class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-content">
+      <div class="section-label">Provider directory</div>
+      <h1 class="heading-xl">Find a provider<br><em>near you.</em></h1>
+      <p class="funnel-tagline" style="margin-top:20px;">Start on the web. Manage anywhere in the app.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="funnel-panel">
+      <div class="funnel-panel-title">Search</div>
+      <p class="funnel-panel-note">Category and location will query Firebase. Teaser results show before sign-in; phone and email stay gated.</p>
+      <form data-funnel-form action="#" method="get">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="search-category">Category</label>
+            <select class="form-select" id="search-category" name="category">
+              <option value="">All categories</option>
+              <option value="farrier">Farrier</option>
+              <option value="vet">Equine veterinarian</option>
+              <option value="trainer">Trainer</option>
+              <option value="dentist">Dentist</option>
+              <option value="other">Other professional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="search-location">City, state, or ZIP</label>
+            <input class="form-input" type="text" id="search-location" name="location" placeholder="e.g. Lexington, KY" autocomplete="off">
+          </div>
+        </div>
+        <button type="submit" class="form-submit">Locate providers</button>
+      </form>
+    </div>
+
+    <div class="funnel-stat-pill" aria-hidden="true">Sample results — UI only</div>
+
+    <div class="funnel-placeholder-grid" aria-label="Sample provider teaser results">
+      <a class="funnel-teaser-card funnel-teaser-card--link" href="provider-detail.html?p=river-valley">
+        <div class="funnel-teaser-name">River Valley Farrier Co.</div>
+        <div class="funnel-teaser-meta">Farrier · Louisville, KY</div>
+      </a>
+      <a class="funnel-teaser-card funnel-teaser-card--link" href="provider-detail.html?p=bluegrass">
+        <div class="funnel-teaser-name">Bluegrass Equine Clinic</div>
+        <div class="funnel-teaser-meta">Veterinarian · Lexington, KY</div>
+      </a>
+      <a class="funnel-teaser-card funnel-teaser-card--link" href="provider-detail.html?p=oak-hill">
+        <div class="funnel-teaser-name">Oak Hill Training</div>
+        <div class="funnel-teaser-meta">Trainer · Georgetown, KY</div>
+      </a>
+    </div>
+
+    <div class="funnel-gate">
+      <h2 class="funnel-gate-title">Protecting our professionals from spam</h2>
+      <p class="funnel-gate-copy">Full contact details are available to real users through the free app or a free web account. This helps reduce spam calls and scams for providers in our directory.</p>
+      <div class="funnel-gate-actions">
+        <a class="btn-primary" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">Download the App for Free Access</a>
+        <button type="button" class="btn-ghost">Create a Free Web Account</button>
+      </div>
+      <p class="funnel-panel-note" style="margin-top:20px; margin-bottom:0;">Open a provider profile to view sample contact info on the web. Building a care team stays in the app.</p>
+    </div>
+  </section>
+
+  <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+    <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
+    <a href="owners.html" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← For Owners</a>
+  </footer>
+</main>
+
+<script src="js/main.js?v=20260520"></script>
+<script src="js/funnel.js?v=20260520"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

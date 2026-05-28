@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260509">
+<link rel="stylesheet" href="css/styles.css?v=20260510">
 <meta property="og:title" content="For Providers — The Horse Concierge">
 <meta property="og:description" content="See full horse history before you arrive. Free listings in a directory of 4,000+ equine professionals — The Horse Concierge.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/providers">
@@ -42,7 +42,11 @@
         <div class="section-label">For Providers</div>
         <h1 class="heading-xl">Step in with <em>confidence.</em><br>See the full picture first.</h1>
       </div>
-      <div class="page-hero-aside">
+      <div class="page-hero-aside page-hero-aside--funnel">
+        <div class="owner-funnel-ctas">
+          <a class="btn-ghost" href="#manage-profile">Sign in to view horses</a>
+          <a class="btn-primary" href="#list-services">List your services</a>
+        </div>
         <div class="download-btns">
           <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">
             <div class="store-btn-icon">🍎</div>
@@ -96,6 +100,86 @@
     </div>
   </section>
 
+  <section class="section" id="provider-web-funnel" style="padding-top:0;">
+    <div class="section-label reveal">Web listing</div>
+    <h2 class="heading-lg reveal" style="margin-bottom:48px;">List or manage<br><em>from the web.</em></h2>
+    <div class="provider-funnel-split">
+      <div>
+        <div class="funnel-panel reveal funnel-anchor-target" style="margin:0;" id="list-services">
+          <div class="funnel-panel-title">List your services</div>
+          <p class="funnel-panel-note">Form submits to the same pending workflow as the app after Firebase is connected. You’ll create your account when you submit; full access waits on approval.</p>
+          <form data-funnel-form action="#" method="post" aria-label="List your services">
+            <div class="form-group">
+              <label class="form-label" for="biz-name">Business name</label>
+              <input class="form-input" type="text" id="biz-name" name="business-name" autocomplete="organization">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="provider-name">Provider name</label>
+              <input class="form-input" type="text" id="provider-name" name="provider-name" autocomplete="name">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="prov-category">Category</label>
+                <select class="form-select" id="prov-category" name="category">
+                  <option value="">Select</option>
+                  <option value="farrier">Farrier</option>
+                  <option value="vet">Equine veterinarian</option>
+                  <option value="trainer">Trainer</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="service-area">Service area</label>
+                <input class="form-input" type="text" id="service-area" name="service-area" placeholder="Regions or radius" autocomplete="off">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="prov-phone">Phone</label>
+                <input class="form-input" type="tel" id="prov-phone" name="phone" autocomplete="tel">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prov-email">Email</label>
+                <input class="form-input" type="email" id="prov-email" name="email" autocomplete="email">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="prov-web">Website or social link</label>
+              <input class="form-input" type="url" id="prov-web" name="website" placeholder="https://" autocomplete="url">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="prov-desc">Description</label>
+              <textarea class="form-input" id="prov-desc" name="description" rows="4" style="resize:vertical; min-height:120px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="prov-logo">Logo or photo</label>
+              <input class="form-file" type="file" id="prov-logo" name="logo" accept="image/*">
+            </div>
+            <div class="gold-divider" style="margin:28px 0;"></div>
+            <p class="form-label" style="margin-bottom:16px;">Account (same submit)</p>
+            <div class="form-group">
+              <label class="form-label" for="acct-email">Login email</label>
+              <input class="form-input" type="email" id="acct-email" name="account-email" autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="acct-password">Password</label>
+              <input class="form-input" type="password" id="acct-password" name="account-password" autocomplete="new-password">
+            </div>
+            <button type="submit" class="form-submit">Submit listing</button>
+          </form>
+        </div>
+      </div>
+      <div>
+        <div class="funnel-panel reveal reveal-delay-1 funnel-anchor-target" style="margin:0;" id="manage-profile">
+          <div class="funnel-panel-title">Manage your profile</div>
+          <p class="funnel-panel-note">Provider tools after sign-in. Nothing is wired yet — you won’t be able to edit a live listing until approved.</p>
+          <button type="button" class="btn-primary" style="display:inline-flex;">Sign in to view horses</button>
+          <p class="funnel-panel-note" style="margin-top:24px; margin-bottom:0;">Deep link or dedicated manage view can replace this button when Auth is ready.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <div class="cta-section">
     <div class="cta-section-inner">
       <div class="section-label reveal" style="justify-content:center;">Join the network</div>
@@ -126,6 +210,7 @@
 </main>
 
 <script src="js/main.js?v=20260509"></script>
+<script src="js/funnel.js?v=20260510"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
