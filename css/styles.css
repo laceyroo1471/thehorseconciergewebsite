@@ -209,6 +209,11 @@
     line-height: 1.75;
     animation: slideUp 1s var(--ease-expo) 0.35s both;
   }
+  .hero-sub--secondary {
+    max-width: 620px;
+    margin: -32px auto 24px;
+    font-size: 0.95rem;
+  }
   .hero-actions {
     display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;
     animation: slideUp 1s var(--ease-expo) 0.5s both;
@@ -396,6 +401,30 @@
   .audience-list li::before {
     content: '→';
     color: var(--gold); flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ===== HOW IT WORKS ===== */
+  .how-it-works-steps {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 18px;
+    counter-reset: how-step;
+  }
+  .how-it-works-steps li {
+    counter-increment: how-step;
+    display: flex; align-items: flex-start; gap: 16px;
+    font-size: 0.92rem; font-weight: 300; line-height: 1.65;
+    color: var(--text-mid);
+  }
+  .how-it-works-steps li::before {
+    content: counter(how-step);
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(var(--gold-rgb), 0.35);
+    border-radius: 50%;
+    font-size: 0.72rem; font-weight: 600;
+    color: var(--gold);
+    margin-top: 2px;
   }
 
   /* ===== MARQUEE ===== */
