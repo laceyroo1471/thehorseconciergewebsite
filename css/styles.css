@@ -1373,6 +1373,9 @@
     gap: 80px;
     align-items: start;
   }
+  .provider-funnel-single {
+    max-width: 640px;
+  }
   @media (max-width: 900px) {
     .owner-funnel-ctas { align-items: stretch; }
     .page-hero-aside--funnel .owner-funnel-ctas .btn-primary,
@@ -2421,6 +2424,35 @@
   .find-providers-empty {
     margin: 24px 0;
     max-width: none;
+  }
+
+  .provider-listing-success {
+    margin: 16px 0 0;
+    padding: 14px 16px;
+    border: 1px solid rgba(var(--gold-rgb), 0.35);
+    background: rgba(var(--gold-rgb), 0.08);
+    border-radius: 4px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--cream);
+  }
+  .provider-listing-disclaimer {
+    margin: 0 0 24px;
+    padding: 14px 16px;
+    border: 1px solid rgba(var(--gold-rgb), 0.18);
+    border-radius: 4px;
+    background: rgba(var(--gold-rgb), 0.04);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-mid);
+  }
+  .provider-listing-disclaimer--submit {
+    margin: 20px 0 16px;
+  }
+  .provider-listing-success[hidden],
+  .auth-error[hidden],
+  .auth-busy[hidden] {
+    display: none !important;
   }
 
   /* ===== Find providers map ===== */
