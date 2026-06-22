@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — The Horse Concierge</title>
+<meta name="description" content="Sign in or create a free Horse Concierge account. Same login as the mobile app — no horse profile required.">
+<link rel="canonical" href="https://www.thehorseconcierge.com/sign-in">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css?v=20260624f">
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="/" aria-label="The Horse Concierge — Home">
+    <img class="nav-logo-img" src="/Images/ColorLogo.svg" width="220" height="44" alt="The Horse Concierge">
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/owners">For Owners</a></li>
+    <li><a href="/providers">For Providers</a></li>
+    <li><a href="/story">Our Story</a></li>
+    <li><a href="/ambassadors">Ambassadors</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="/owners">Download the App</a>
+</nav>
+
+<main id="main-content">
+  <section class="section">
+    <div class="funnel-panel web-auth-panel">
+      <p class="section-label">Your account</p>
+      <h1 class="heading-lg web-auth-panel__title">Sign in or create an account</h1>
+      <p class="body-text web-auth-panel__lead">Use the same email and password as The Horse Concierge app. You don’t need to create a horse profile — just an account to unlock provider contact details and more.</p>
+
+      <div id="web-auth-signed-in" class="web-auth-signed-in" hidden>
+        <p class="body-text">Signed in as <strong class="web-auth-email"></strong></p>
+        <p id="web-auth-redirect-note" class="funnel-panel-note">Taking you back…</p>
+      </div>
+
+      <div id="web-auth-form">
+        <div class="form-group">
+          <label class="form-label" for="web-auth-email">Email</label>
+          <input class="form-input" type="email" id="web-auth-email" autocomplete="email" inputmode="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="web-auth-password">Password</label>
+          <input class="form-input" type="password" id="web-auth-password" autocomplete="current-password" minlength="6" required>
+        </div>
+        <div class="web-auth-actions">
+          <button type="button" class="btn-primary" id="web-auth-signin">Sign in</button>
+          <button type="button" class="btn-ghost" id="web-auth-create">Create account</button>
+        </div>
+      </div>
+
+      <p id="web-auth-busy" class="auth-busy" role="status" hidden></p>
+      <p id="web-auth-error" class="auth-error" role="alert" hidden></p>
+
+      <p class="funnel-panel-note web-auth-panel__horse-note">Want a horse profile too? You can <a href="/start-horse-profile">start one anytime</a> — it’s optional.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="snapshot-footer">
+  <div class="snapshot-footer__brand">The Horse Concierge™</div>
+  <a href="/find-providers" class="snapshot-footer__link">Find providers</a>
+</footer>
+
+<script src="/js/main.js?v=20260520"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="/js/web-auth-page.js?v=20260624f"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

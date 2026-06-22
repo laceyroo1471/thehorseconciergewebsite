@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Find a Provider — The Horse Concierge</title>
-<meta name="description" content="Search trusted equine professionals. Create a free account or use the app for full contact details.">
+<meta name="description" content="Search trusted equine professionals by name, category, and ZIP code. Farriers, veterinarians, trainers, and more — find providers near you.">
 <link rel="canonical" href="https://www.thehorseconcierge.com/find-providers">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260520">
+<link rel="stylesheet" href="css/styles.css?v=20260625e">
 <meta property="og:title" content="Find a Provider — The Horse Concierge">
 <meta property="og:url" content="https://www.thehorseconcierge.com/find-providers">
 <meta property="og:type" content="website">
@@ -40,61 +40,78 @@
     <div class="page-hero-content">
       <div class="section-label">Provider directory</div>
       <h1 class="heading-xl">Find a provider<br><em>near you.</em></h1>
-      <p class="funnel-tagline" style="margin-top:20px;">Start on the web. Manage anywhere in the app.</p>
+      <p class="funnel-tagline" style="margin-top:20px;">Search by name, category, and ZIP. Open a profile for ratings and services.</p>
     </div>
   </div>
 
   <section class="section">
     <div class="funnel-panel">
       <div class="funnel-panel-title">Search</div>
-      <p class="funnel-panel-note">Category and location will query Firebase. Teaser results show before sign-in; phone and email stay gated.</p>
-      <form data-funnel-form action="#" method="get">
+      <p class="funnel-panel-note">Search by provider name (nationwide) or by ZIP and radius. You can combine a name with a category filter. Results link to public provider profiles.</p>
+      <form id="find-providers-form" action="#" method="get">
+        <div class="form-group">
+          <label class="form-label" for="search-name">Provider name</label>
+          <input class="form-input" type="search" id="search-name" name="q" placeholder="e.g. Lone Eagle Farrier" autocomplete="off">
+        </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="search-category">Category</label>
             <select class="form-select" id="search-category" name="category">
               <option value="">All categories</option>
-              <option value="farrier">Farrier</option>
-              <option value="vet">Equine veterinarian</option>
-              <option value="trainer">Trainer</option>
-              <option value="dentist">Dentist</option>
-              <option value="other">Other professional</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="search-location">City, state, or ZIP</label>
-            <input class="form-input" type="text" id="search-location" name="location" placeholder="e.g. Lexington, KY" autocomplete="off">
+            <label class="form-label" for="search-zip">ZIP code <span class="form-label-optional">(optional if searching by name)</span></label>
+            <input class="form-input" type="text" id="search-zip" name="zip" placeholder="e.g. 40507" inputmode="numeric" pattern="\d{5}" maxlength="5" autocomplete="postal-code">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="search-radius">Radius (miles)</label>
+            <select class="form-select" id="search-radius" name="radius">
+              <option value="25">25 miles</option>
+              <option value="50" selected>50 miles</option>
+              <option value="100">100 miles</option>
+              <option value="150">150 miles</option>
+            </select>
           </div>
         </div>
-        <button type="submit" class="form-submit">Locate providers</button>
+        <button type="submit" class="form-submit">Search providers</button>
       </form>
+      <p id="find-providers-status" class="find-providers-status" role="status" hidden></p>
     </div>
 
-    <div class="funnel-stat-pill" aria-hidden="true">Sample results — UI only</div>
+    <div id="find-providers-results"></div>
 
-    <div class="funnel-placeholder-grid" aria-label="Sample provider teaser results">
-      <a class="funnel-teaser-card funnel-teaser-card--link" href="provider-detail.html?p=river-valley">
-        <div class="funnel-teaser-name">River Valley Farrier Co.</div>
-        <div class="funnel-teaser-meta">Farrier · Louisville, KY</div>
-      </a>
-      <a class="funnel-teaser-card funnel-teaser-card--link" href="provider-detail.html?p=bluegrass">
-        <div class="funnel-teaser-name">Bluegrass Equine Clinic</div>
-        <div class="funnel-teaser-meta">Veterinarian · Lexington, KY</div>
-      </a>
-      <a class="funnel-teaser-card funnel-teaser-card--link" href="provider-detail.html?p=oak-hill">
-        <div class="funnel-teaser-name">Oak Hill Training</div>
-        <div class="funnel-teaser-meta">Trainer · Georgetown, KY</div>
-      </a>
-    </div>
+    <div id="find-providers-sample-pill" class="funnel-stat-pill" aria-hidden="true">Search by provider name or ZIP code above</div>
+
+    <div id="find-providers-sample" class="funnel-placeholder-grid" aria-hidden="true"></div>
 
     <div class="funnel-gate">
       <h2 class="funnel-gate-title">Protecting our professionals from spam</h2>
-      <p class="funnel-gate-copy">Full contact details are available to real users through the free app or a free web account. This helps reduce spam calls and scams for providers in our directory.</p>
-      <div class="funnel-gate-actions">
-        <a class="btn-primary" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">Download the App for Free Access</a>
-        <button type="button" class="btn-ghost">Create a Free Web Account</button>
+      <p class="funnel-gate-copy">Full contact details are available after you create a free web account — the same login works in the app. This helps reduce spam calls and scams for providers in our directory.</p>
+      <div class="funnel-gate-actions provider-detail-gate__account">
+        <a class="btn-primary" href="sign-in.html?return=%2Ffind-providers">Create Free Account</a>
+        <a class="btn-ghost" href="sign-in.html?return=%2Ffind-providers">Sign in</a>
       </div>
-      <p class="funnel-panel-note" style="margin-top:20px; margin-bottom:0;">Open a provider profile to view sample contact info on the web. Building a care team stays in the app.</p>
+      <p class="provider-detail-gate__app-label">Or download the app for your device:</p>
+      <div class="download-btns provider-detail-gate__stores">
+        <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer" aria-label="Download on the App Store for iPhone and iPad">
+          <div class="store-btn-icon" aria-hidden="true">🍎</div>
+          <div>
+            <div class="store-btn-text-top">Download on the</div>
+            <div class="store-btn-text-main">App Store</div>
+            <div class="store-btn-text-sub">iPhone &amp; iPad</div>
+          </div>
+        </a>
+        <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.thehorseconcierge.app" target="_blank" rel="noopener noreferrer" aria-label="Get The Horse Concierge on Google Play for Android">
+          <div class="store-btn-icon" aria-hidden="true">▶</div>
+          <div>
+            <div class="store-btn-text-top">Get it on</div>
+            <div class="store-btn-text-main">Google Play</div>
+            <div class="store-btn-text-sub">Android</div>
+          </div>
+        </a>
+      </div>
+      <p class="funnel-panel-note" style="margin-top:20px; margin-bottom:0;">Open a provider profile for ratings and services. Contact details unlock after you sign in.</p>
     </div>
   </section>
 
@@ -105,7 +122,11 @@
 </main>
 
 <script src="js/main.js?v=20260520"></script>
-<script src="js/funnel.js?v=20260520"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/provider-location-utils.js?v=20260625e"></script>
+<script src="js/find-providers-map.js?v=20260625e"></script>
+<script src="js/find-providers-search.js?v=20260625e"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

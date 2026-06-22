@@ -1,0 +1,10 @@
+{
+  "name": "thc-website",
+  "private": true,
+  "scripts": {
+    "generate-sitemap": "node scripts/generate-sitemap.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}

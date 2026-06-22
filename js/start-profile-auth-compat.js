@@ -1,7 +1,6 @@
 /**
  * start-horse-profile: Auth + Firestore using Firebase compat (plain script tags).
- * Keeps logic in sync with start-profile-auth.js; use compat so buttons work from file:// and all hosts.
- * Config: mirror js/firebase-config.js
+ * Funnel scope: capture lead (account + basic horse), then route to snapshot → app.
  */
 (function () {
   var firebaseConfig = {
@@ -15,8 +14,7 @@
 
   var DRAFT_KEY = "thc_horse_profile_draft_v1";
   var LAST_CREATED_HORSE_ID_KEY = "thc_last_created_horse_id_v1";
-  var SNAPSHOT_PAGE = "horse-snapshot.html";
-  var MAX_PHOTO_STRING_LENGTH = 600000;
+  var SNAPSHOT_PAGE = "horse-snapshot.html?welcome=1";
 
   if (typeof firebase === "undefined") {
     var fatal = document.getElementById("auth-error");
@@ -33,6 +31,52 @@
   }
   var auth = firebase.auth();
   var db = firebase.firestore();
+  var storage = firebase.storage();
+
+  function resolvePhotoForSave(user, draft) {
+    var pendingFile = window.__thcPendingHorsePhoto || null;
+    if (pendingFile && pendingFile.size) {
+      var ext = "jpg";
+      var name = (pendingFile.name || "").toLowerCase();
+      if (name.endsWith(".png")) ext = "png";
+      else if (name.endsWith(".webp")) ext = "webp";
+      var photoRef = storage.ref("horse-photos/" + user.uid + "_" + Date.now() + "." + ext);
+      return photoRef
+        .put(pendingFile, { contentType: pendingFile.type || "image/jpeg" })
+        .then(function () {
+          return photoRef.getDownloadURL();
+        });
+    }
+
+    var dataUrl = draft && draft.photoDataUrl;
+    if (dataUrl && String(dataUrl).indexOf("data:") === 0) {
+      return fetch(dataUrl)
+        .then(function (r) {
+          return r.blob();
+        })
+        .then(function (blob) {
+          var photoRef = storage.ref("horse-photos/" + user.uid + "_" + Date.now() + ".jpg");
+          return photoRef.put(blob, { contentType: blob.type || "image/jpeg" }).then(function () {
+            return photoRef.getDownloadURL();
+          });
+        });
+    }
+
+    if (dataUrl && String(dataUrl).indexOf("http") === 0) {
+      return Promise.resolve(dataUrl);
+    }
+
+    return Promise.resolve(null);
+  }
+
+  function clearPendingPhoto() {
+    window.__thcPendingHorsePhoto = null;
+    try {
+      sessionStorage.removeItem(DRAFT_KEY + "_has_photo");
+    } catch (e) {
+      /* ignore */
+    }
+  }
 
   var emailEl = document.getElementById("auth-email");
   var passwordEl = document.getElementById("auth-password");
@@ -159,48 +203,56 @@
 
     saveInProgress = true;
     clearFirestoreStatus();
+    setBusy("Uploading photo…");
 
-    var hadPhoto = !!draft.photoDataUrl;
-    var photo = draft.photoDataUrl || null;
-    var photoDroppedForSize = false;
-    if (photo && photo.length > MAX_PHOTO_STRING_LENGTH) {
-      photo = null;
-      photoDroppedForSize = true;
-    }
+    var hadPhoto = !!(window.__thcPendingHorsePhoto || draft.photoDataUrl);
+    var photoUploadFailed = false;
 
-    var payload = {
-      name: String(draft.name).trim(),
-      breed: draft.breed || "",
-      age: draft.age || "",
-      color: draft.color || "",
-      gender: draft.gender || "",
-      height: draft.height || "",
-      weight: draft.weight || "",
-      description: draft.description || "",
-      photo: photo,
-      userId: user.uid,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    return resolvePhotoForSave(user, draft)
+      .catch(function (err) {
+        console.error("Photo upload failed", err);
+        photoUploadFailed = true;
+        return null;
+      })
+      .then(function (photoUrl) {
+        setBusy("Saving your horse…");
 
-    return db
-      .collection("horseProfiles")
-      .add(payload)
-      .then(function (docRef) {
-        try {
-          sessionStorage.setItem(LAST_CREATED_HORSE_ID_KEY, docRef.id);
-        } catch (e) {
-          /* ignore */
-        }
-        sessionStorage.removeItem(DRAFT_KEY);
-        var msg =
-          "Your horse profile was saved. It will show in The Horse Concierge app for this account.";
-        if (photoDroppedForSize || (hadPhoto && !photo)) {
-          msg +=
-            " The photo was not stored (too large for web save). Add a photo from the app if you like.";
-        }
-        showFirestoreSuccess(msg);
-        return "saved";
+        var payload = {
+          name: String(draft.name).trim(),
+          breed: draft.breed || "",
+          age: draft.age || "",
+          color: draft.color || "",
+          gender: draft.gender || "",
+          height: draft.height || "",
+          weight: draft.weight || "",
+          description: draft.description || "",
+          photo: photoUrl,
+          userId: user.uid,
+          userName: user.displayName || "Unknown User",
+          userEmail: user.email || "",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        return db.collection("horseProfiles").add(payload).then(function (docRef) {
+          try {
+            sessionStorage.setItem(LAST_CREATED_HORSE_ID_KEY, docRef.id);
+          } catch (e) {
+            /* ignore */
+          }
+          sessionStorage.removeItem(DRAFT_KEY);
+          clearPendingPhoto();
+
+          var msg =
+            "Your horse profile was saved. Next: see your snapshot or download the app for the full experience.";
+          if (photoUploadFailed && hadPhoto) {
+            msg += " The photo could not be uploaded — add one in the app.";
+          } else if (photoUrl) {
+            msg += " Photo saved.";
+          }
+          showFirestoreSuccess(msg);
+          return "saved";
+        });
       })
       .catch(function (e) {
         console.error(e);

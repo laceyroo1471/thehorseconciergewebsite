@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Provider — The Horse Concierge</title>
+<meta name="description" content="Equine provider profile on The Horse Concierge.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css?v=20260625c">
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav id="mainNav">
+  <a class="nav-logo" href="/" aria-label="The Horse Concierge — Home">
+    <img class="nav-logo-img" src="/Images/ColorLogo.svg" width="220" height="44" alt="The Horse Concierge">
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/owners">For Owners</a></li>
+    <li><a href="/providers">For Providers</a></li>
+    <li><a href="/story">Our Story</a></li>
+    <li><a href="/ambassadors">Ambassadors</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="/owners">Download the App</a>
+</nav>
+
+<main id="main-content" class="provider-detail-page">
+  <div id="provider-profile-root">
+    <div class="section provider-detail-back">
+      <p class="body-text">Loading provider…</p>
+    </div>
+  </div>
+</main>
+
+<footer class="snapshot-footer">
+  <div class="snapshot-footer__brand">The Horse Concierge™</div>
+  <a href="/find-providers" class="snapshot-footer__link">Find providers</a>
+</footer>
+
+<script src="/js/main.js?v=20260520"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="/js/provider-location-utils.js?v=20260624c"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="/js/contact-access-gate.js?v=20260625b"></script>
+<script src="/js/provider-contact-unlock.js?v=20260625b"></script>
+<script src="/js/provider-star-rating.js?v=20260625c"></script>
+<script src="/js/provider-claim.js?v=20260625c"></script>
+<script src="/js/provider-profile-client.js?v=20260625c"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

@@ -1,6 +1,10 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "buildCommand": "npm install && npm run generate-sitemap",
+  "rewrites": [
+    { "source": "/providers/:slug", "destination": "/api/providers/:slug" }
+  ],
   "headers": [
     {
       "source": "/css/(.*)",

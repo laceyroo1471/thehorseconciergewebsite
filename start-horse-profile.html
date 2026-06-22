@@ -51,16 +51,16 @@
 
   <section class="section section--start-profile-tight">
     <div class="funnel-page-intro funnel-page-intro--centered">
-      <p class="body-text funnel-page-intro__text">Add your horse’s basics below. When you continue, we’ll save this in your browser and ask you to sign in or create an account so the profile can sync with the app.</p>
+      <p class="body-text funnel-page-intro__text">Add your horse’s basics below — that’s all we need to get you started. When you continue, we’ll save this in your browser and ask you to sign in or create a free account. Documents, full history, and ride tracking live in the app.</p>
     </div>
 
     <div id="horse-profile-step-form" class="horse-profile-step">
       <div class="form-wrap" style="margin-top:0;">
         <form id="horse-profile-form" action="#" method="post" aria-label="Horse profile basics">
           <div class="form-group">
-            <label class="form-label" for="horse-photo">Horse photo <span style="font-weight:300; color:var(--text-dim); text-transform:none; letter-spacing:0;">(optional)</span></label>
+            <label class="form-label" for="horse-photo">Horse photo <span class="form-label-optional">(optional)</span></label>
             <input class="form-file" type="file" id="horse-photo" name="horse-photo" accept="image/*">
-            <p class="funnel-panel-note" style="margin-top:8px; margin-bottom:0;">JPEG or PNG, up to about 2.5 MB. You can add or change a photo after sign-in too.</p>
+            <p class="funnel-panel-note" style="margin-top:8px; margin-bottom:0;">JPEG or PNG, up to about 2.5 MB. You can add or change a photo in the app too.</p>
           </div>
           <div class="form-group">
             <label class="form-label" for="horse-name">Horse name</label>
@@ -87,6 +87,15 @@
           </div>
           <button type="submit" class="form-submit">Continue</button>
         </form>
+
+        <div class="funnel-upsell-panel" aria-label="Full experience in the app">
+          <p class="funnel-upsell-panel__label">In the app</p>
+          <p class="funnel-upsell-panel__title">Build the full profile from documents &amp; history</p>
+          <p class="funnel-panel-note funnel-upsell-panel__note">Upload Coggins and vet records, type or dictate prior history, and let AI organize care records — all in The Horse Concierge app.</p>
+          <div class="funnel-upsell-panel__actions">
+            <button type="button" class="btn-primary" data-thc-action="app">Download the app</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -127,9 +136,33 @@
       <button type="button" class="btn-ghost" id="horse-profile-edit-details" style="margin-top:20px; display:inline-flex;">
         ← Edit horse details
       </button>
-      <p class="funnel-auth-placeholder-note">After you sign in, your horse is saved and you’ll go to your Horse Snapshot on the web.</p>
+      <p class="funnel-auth-placeholder-note">After you sign in, your horse is saved and you’ll see your Horse Snapshot — download the app anytime for the full experience.</p>
     </div>
   </section>
+
+  <dialog id="thc-dialog-app" class="thc-dialog">
+    <div class="thc-dialog__inner">
+      <button type="button" class="thc-dialog-close" aria-label="Close">&times;</button>
+      <h2 class="thc-dialog__title">Build your full profile in the app</h2>
+      <p class="thc-dialog__text">Upload documents, add history, track rides, and share with your care team.</p>
+      <div class="download-btns thc-dialog__stores">
+        <a class="store-btn" href="https://apps.apple.com/us/app/the-horse-concierge/id6749463193" target="_blank" rel="noopener noreferrer">
+          <div class="store-btn-icon">🍎</div>
+          <div>
+            <div class="store-btn-text-top">Download on the</div>
+            <div class="store-btn-text-main">App Store</div>
+          </div>
+        </a>
+        <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.thehorseconcierge.app" target="_blank" rel="noopener noreferrer">
+          <div class="store-btn-icon">▶</div>
+          <div>
+            <div class="store-btn-text-top">Get it on</div>
+            <div class="store-btn-text-main">Google Play</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </dialog>
 
   <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
@@ -138,11 +171,13 @@
 </main>
 
 <script src="js/main.js?v=20260520"></script>
-<script src="js/horse-profile-draft.js?v=20260520"></script>
+<script src="js/thc-gating.js?v=20260623"></script>
+<script src="js/horse-profile-draft.js?v=20260622"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="js/start-profile-auth-compat.js?v=20260522"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="js/start-profile-auth-compat.js?v=20260622"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

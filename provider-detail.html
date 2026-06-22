@@ -3,102 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Provider — The Horse Concierge</title>
-<meta name="description" content="View provider details and contact information. Full collaboration in The Horse Concierge app.">
-<link rel="canonical" href="https://www.thehorseconcierge.com/provider-detail">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260520">
-<meta property="og:title" content="Provider — The Horse Concierge">
-<meta property="og:type" content="website">
+<title>Redirecting… — The Horse Concierge</title>
+<meta http-equiv="refresh" content="0;url=/find-providers">
+<link rel="canonical" href="https://www.thehorseconcierge.com/find-providers">
+<meta name="robots" content="noindex">
+<script>window.location.replace('/find-providers');</script>
 </head>
 <body>
-
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-
-<nav id="mainNav">
-  <a class="nav-logo" href="index.html" aria-label="The Horse Concierge — Home">
-    <img class="nav-logo-img" src="Images/ColorLogo.svg" width="220" height="44" alt="The Horse Concierge">
-  </a>
-  <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="owners.html">For Owners</a></li>
-    <li><a href="providers.html">For Providers</a></li>
-    <li><a href="story.html">Our Story</a></li>
-    <li><a href="ambassadors.html">Ambassadors</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
-  <a class="nav-cta" href="owners.html">Download the App</a>
-</nav>
-
-<main id="main-content" class="provider-detail-page">
-  <div class="section provider-detail-back">
-    <a href="find-providers.html" class="snapshot-footer__link">← Back to directory</a>
-  </div>
-
-  <article class="section provider-detail-card" id="provider-river-valley" hidden>
-    <h1 class="heading-lg provider-detail-card__title">River Valley Farrier Co.</h1>
-    <p class="provider-detail-card__meta">Farrier · Louisville, KY</p>
-    <div class="provider-detail-card__contact">
-      <p><strong>Phone</strong><br><a href="tel:+15025550101">(502) 555-0101</a></p>
-      <p><strong>Email</strong><br><a href="mailto:hello@rivervalleyfarrier.example">hello@rivervalleyfarrier.example</a></p>
-    </div>
-    <p class="body-text provider-detail-card__note">Sample listing for web preview. Directory data will connect to Firebase later.</p>
-    <a class="btn-primary provider-detail-card__cta" href="subscribe.html">Share Horse Profile</a>
-  </article>
-
-  <article class="section provider-detail-card" id="provider-bluegrass" hidden>
-    <h1 class="heading-lg provider-detail-card__title">Bluegrass Equine Clinic</h1>
-    <p class="provider-detail-card__meta">Veterinarian · Lexington, KY</p>
-    <div class="provider-detail-card__contact">
-      <p><strong>Phone</strong><br><a href="tel:+18595550202">(859) 555-0202</a></p>
-      <p><strong>Email</strong><br><a href="mailto:care@bluegrassequine.example">care@bluegrassequine.example</a></p>
-    </div>
-    <p class="body-text provider-detail-card__note">Sample listing for web preview. Directory data will connect to Firebase later.</p>
-    <a class="btn-primary provider-detail-card__cta" href="subscribe.html">Share Horse Profile</a>
-  </article>
-
-  <article class="section provider-detail-card" id="provider-oak-hill" hidden>
-    <h1 class="heading-lg provider-detail-card__title">Oak Hill Training</h1>
-    <p class="provider-detail-card__meta">Trainer · Georgetown, KY</p>
-    <div class="provider-detail-card__contact">
-      <p><strong>Phone</strong><br><a href="tel:+18595550303">(859) 555-0303</a></p>
-      <p><strong>Email</strong><br><a href="mailto:info@oakhilltraining.example">info@oakhilltraining.example</a></p>
-    </div>
-    <p class="body-text provider-detail-card__note">Sample listing for web preview. Directory data will connect to Firebase later.</p>
-    <a class="btn-primary provider-detail-card__cta" href="subscribe.html">Share Horse Profile</a>
-  </article>
-</main>
-
-<footer class="snapshot-footer">
-  <div class="snapshot-footer__brand">The Horse Concierge™</div>
-  <a href="find-providers.html" class="snapshot-footer__link">Find providers</a>
-</footer>
-
-<script src="js/main.js?v=20260520"></script>
-<script>
-(function () {
-  var params = new URLSearchParams(window.location.search);
-  var p = (params.get("p") || "river-valley").toLowerCase().replace(/[^a-z-]/g, "");
-  var map = {
-    "river-valley": "provider-river-valley",
-    rivervalley: "provider-river-valley",
-    river: "provider-river-valley",
-    bluegrass: "provider-bluegrass",
-    "oak-hill": "provider-oak-hill",
-    oakhill: "provider-oak-hill",
-    oak: "provider-oak-hill",
-  };
-  var id = map[p] || "provider-river-valley";
-  var node = document.getElementById(id);
-  if (node) node.hidden = false;
-})();
-</script>
-<script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
+<p><a href="/find-providers">Go to Find Providers</a></p>
 </body>
 </html>

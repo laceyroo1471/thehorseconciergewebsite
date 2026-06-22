@@ -12,6 +12,17 @@
   var btnBack = document.getElementById("horse-profile-edit-details");
   var nameInput = document.getElementById("horse-name");
 
+  var pendingPhotoFile = null;
+  var photoInput = document.getElementById("horse-photo");
+
+  if (photoInput) {
+    photoInput.addEventListener("change", function () {
+      pendingPhotoFile =
+        photoInput.files && photoInput.files[0] ? photoInput.files[0] : null;
+      window.__thcPendingHorsePhoto = pendingPhotoFile;
+    });
+  }
+
   if (!form || !stepForm || !stepAuth) return;
 
   function loadDraft() {
@@ -82,8 +93,15 @@
       return;
     }
 
-    var photoInput = document.getElementById("horse-photo");
-    var file = photoInput && photoInput.files && photoInput.files[0] ? photoInput.files[0] : null;
+    var photoInputEl = document.getElementById("horse-photo");
+    var file =
+      photoInputEl && photoInputEl.files && photoInputEl.files[0]
+        ? photoInputEl.files[0]
+        : pendingPhotoFile;
+    if (file) {
+      pendingPhotoFile = file;
+      window.__thcPendingHorsePhoto = file;
+    }
 
     var previousPhoto = null;
     try {
@@ -118,13 +136,21 @@
 
         try {
           sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+          if (pendingPhotoFile) {
+            try {
+              sessionStorage.setItem(
+                DRAFT_KEY + "_has_photo",
+                pendingPhotoFile.name || "1"
+              );
+            } catch (ignore) {}
+          }
         } catch (err) {
           if (photoDataUrl) {
             draft.photoDataUrl = null;
             try {
               sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
               window.alert(
-                "Photo couldn’t be saved in the browser (storage full). Your other details were saved — add a photo again after sign-in if needed."
+                "Photo couldn’t be saved in the browser (storage full). Your other details were saved — add a photo in the app if you like."
               );
             } catch (err2) {
               window.alert("Could not save your details in the browser. Try again or use a smaller photo.");

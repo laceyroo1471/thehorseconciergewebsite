@@ -13,7 +13,7 @@
   };
 
   var LAST_CREATED_HORSE_ID_KEY = "thc_last_created_horse_id_v1";
-  var START_PROFILE = "start-horse-profile.html";
+  var START_PROFILE = "start-horse-profile";
 
   function el(id) {
     return document.getElementById(id);
@@ -60,13 +60,43 @@
     }
   }
 
+  function applySnapshotToView(snap) {
+    renderLocalFieldsFromSnapshot(snap || defaultSnapshot());
+  }
+
+  function loadSnapshotForHorse(uid, horseId) {
+    if (!window.ThcSnapshotSync) {
+      return Promise.resolve(loadLocalSnapshot(uid, horseId));
+    }
+    return window.ThcSnapshotSync.fetchSyncedSnapshot(db, uid, horseId).catch(function (err) {
+      console.warn("Firestore snapshot load failed, using local fallback", err);
+      return loadLocalSnapshot(uid, horseId);
+    });
+  }
+
   function saveLocalSnapshot(uid, horseId, data) {
-    if (!uid || !horseId) return;
+    if (!uid || !horseId) return false;
     try {
       localStorage.setItem(snapshotStorageKey(uid, horseId), JSON.stringify(normalizeSnapshot(data)));
+      return true;
     } catch (err) {
       console.warn("snapshot local save failed", err);
+      return false;
     }
+  }
+
+  var saveToastTimer = null;
+  function showSaveToast(message, isError) {
+    var toast = el("snapshot-local-save-toast");
+    if (!toast) return;
+    toast.textContent = message;
+    toast.hidden = false;
+    toast.classList.toggle("snapshot-local-save-toast--error", !!isError);
+    toast.classList.toggle("snapshot-local-save-toast--success", !isError);
+    if (saveToastTimer) clearTimeout(saveToastTimer);
+    saveToastTimer = setTimeout(function () {
+      toast.hidden = true;
+    }, 4000);
   }
 
   function daysSinceDateString(isoDate) {
@@ -203,7 +233,13 @@
   }
 
   function renderLocalFields(uid, horseId) {
-    var snap = loadLocalSnapshot(uid, horseId);
+    loadSnapshotForHorse(uid, horseId).then(function (snap) {
+      renderLocalFieldsFromSnapshot(snap);
+    });
+  }
+
+  function renderLocalFieldsFromSnapshot(snap) {
+    snap = normalizeSnapshot(snap || defaultSnapshot());
 
     var farrierInput = el("snapshot-farrier-date");
     var farrierDisplay = el("snapshot-farrier-display");
@@ -279,49 +315,100 @@
     }
   }
 
-  function wireLocalForms(uid, horseId) {
+  function wireLocalForms(uid, horseId, horseName) {
+    var sync = window.ThcSnapshotSync;
+
+    function persistAndRefresh(savePromise, successMessage) {
+      return savePromise
+        .then(function () {
+          return loadSnapshotForHorse(uid, horseId);
+        })
+        .then(function (snap) {
+          renderLocalFieldsFromSnapshot(snap);
+          showSaveToast(successMessage);
+        })
+        .catch(function (err) {
+          console.error(err);
+          var msg =
+            err && err.code === "permission-denied"
+              ? "Could not save — check that you’re signed in."
+              : "Could not save. Check your connection and try again.";
+          showSaveToast(msg, true);
+        });
+    }
+
     var farrierForm = el("snapshot-form-farrier");
     if (farrierForm) {
-      farrierForm.onsubmit = function (e) {
+      farrierForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        var snap = loadLocalSnapshot(uid, horseId);
         var inp = el("snapshot-farrier-date");
-        snap.lastFarrierDate = inp && inp.value ? inp.value : "";
-        saveLocalSnapshot(uid, horseId, snap);
-        renderLocalFields(uid, horseId);
-      };
+        if (!inp || !inp.value) {
+          showSaveToast("Pick a farrier date first.", true);
+          if (inp) inp.focus();
+          return;
+        }
+        if (!sync) {
+          showSaveToast("Sync is unavailable. Refresh the page.", true);
+          return;
+        }
+        showSaveToast("Saving…");
+        persistAndRefresh(
+          sync.saveFarrierVisit(db, uid, horseId, inp.value),
+          "Farrier visit saved to your profile — it will show in the app."
+        );
+      });
     }
 
     var feedForm = el("snapshot-form-feed");
     if (feedForm) {
-      feedForm.onsubmit = function (e) {
+      feedForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        var snap = loadLocalSnapshot(uid, horseId);
         var d = el("snapshot-feed-date");
         var n = el("snapshot-feed-note");
-        snap.lastFeedChangeDate = d && d.value ? d.value : "";
-        snap.lastFeedChangeNote = n && n.value ? n.value.trim() : "";
-        saveLocalSnapshot(uid, horseId, snap);
-        renderLocalFields(uid, horseId);
-      };
+        if (!d || !d.value) {
+          showSaveToast("Pick a feed change date first.", true);
+          if (d) d.focus();
+          return;
+        }
+        if (!sync) {
+          showSaveToast("Sync is unavailable. Refresh the page.", true);
+          return;
+        }
+        showSaveToast("Saving…");
+        persistAndRefresh(
+          sync.saveFeedUpdate(db, uid, horseId, d.value, n ? n.value : ""),
+          "Feed update saved to your profile — it will show in the app."
+        );
+      });
     }
 
     var nextForm = el("snapshot-form-next");
     if (nextForm) {
-      nextForm.onsubmit = function (e) {
+      nextForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        var snap = loadLocalSnapshot(uid, horseId);
         var d = el("snapshot-next-date");
         var t = el("snapshot-next-type");
         var n = el("snapshot-next-note");
-        snap.nextCareEvent = {
-          date: d && d.value ? d.value : "",
-          type: t && t.value ? t.value : "",
-          note: n && n.value ? n.value.trim() : "",
-        };
-        saveLocalSnapshot(uid, horseId, snap);
-        renderLocalFields(uid, horseId);
-      };
+        if (!d || !d.value) {
+          showSaveToast("Pick an appointment date first.", true);
+          if (d) d.focus();
+          return;
+        }
+        if (!t || !t.value) {
+          showSaveToast("Select an appointment type.", true);
+          if (t) t.focus();
+          return;
+        }
+        if (!sync) {
+          showSaveToast("Sync is unavailable. Refresh the page.", true);
+          return;
+        }
+        showSaveToast("Saving…");
+        persistAndRefresh(
+          sync.saveNextAppointment(db, uid, horseId, horseName, d.value, t.value, n ? n.value : ""),
+          "Appointment saved to your profile — it will show in the app."
+        );
+      });
     }
   }
 
@@ -344,6 +431,20 @@
     line.textContent =
       "Signed in as " + (user.email || user.uid) + (user.uid ? " · UID: " + user.uid : "");
     line.hidden = false;
+  }
+
+  function showWelcomeBannerIfNeeded() {
+    var banner = el("snapshot-welcome-banner");
+    if (!banner) return;
+    try {
+      var params = new URLSearchParams(window.location.search || "");
+      if (params.get("welcome") === "1") {
+        banner.hidden = false;
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, "", window.location.pathname);
+        }
+      }
+    } catch (ignore) {}
   }
 
   function formatFirestoreError(e) {
@@ -371,8 +472,9 @@
         }
         renderHorseCard(horse.data);
         renderLocalFields(user.uid, horse.id);
-        wireLocalForms(user.uid, horse.id);
+        wireLocalForms(user.uid, horse.id, horse.data.name || "Horse");
         setView("main");
+        showWelcomeBannerIfNeeded();
       })
       .catch(function (err) {
         console.error(err);

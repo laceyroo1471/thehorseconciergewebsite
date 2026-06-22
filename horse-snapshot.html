@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260526">
+<link rel="stylesheet" href="css/styles.css?v=20260622">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="Horse Snapshot — The Horse Concierge">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horse-snapshot">
@@ -52,6 +52,15 @@
   </div>
 
   <div id="snapshot-view-main" class="snapshot-shell section" hidden>
+
+    <div id="snapshot-welcome-banner" class="snapshot-welcome-banner" hidden>
+      <p class="snapshot-welcome-banner__label">Profile saved</p>
+      <h2 class="snapshot-welcome-banner__title">You’re in — <em>what’s next?</em></h2>
+      <p class="snapshot-welcome-banner__text">Your horse is on your account. Download the app to upload documents, build history, and track rides.</p>
+      <div class="snapshot-welcome-banner__actions">
+        <button type="button" class="btn-primary" data-thc-action="app">Download the app</button>
+      </div>
+    </div>
 
     <div class="snapshot-hero-grid">
       <div class="snapshot-hero-left">
@@ -96,21 +105,23 @@
       </div>
     </div>
 
-    <p class="snapshot-browser-hint">Quick notes below save only in this browser — not synced to the app.</p>
+    <p class="snapshot-browser-hint">Updates below save to your horse profile and sync with The Horse Concierge app. Pick a date, then tap Save.</p>
+
+    <p id="snapshot-local-save-toast" class="snapshot-local-save-toast" role="status" hidden></p>
 
     <div class="snapshot-priority-2x2">
       <div class="snapshot-priority-card">
         <form id="snapshot-form-farrier" class="snapshot-priority-card__form">
           <div class="snapshot-priority-card__head">
             <h3 class="snapshot-priority-card__title">Farrier</h3>
-            <button type="submit" class="btn-primary snapshot-priority-card__head-cta">Add last farrier visit</button>
           </div>
           <p id="snapshot-farrier-display" class="snapshot-priority-card__saved" hidden></p>
           <p id="snapshot-farrier-days" class="snapshot-priority-card__days-line">— Days since Last Farrier Visit</p>
           <div class="snapshot-mini-form">
-            <label class="form-label" for="snapshot-farrier-date">Date</label>
-            <input class="form-input" type="date" id="snapshot-farrier-date" name="farrier-date">
+            <label class="form-label" for="snapshot-farrier-date">Last farrier visit date</label>
+            <input class="form-input" type="date" id="snapshot-farrier-date" name="farrier-date" required>
           </div>
+          <button type="submit" class="btn-primary snapshot-priority-card__cta">Save farrier date</button>
         </form>
       </div>
 
@@ -118,16 +129,16 @@
         <form id="snapshot-form-feed" class="snapshot-priority-card__form">
           <div class="snapshot-priority-card__head">
             <h3 class="snapshot-priority-card__title">Feed</h3>
-            <button type="submit" class="btn-primary snapshot-priority-card__head-cta">Add feed</button>
           </div>
           <p id="snapshot-feed-display" class="snapshot-priority-card__saved" hidden></p>
           <p id="snapshot-feed-days" class="snapshot-priority-card__days-line">— Days since last feed change</p>
           <div class="snapshot-mini-form">
-            <label class="form-label" for="snapshot-feed-date">Date</label>
-            <input class="form-input" type="date" id="snapshot-feed-date" name="feed-date">
+            <label class="form-label" for="snapshot-feed-date">Feed change date</label>
+            <input class="form-input" type="date" id="snapshot-feed-date" name="feed-date" required>
             <label class="form-label" for="snapshot-feed-note">Note <span class="form-label-optional">(optional)</span></label>
             <input class="form-input" type="text" id="snapshot-feed-note" name="feed-note" maxlength="500" placeholder="e.g. switched to senior feed">
           </div>
+          <button type="submit" class="btn-primary snapshot-priority-card__cta">Save feed update</button>
         </form>
       </div>
 
@@ -135,15 +146,14 @@
         <form id="snapshot-form-next" class="snapshot-priority-card__form">
           <div class="snapshot-priority-card__head">
             <h3 class="snapshot-priority-card__title">Next appointment</h3>
-            <button type="submit" class="btn-primary snapshot-priority-card__head-cta">Add next appointment</button>
           </div>
           <p id="snapshot-next-display" class="snapshot-priority-card__saved" hidden></p>
           <button type="button" class="btn-ghost snapshot-priority-card__link" id="snapshot-next-add-another" data-thc-action="schedule-limit" hidden>Add another upcoming event</button>
           <div class="snapshot-mini-form">
-            <label class="form-label" for="snapshot-next-date">Date</label>
-            <input class="form-input" type="date" id="snapshot-next-date" name="next-date">
+            <label class="form-label" for="snapshot-next-date">Appointment date</label>
+            <input class="form-input" type="date" id="snapshot-next-date" name="next-date" required>
             <label class="form-label" for="snapshot-next-type">Type</label>
-            <select class="form-select" id="snapshot-next-type" name="next-type">
+            <select class="form-select" id="snapshot-next-type" name="next-type" required>
               <option value="">Select</option>
               <option value="Farrier">Farrier</option>
               <option value="Vet">Vet</option>
@@ -154,6 +164,7 @@
             <label class="form-label" for="snapshot-next-note">Note <span class="form-label-optional">(optional)</span></label>
             <input class="form-input" type="text" id="snapshot-next-note" name="next-note" maxlength="500">
           </div>
+          <button type="submit" class="btn-primary snapshot-priority-card__cta">Save appointment</button>
         </form>
       </div>
 
@@ -246,11 +257,12 @@
 </footer>
 
 <script src="js/main.js?v=20260523"></script>
-<script src="js/thc-gating.js?v=20260523"></script>
+<script src="js/thc-gating.js?v=20260623"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="js/horse-snapshot-compat.js?v=20260527"></script>
+<script src="js/horse-snapshot-sync.js?v=20260622"></script>
+<script src="js/horse-snapshot-compat.js?v=20260622b"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
