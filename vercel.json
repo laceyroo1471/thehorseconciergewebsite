@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/providers/:slug", "destination": "/provider.html" }
+    { "source": "/providers/:slug", "destination": "/provider" }
   ],
   "functions": {
     "api/**/*.js": {
