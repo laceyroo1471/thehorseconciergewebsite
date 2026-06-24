@@ -148,9 +148,20 @@
       ' — ' +
       categoryLabel +
       (locationLine ? ' in ' + locationLine : '') +
-      '. View on The Horse Concierge.';
+      '. View ratings and services on The Horse Concierge.';
     var meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', metaDesc);
+
+    var canonicalUrl = 'https://www.thehorseconcierge.com/providers/' + slug;
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      canonical.setAttribute('href', canonicalUrl);
+    } else {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      canonical.href = canonicalUrl;
+      document.head.appendChild(canonical);
+    }
 
     root.innerHTML =
       '<div class="section provider-detail-back">' +

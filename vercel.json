@@ -4,8 +4,13 @@
   "buildCommand": "npm run build",
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/providers/:slug", "destination": "/api/providers/:slug" }
+    { "source": "/providers/:slug", "destination": "/provider.html" }
   ],
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "lib/**"
+    }
+  },
   "headers": [
     {
       "source": "/css/(.*)",
