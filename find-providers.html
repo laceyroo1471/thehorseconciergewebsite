@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260625e">
+<link rel="stylesheet" href="css/styles.css?v=20260628">
 <meta property="og:title" content="Find a Provider — The Horse Concierge">
 <meta property="og:url" content="https://www.thehorseconcierge.com/find-providers">
 <meta property="og:type" content="website">
@@ -77,6 +77,26 @@
         <button type="submit" class="form-submit">Search providers</button>
       </form>
       <p id="find-providers-status" class="find-providers-status" role="status" hidden></p>
+    </div>
+
+    <div class="directory-browse funnel-panel">
+      <div class="funnel-panel-title">Browse the directory</div>
+      <p class="funnel-panel-note">Prefer to explore? Open a category or state listing with links to every public provider profile.</p>
+      <div class="directory-browse__group">
+        <p class="directory-browse__label">By service</p>
+        <div class="directory-browse__actions">
+          <a class="btn-ghost" href="/directory/trainers">Trainers &amp; Instructors</a>
+          <a class="btn-ghost" href="/directory/farriers">Farriers</a>
+          <a class="btn-ghost" href="/directory/boarding">Boarding &amp; Stables</a>
+          <a class="btn-ghost" href="/directory">All services</a>
+        </div>
+      </div>
+      <div class="directory-browse__group">
+        <p class="directory-browse__label">By location</p>
+        <div class="directory-browse__actions">
+          <a class="btn-ghost" href="/directory/states">Browse by state</a>
+        </div>
+      </div>
     </div>
 
     <div id="find-providers-results"></div>

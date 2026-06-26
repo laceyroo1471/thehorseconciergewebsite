@@ -2,9 +2,10 @@
   "name": "thc-website",
   "private": true,
   "scripts": {
+    "generate-directory": "node scripts/generate-directory-pages.js",
     "generate-sitemap": "node scripts/generate-sitemap.js",
     "prepare-public": "node scripts/prepare-public.js",
-    "build": "npm run generate-sitemap && npm run prepare-public"
+    "build": "npm run generate-directory && npm run generate-sitemap && npm run prepare-public"
   },
   "dependencies": {
     "firebase-admin": "^12.7.0"
