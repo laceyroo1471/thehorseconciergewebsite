@@ -8,6 +8,7 @@ const {
   US_STATE_NAMES,
   PAGE_SIZE,
   categoryValueToSlug,
+  isValidStateCode,
   buildCategorySlugIndex,
   resolveCategoryMeta,
 } = require('../lib/directory-urls');
@@ -45,6 +46,12 @@ function hasUsableFirebaseCredentials() {
 
 function writePage(relativePath, html) {
   const filePath = path.join(OUT_DIR, relativePath);
+  const resolved = path.resolve(filePath);
+  // Guard against path traversal / dotted filenames that could escape OUT_DIR
+  // or produce clean URLs that shadow other pages.
+  if (resolved !== OUT_DIR && !resolved.startsWith(OUT_DIR + path.sep)) {
+    throw new Error('Refusing to write outside directory output: ' + relativePath);
+  }
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, html, 'utf8');
 }
@@ -104,7 +111,10 @@ function groupProviders(providers) {
     if (!byCategory.has(catSlug)) byCategory.set(catSlug, []);
     byCategory.get(catSlug).push(p);
 
-    const state = p.state || 'OTHER';
+    // Only group by genuine 2-letter US state codes. Garbage values (".",
+    // county names, blanks) collapse to OTHER so they never produce junk
+    // state pages or slugs that could shadow the states hub.
+    const state = isValidStateCode(p.state) ? p.state.toUpperCase() : 'OTHER';
     if (!byState.has(state)) byState.set(state, []);
     byState.get(state).push(p);
 
@@ -181,7 +191,7 @@ function generateCategoryStatePages(byCategoryState, categoryIndex, manifest) {
     const parts = comboKey.split('|');
     const catSlug = parts[0];
     const stateCode = parts[1];
-    if (stateCode === 'OTHER' || providers.length === 0) return;
+    if (stateCode === 'OTHER' || !isValidStateCode(stateCode) || providers.length === 0) return;
 
     const meta = categoryIndex.bySlug.get(catSlug) || { slug: catSlug, label: catSlug };
     const stateName = US_STATE_NAMES[stateCode] || stateCode;
@@ -224,7 +234,7 @@ function generateStatePages(byState, manifest) {
 
   const sortedStates = Array.from(byState.entries())
     .filter(function (entry) {
-      return entry[0] !== 'OTHER';
+      return entry[0] !== 'OTHER' && isValidStateCode(entry[0]);
     })
     .sort(function (a, b) {
       return a[0].localeCompare(b[0]);
