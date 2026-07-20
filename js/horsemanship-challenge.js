@@ -4,7 +4,7 @@
  * Returning users can sign in with email/password only.
  */
 (function () {
-  var FB_GROUP_URL = 'https://www.facebook.com/groups/1048920771114090/';
+  var FB_GROUP_URL = 'https://www.facebook.com/groups/1388463146804189';
   var HUB_URL = 'horsemanship-challenge-hub.html';
   var CHALLENGE_ID = 'horsemanship-2026';
 
