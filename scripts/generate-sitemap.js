@@ -18,6 +18,7 @@ const STATIC_PATHS = [
   '/find-providers',
   '/directory',
   '/directory/states',
+  '/horsemanship-challenge',
 ];
 
 const VALID_SLUG = /^[a-z0-9-]+$/;

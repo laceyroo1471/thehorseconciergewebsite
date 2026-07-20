@@ -31,7 +31,7 @@
       ]
     },
     {
-      "source": "/horsemanship-challenge",
+      "source": "/horsemanship-challenge-trailer-safety",
       "headers": [
         {
           "key": "X-Robots-Tag",
@@ -40,7 +40,7 @@
       ]
     },
     {
-      "source": "/horsemanship-challenge-trailer-safety",
+      "source": "/horsemanship-challenge-hub",
       "headers": [
         {
           "key": "X-Robots-Tag",

@@ -1,14 +1,16 @@
 /**
- * Week 10 Trailer Safety — hybrid daily unlock.
- * Schedule headers always visible; day bodies unlock Mon–Sun.
+ * Week 10 Trailer Safety — page gate + hybrid daily unlock.
+ * Page locked until Monday Nov 2, 2026 (unless FORCE_PAGE_ACCESS).
+ * Schedule headers always visible once open; day bodies unlock Mon–Sun.
  * After Sunday (week end), all content stays unlocked for arrears.
  *
- * Preview: FORCE_UNLOCK_ALL = true so partners can review the full page.
- * Before go-live (Nov 1, 2026): set FORCE_UNLOCK_ALL = false.
+ * Partner preview of the full page before go-live: set FORCE_PAGE_ACCESS = true.
+ * Daily drip during the week: set FORCE_UNLOCK_ALL = false (default).
  */
 (function () {
-  var WEEK_START = '2026-11-01'; // Monday of Week 10
-  var FORCE_UNLOCK_ALL = true; // set false before Nov 1 for daily drip
+  var WEEK_START = '2026-11-02'; // Monday of Week 10
+  var FORCE_PAGE_ACCESS = false; // true = bypass week gate for partner review
+  var FORCE_UNLOCK_ALL = false; // true = unlock all days once page is open
 
   var DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   var MONTHS = [
@@ -45,16 +47,34 @@
   if (!weekStart) return;
 
   var today = startOfToday();
-  var weekEnd = addDays(weekStart, 6); // Sunday Nov 7
+  var weekEnd = addDays(weekStart, 6); // Sunday Nov 8
+  var beforeWeek = today.getTime() < weekStart.getTime();
   var afterWeek = today.getTime() > weekEnd.getTime();
-  var unlockAll = FORCE_UNLOCK_ALL || afterWeek;
+
+  var lockedEl = document.getElementById('challenge-week-locked');
+  var openEl = document.getElementById('challenge-week-open');
+
+  if (beforeWeek && !FORCE_PAGE_ACCESS) {
+    if (lockedEl) lockedEl.hidden = false;
+    if (openEl) openEl.hidden = true;
+    return;
+  }
+
+  if (lockedEl) lockedEl.hidden = true;
+  if (openEl) openEl.hidden = false;
+
+  var unlockAll = FORCE_UNLOCK_ALL || afterWeek || FORCE_PAGE_ACCESS;
 
   var banner = document.getElementById('challenge-unlock-banner');
   if (banner) {
-    if (FORCE_UNLOCK_ALL && !afterWeek) {
+    if (FORCE_PAGE_ACCESS && beforeWeek) {
       banner.hidden = false;
       banner.textContent =
-        'Preview mode: all days are unlocked for partner review. Daily drip activates when FORCE_UNLOCK_ALL is set to false before November 1, 2026.';
+        'Preview mode: page access is forced open for partner review. Public access unlocks November 2, 2026.';
+    } else if (FORCE_UNLOCK_ALL && !afterWeek) {
+      banner.hidden = false;
+      banner.textContent =
+        'Preview mode: all days are unlocked for partner review. Daily drip activates when FORCE_UNLOCK_ALL is set to false.';
     } else if (afterWeek) {
       banner.hidden = false;
       banner.textContent =
