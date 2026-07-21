@@ -198,7 +198,7 @@
     if (!yearsOwned) return showError('Please select how long you have owned horses.'), null;
     if (!primaryDiscipline) return showError('Please select your primary discipline.'), null;
     if (horseCountRaw === '' || isNaN(Number(horseCountRaw)) || Number(horseCountRaw) < 0) {
-      return showError('Please enter how many horses you own.'), null;
+      return showError('Please enter how many horses you own (use 0 if none).'), null;
     }
     if (!emailConsent) {
       return showError('Please agree to receive challenge emails to continue.'), null;
