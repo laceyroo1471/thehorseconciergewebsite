@@ -303,6 +303,70 @@
       });
   }
 
+  /** Never include password. Dual-write: Firestore + email backup. */
+  function logRegistrationFailure(formData, err, user) {
+    var code = (err && err.code) || 'unknown';
+    var message = (err && (err.message || String(err))) || 'Registration failed';
+    var payload = {
+      challengeId: CHALLENGE_ID,
+      source: 'web',
+      stage: user ? 'firestore' : 'auth',
+      errorCode: String(code).slice(0, 120),
+      errorMessage: String(message).slice(0, 500),
+      email: (formData && formData.email) || '',
+      name: (formData && formData.name) || '',
+      userId: user && user.uid ? user.uid : '',
+      horseHousing: (formData && formData.horseHousing) || '',
+      yearsOwned: (formData && formData.yearsOwned) || '',
+      primaryDiscipline: (formData && formData.primaryDiscipline) || '',
+      horseCount:
+        formData && typeof formData.horseCount === 'number' ? formData.horseCount : null,
+      referralPartner: (formData && formData.referralPartner) || '',
+      emailConsent: !!(formData && formData.emailConsent),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      userAgent: typeof navigator !== 'undefined' ? String(navigator.userAgent || '').slice(0, 300) : '',
+      recovered: false,
+    };
+
+    var firestoreWrite = db
+      .collection('challengeRegistrationFailures')
+      .add(payload)
+      .catch(function (logErr) {
+        console.warn('Could not write challengeRegistrationFailures', logErr);
+      });
+
+    // Email backup if Firestore logging is also blocked
+    var emailBackup = null;
+    if (typeof fetch === 'function' && payload.email) {
+      emailBackup = fetch('https://formsubmit.co/ajax/info@thehorseconcierge.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: 'Horsemanship Challenge — registration failed',
+          challengeId: CHALLENGE_ID,
+          email: payload.email,
+          name: payload.name,
+          userId: payload.userId,
+          errorCode: payload.errorCode,
+          errorMessage: payload.errorMessage,
+          stage: payload.stage,
+          horseHousing: payload.horseHousing,
+          yearsOwned: payload.yearsOwned,
+          primaryDiscipline: payload.primaryDiscipline,
+          horseCount: payload.horseCount,
+          referralPartner: payload.referralPartner,
+        }),
+      }).catch(function (emailErr) {
+        console.warn('Could not email registration failure', emailErr);
+      });
+    }
+
+    return Promise.all([firestoreWrite, emailBackup].filter(Boolean));
+  }
+
   function loadRegistration(uid) {
     return db
       .collection('challengeRegistrations')
@@ -360,8 +424,10 @@
 
       setBusy('Creating your registration…');
 
+      var authUser = null;
       ensureAuth(data.email, data.password, data.name)
         .then(function (user) {
+          authUser = user;
           setBusy('Unlocking the Challenge Hub…');
           return saveRegistration(user, data);
         })
@@ -374,7 +440,18 @@
         .catch(function (err) {
           console.error(err);
           setBusy('');
-          showError(mapAuthError(err.code) || err.message || 'Registration failed.');
+          var userForLog = authUser || auth.currentUser;
+          logRegistrationFailure(data, err, userForLog).finally(function () {
+            var base = mapAuthError(err.code) || err.message || 'Registration failed.';
+            if (err && err.code === 'permission-denied') {
+              showError(
+                base +
+                  ' We saved your details so we can help you finish — please try again in a moment, or email info@thehorseconcierge.com.'
+              );
+            } else {
+              showError(base);
+            }
+          });
         });
     });
   }

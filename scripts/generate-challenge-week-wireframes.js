@@ -54,6 +54,8 @@ const LOGOS = {
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FYEF%2BBanner%2BLogo.webp?alt=media&token=226ebcda-03a9-4a53-8260-eb545d61b796',
   myler:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FMyler%20Bits.jpg?alt=media&token=29eed792-20a4-4861-9112-565fddf0107a',
+  toklat:
+    'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2F0000165_Toklat-Vertical.png?alt=media&token=b759e6e5-f986-41e0-9ee8-1ec66a905d60',
   fourH:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2F4Hooves.webp?alt=media&token=26f97c59-1887-4b68-b7f7-3562b304a679',
   denver:
@@ -127,12 +129,15 @@ const WEEKS = [
     slug: 'week-06-saddle-myler',
     start: '2026-10-05',
     theme: 'Saddle & Tack',
-    partner: 'Myler Bits',
-    partnerShort: 'Myler Bits',
+    partner: 'Myler presented by Toklat',
+    partnerShort: 'Toklat',
     logo: LOGOS.myler,
+    logoSecondary: LOGOS.toklat,
+    logoSecondaryAlt: 'Toklat',
+    presentedBy: true,
     website: 'https://www.toklat.com/',
     about:
-      'Partner copy for Myler Bits (Toklat) will go here — saddle and tack focus for Week 6.',
+      'Partner copy for Myler presented by Toklat will go here — saddle and tack focus for Week 6.',
   },
   {
     num: 7,
@@ -221,6 +226,25 @@ function logoWell(week) {
         <span class="challenge-week-card__logo--empty" style="border:none;height:auto;"><span>Partner TBD</span></span>
       </div>`;
   }
+  if (week.logoSecondary) {
+    return `<div class="challenge-partner-logo-well challenge-partner-logo-well--dual reveal">
+        <img
+          src="${escapeHtml(week.logo)}"
+          alt="Myler Bits"
+          width="120"
+          height="100"
+          class="challenge-partner-logo-well__img"
+        >
+        <span class="challenge-partner-logo-well__divider">presented by</span>
+        <img
+          src="${escapeHtml(week.logoSecondary)}"
+          alt="${escapeHtml(week.logoSecondaryAlt || week.partnerShort)}"
+          width="120"
+          height="100"
+          class="challenge-partner-logo-well__img"
+        >
+      </div>`;
+  }
   return `<div class="challenge-partner-logo-well reveal">
         <img
           src="${escapeHtml(week.logo)}"
@@ -294,9 +318,11 @@ function renderWeek(week) {
   const pathSlug = file.replace(/\.html$/, '');
   const range = rangeLabel(week.start);
   const unlock = unlockLong(week.start);
-  const presented = week.partner
-    ? `Presented by <em>${escapeHtml(week.partner)}</em> — content wireframe ready for partner materials.`
-    : `Partner and theme to be announced — wireframe ready for content.`;
+  const presented = week.presentedBy
+    ? `<em>Myler</em> presented by <em>Toklat</em> — content wireframe ready for partner materials.`
+    : week.partner
+      ? `Presented by <em>${escapeHtml(week.partner)}</em> — content wireframe ready for partner materials.`
+      : `Partner and theme to be announced — wireframe ready for content.`;
   const aboutH2 = week.partner
     ? `About<br><em>${escapeHtml(week.partner)}</em>`
     : `Education partner<br><em>coming soon.</em>`;

@@ -3560,6 +3560,25 @@
     height: auto;
     object-fit: contain;
   }
+  .challenge-partner-card__logo--dual {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+  }
+  .challenge-partner-card__logo--dual .challenge-partner-card__img {
+    max-width: 110px;
+    max-height: 72px;
+  }
+  .challenge-partner-card__logo-divider {
+    flex: 0 0 100%;
+    margin: -4px 0;
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.45);
+    text-align: center;
+  }
   .challenge-partner-card__category {
     margin: 0;
     padding: 12px 10px;
@@ -3834,6 +3853,26 @@
     height: auto;
     object-fit: contain;
   }
+  .challenge-week-card__logo--dual {
+    flex-direction: column;
+    height: auto;
+    min-height: 72px;
+    gap: 4px;
+    padding: 8px 10px;
+  }
+  .challenge-week-card__logo--dual img {
+    max-width: 72%;
+    max-height: 36px;
+  }
+  .challenge-week-card__logo-divider {
+    font-size: 0.5rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.4);
+    line-height: 1.1;
+    text-align: center;
+  }
   .challenge-week-card__logo--empty {
     border: 1px dashed rgba(0, 0, 0, 0.2);
     border-radius: 4px;
@@ -3938,6 +3977,29 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+  .challenge-partner-logo-well--dual {
+    width: auto;
+    max-width: min(320px, 92vw);
+    height: auto;
+    min-height: 140px;
+    gap: 12px 16px;
+    flex-wrap: wrap;
+  }
+  .challenge-partner-logo-well--dual .challenge-partner-logo-well__img {
+    width: auto;
+    height: auto;
+    max-width: 120px;
+    max-height: 100px;
+  }
+  .challenge-partner-logo-well__divider {
+    flex: 0 0 100%;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.45);
+    text-align: center;
   }
   .challenge-partner-links {
     display: flex;
