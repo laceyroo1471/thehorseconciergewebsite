@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260804a">
+<link rel="stylesheet" href="css/styles.css?v=20260813b">
 <meta property="og:title" content="Horsemanship Challenge — The Horse Concierge">
 <meta property="og:description" content="Horsemanship from the ground to the saddle. Learn from industry leaders. Compete for prizes — or follow along.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horsemanship-challenge">
@@ -52,8 +52,8 @@
       <h1 class="heading-xl">Horsemanship<br>Challenge</h1>
       <p class="funnel-tagline challenge-hero-tagline">Horsemanship from the ground<br>to the <em>saddle.</em></p>
       <div class="hero-actions challenge-hero-actions">
-        <a class="btn-primary" href="#register" data-challenge-open-tab="register">Register to Enter</a>
-        <a class="btn-ghost" href="#register" data-challenge-open-tab="signin">Sign In to Hub</a>
+        <a class="btn-primary" href="#register" data-challenge-open-tab="register">Join the Challenge — Free</a>
+        <a class="btn-ghost" href="#register" data-challenge-open-tab="signin">App Users: Sign In</a>
       </div>
     </div>
   </div>
@@ -139,11 +139,72 @@
     </div>
   </section>
 
+  <section class="section challenge-value-section" id="whats-in-store">
+    <div class="challenge-value-header reveal">
+      <div class="section-label">90 days</div>
+      <h2 class="heading-xl">What's in store<br><em>over 90 days</em></h2>
+      <p class="challenge-value-tagline">Real experts. Real opportunities. Real value for you and your horse.</p>
+    </div>
+
+    <div class="challenge-value-grid reveal reveal-delay-1">
+      <div class="challenge-value-card">
+        <span class="challenge-value-card__icon" aria-hidden="true">🏆</span>
+        <h3 class="challenge-value-card__title">Partner Prizes</h3>
+        <p class="challenge-value-card__text">Prizes throughout the Challenge</p>
+      </div>
+      <div class="challenge-value-card">
+        <span class="challenge-value-card__icon" aria-hidden="true">🐴</span>
+        <h3 class="challenge-value-card__title">Expert Case Studies</h3>
+        <p class="challenge-value-card__text">Your horse could be selected</p>
+      </div>
+      <div class="challenge-value-card">
+        <span class="challenge-value-card__icon" aria-hidden="true">🎥</span>
+        <h3 class="challenge-value-card__title">Live Access + Q&amp;As</h3>
+        <p class="challenge-value-card__text">Interact with select educators</p>
+      </div>
+      <div class="challenge-value-card">
+        <span class="challenge-value-card__icon" aria-hidden="true">📚</span>
+        <h3 class="challenge-value-card__title">Expert Education</h3>
+        <p class="challenge-value-card__text">Nutrition, hoof care, saddle fit, hauling, training &amp; more</p>
+      </div>
+      <div class="challenge-value-card">
+        <span class="challenge-value-card__icon" aria-hidden="true">🥕</span>
+        <h3 class="challenge-value-card__title">Free Consult Opportunities</h3>
+        <p class="challenge-value-card__text">Access select professionals</p>
+      </div>
+      <div class="challenge-value-card">
+        <span class="challenge-value-card__icon" aria-hidden="true">🎁</span>
+        <h3 class="challenge-value-card__title">Exclusive Partner Offers</h3>
+        <p class="challenge-value-card__text">Discounts and special offers</p>
+      </div>
+      <div class="challenge-value-card">
+        <span class="challenge-value-card__icon" aria-hidden="true">📱</span>
+        <h3 class="challenge-value-card__title">Premium Challenge Access</h3>
+        <p class="challenge-value-card__text">The Horse Concierge Premium included during the Challenge</p>
+      </div>
+      <div class="challenge-value-card">
+        <span class="challenge-value-card__icon" aria-hidden="true">🎯</span>
+        <h3 class="challenge-value-card__title">Activities + Recognition</h3>
+        <p class="challenge-value-card__text">Participate, earn points and reach milestones</p>
+      </div>
+    </div>
+
+    <div class="challenge-value-cta reveal">
+      <p class="challenge-value-free">All included. No cost to participate.</p>
+      <a class="btn-primary" href="#register" data-challenge-open-tab="register">Join the Challenge — Free</a>
+    </div>
+  </section>
+
   <section class="section challenge-register-section" style="padding-top:0;" id="register">
     <div class="challenge-register-intro reveal">
       <div class="section-label">Enter the challenge</div>
       <h2 class="heading-xl">This is the door.<br><em>Register or sign in.</em></h2>
-      <p class="body-text">New here? Register once to unlock the Challenge Hub. Already registered on another device? Sign in with the same email and password — works on phone, tablet, and computer.</p>
+      <p class="body-text">Already have The Horse Concierge app? Use that same email and password — do not create a new login. New to The Horse Concierge? Register once to unlock the Challenge Hub.</p>
+    </div>
+
+    <div class="challenge-app-login-notice reveal" role="note">
+      <p class="challenge-app-login-notice__label">Existing app account?</p>
+      <p class="challenge-app-login-notice__text">Use the <strong>same email and password</strong> from The Horse Concierge app. Do not create a second account with a different email.</p>
     </div>
 
     <div id="challenge-auth-tabs" class="challenge-auth-tabs" role="tablist" aria-label="Challenge access">
@@ -162,16 +223,16 @@
     </div>
 
     <div id="challenge-signin-panel" class="funnel-panel challenge-register-panel">
-      <div class="funnel-panel-title">Sign in to the hub</div>
-      <p class="funnel-panel-note">Use the same email and password you registered with (or your Horse Concierge app login). Works across phone and computer.</p>
+      <div class="funnel-panel-title">Sign in with your app login</div>
+      <p class="funnel-panel-note">Enter the <strong style="color:var(--cream);">same email and password</strong> you use in The Horse Concierge app. This is one account for the app and the Challenge Hub.</p>
       <form id="challenge-signin-form" action="#" method="post" novalidate>
         <div class="form-group">
-          <label class="form-label" for="challenge-signin-email">Email</label>
-          <input class="form-input" type="email" id="challenge-signin-email" name="email" autocomplete="email" inputmode="email" required placeholder="Your challenge email">
+          <label class="form-label" for="challenge-signin-email">App email</label>
+          <input class="form-input" type="email" id="challenge-signin-email" name="email" autocomplete="email" inputmode="email" required placeholder="Email from The Horse Concierge app">
         </div>
         <div class="form-group">
-          <label class="form-label" for="challenge-signin-password">Password</label>
-          <input class="form-input" type="password" id="challenge-signin-password" name="password" autocomplete="current-password" minlength="6" required placeholder="Your password">
+          <label class="form-label" for="challenge-signin-password">App password</label>
+          <input class="form-input" type="password" id="challenge-signin-password" name="password" autocomplete="current-password" minlength="6" required placeholder="Password from The Horse Concierge app">
         </div>
         <button type="submit" class="form-submit" id="challenge-signin-submit">Sign In &amp; Open the Hub</button>
       </form>
@@ -181,7 +242,11 @@
 
     <div id="challenge-register-panel" class="funnel-panel challenge-register-panel" hidden>
       <div class="funnel-panel-title">Registration</div>
-      <p class="funnel-panel-note">Create your account (or use your existing app login) to unlock the Challenge Hub. This works on the web and in the app.</p>
+      <div class="challenge-app-login-notice challenge-app-login-notice--panel" role="note">
+        <p class="challenge-app-login-notice__label">Already have the app?</p>
+        <p class="challenge-app-login-notice__text">Enter your <strong>existing app email and password</strong> below — do not create a new login. Already joined the Challenge? <button type="button" class="challenge-app-login-notice__link" data-challenge-open-tab="signin">Sign In instead</button>.</p>
+      </div>
+      <p class="funnel-panel-note">New to The Horse Concierge? Create an account below. Your login works for both the Challenge Hub and the app.</p>
 
       <form id="challenge-register-form" action="#" method="post" novalidate>
         <div class="form-group">
@@ -190,7 +255,7 @@
         </div>
         <div class="form-group">
           <label class="form-label" for="challenge-email">Email</label>
-          <input class="form-input" type="email" id="challenge-email" name="email" autocomplete="email" inputmode="email" required placeholder="Same email as The Horse Concierge app">
+          <input class="form-input" type="email" id="challenge-email" name="email" autocomplete="email" inputmode="email" required placeholder="App email, or a new email if you’re new">
         </div>
         <div class="form-group">
           <label class="form-label" for="challenge-password">Password</label>
@@ -282,7 +347,7 @@
         <h2 class="heading-lg">Your Challenge Hub<br>is waiting to <em>open.</em></h2>
         <p class="body-text" style="margin:16px auto 0; text-align:center; max-width:420px;">Weekly themes, how to compete, prize details, and community links — unlocked the moment you register.</p>
         <div class="hero-actions" style="justify-content:center; margin-top:28px;">
-          <a class="btn-primary" href="#register" data-challenge-open-tab="register">Register to Unlock</a>
+          <a class="btn-primary" href="#register" data-challenge-open-tab="register">Join Free to Unlock</a>
         </div>
       </div>
     </div>
@@ -323,7 +388,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="js/horsemanship-challenge.js?v=20260807a"></script>
+<script src="js/horsemanship-challenge.js?v=20260813a"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

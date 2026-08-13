@@ -107,9 +107,9 @@
       case 'auth/wrong-password':
       case 'auth/invalid-credential':
       case 'auth/user-not-found':
-        return 'Incorrect email or password. Use the same login as The Horse Concierge app.';
+        return 'Incorrect email or password. Use the same email and password as The Horse Concierge app — do not create a new account.';
       case 'auth/email-already-in-use':
-        return 'That email already has an account — enter the correct password to register for the challenge.';
+        return 'That email already has a Horse Concierge account. Switch to Sign In and use your existing app password.';
       case 'auth/weak-password':
         return 'Password must be at least 6 characters.';
       case 'permission-denied':
@@ -388,6 +388,7 @@
   function openGuestTab(mode) {
     showError('');
     showSignInError('');
+    showSuccess('');
     setPanel(mode === 'register' ? 'register' : 'signin');
     if (mode === 'signin') {
       var email = val('challenge-email');
@@ -492,12 +493,14 @@
           console.error(err);
           setSignInBusy('');
           if (err && err.code === 'no-registration') {
-            showSignInError(
-              'No challenge registration found for this account. Create your registration below.'
-            );
             setPanel('register');
             var regEmail = document.getElementById('challenge-email');
+            var regPassword = document.getElementById('challenge-password');
             if (regEmail) regEmail.value = email;
+            if (regPassword) regPassword.value = password;
+            showSuccess(
+              'Your app login worked. Finish the Challenge questions below — keep using that same email and password.'
+            );
             return;
           }
           showSignInError(mapAuthError(err.code) || err.message || 'Sign in failed.');
