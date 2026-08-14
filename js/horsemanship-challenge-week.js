@@ -6,12 +6,22 @@
  *   data-week-number="1"           Display number for banners
  *   data-unlock-label="September 1, 2026"  Human date for lock screen / preview
  *
- * Partner preview: set FORCE_PAGE_ACCESS = true
- * Unlock all days once open: set FORCE_UNLOCK_ALL = true
+ * Partner / internal preview (does not open the page to the public):
+ *   Add ?preview=thc-hc-preview-2026 to the week URL.
+ *   Access is remembered in this browser tab/session via sessionStorage.
+ *   Example: horsemanship-challenge-week-01-nutrition.html?preview=thc-hc-preview-2026
+ *
+ * Dev overrides (avoid shipping true to production):
+ *   FORCE_PAGE_ACCESS = true  — always open page + all days
+ *   FORCE_UNLOCK_ALL = true   — unlock all days once page is open
  */
 (function () {
   var FORCE_PAGE_ACCESS = false;
   var FORCE_UNLOCK_ALL = false;
+
+  /** Share this privately with education partners — not a public “open sesame”. */
+  var PREVIEW_KEY = 'thc-hc-preview-2026';
+  var PREVIEW_STORAGE_KEY = 'thcChallengeWeekPreview';
 
   var DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   var MONTHS = [
@@ -44,6 +54,23 @@
     return MONTHS[date.getMonth()] + ' ' + date.getDate();
   }
 
+  function hasPreviewAccess() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var q = params.get('preview');
+      if (q && q === PREVIEW_KEY) {
+        sessionStorage.setItem(PREVIEW_STORAGE_KEY, PREVIEW_KEY);
+        return true;
+      }
+      return sessionStorage.getItem(PREVIEW_STORAGE_KEY) === PREVIEW_KEY;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  var previewAccess = hasPreviewAccess();
+  var forceOpen = FORCE_PAGE_ACCESS || previewAccess;
+
   var config = document.getElementById('challenge-week-config');
   var weekStartYmd = config && config.getAttribute('data-week-start');
   var weekNumber = (config && config.getAttribute('data-week-number')) || '';
@@ -60,7 +87,7 @@
   var lockedEl = document.getElementById('challenge-week-locked');
   var openEl = document.getElementById('challenge-week-open');
 
-  if (beforeWeek && !FORCE_PAGE_ACCESS) {
+  if (beforeWeek && !forceOpen) {
     if (lockedEl) lockedEl.hidden = false;
     if (openEl) openEl.hidden = true;
     return;
@@ -69,19 +96,23 @@
   if (lockedEl) lockedEl.hidden = true;
   if (openEl) openEl.hidden = false;
 
-  var unlockAll = FORCE_UNLOCK_ALL || afterWeek || FORCE_PAGE_ACCESS;
+  var unlockAll = FORCE_UNLOCK_ALL || afterWeek || forceOpen;
   var weekLabel = weekNumber ? 'Week ' + weekNumber : 'This week';
   var unlockDateLabel = unlockLabel || monthDayLabel(weekStart) + ', ' + weekStart.getFullYear();
 
   var banner = document.getElementById('challenge-unlock-banner');
   if (banner) {
-    if (FORCE_PAGE_ACCESS && beforeWeek) {
+    if (previewAccess && beforeWeek) {
+      banner.hidden = false;
+      banner.textContent =
+        'Private preview — for partner review only. Public access unlocks ' + unlockDateLabel + '.';
+    } else if (FORCE_PAGE_ACCESS && beforeWeek) {
       banner.hidden = false;
       banner.textContent =
         'Preview mode: page access is forced open for partner review. Public access unlocks ' +
         unlockDateLabel +
         '.';
-    } else if (FORCE_UNLOCK_ALL && !afterWeek) {
+    } else if (FORCE_UNLOCK_ALL && !afterWeek && !previewAccess) {
       banner.hidden = false;
       banner.textContent =
         'Preview mode: all days are unlocked for partner review. Daily drip activates when FORCE_UNLOCK_ALL is set to false.';

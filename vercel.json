@@ -6,6 +6,13 @@
   "rewrites": [
     { "source": "/providers/:slug", "destination": "/api/providers/:slug" }
   ],
+  "redirects": [
+    { "source": "/horsemanship-challenge-week-04", "destination": "/horsemanship-challenge-week-04-ride", "permanent": true },
+    { "source": "/horsemanship-challenge-week-07", "destination": "/horsemanship-challenge-week-07-ride", "permanent": true },
+    { "source": "/horsemanship-challenge-week-08-emergency", "destination": "/horsemanship-challenge-week-11-emergency", "permanent": true },
+    { "source": "/horsemanship-challenge-week-11", "destination": "/horsemanship-challenge-week-11-emergency", "permanent": true },
+    { "source": "/horsemanship-challenge-week-12-equine-behavior", "destination": "/horsemanship-challenge-week-08-equine-behavior", "permanent": true }
+  ],
   "functions": {
     "api/**/*.js": {
       "includeFiles": "lib/**"

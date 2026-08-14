@@ -1,5 +1,8 @@
 /**
  * Generate Horsemanship Challenge week wireframe pages (all except Week 10 trailer).
+ * Mirrors horsemanship-challenge-trailer-safety.html flow: lock gate → hero → about →
+ * points (TBD) → daily drip schedule → CTA.
+ *
  * Run: node scripts/generate-challenge-week-wireframes.js
  */
 const fs = require('fs');
@@ -43,9 +46,20 @@ function unlockLong(startYmd) {
   return MONTHS[start.getMonth()] + ' ' + start.getDate() + ', 2026';
 }
 
+function shortRange(startYmd) {
+  const start = parseYmd(startYmd);
+  const end = addDays(start, 6);
+  const startMonth = MONTHS[start.getMonth()].slice(0, 3);
+  const endMonth = MONTHS[end.getMonth()].slice(0, 3);
+  if (start.getMonth() === end.getMonth()) {
+    return startMonth + ' ' + start.getDate() + '–' + end.getDate();
+  }
+  return startMonth + ' ' + start.getDate() + '–' + endMonth + ' ' + end.getDate();
+}
+
 const LOGOS = {
   madBarn:
-    'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FMad%20Barn.webp?alt=media&token=e7de6e45-7492-4cd4-b129-6428d7b51076',
+    'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Logos%2FMBlogo.png?alt=media&token=5cf42881-655b-4a1a-98c3-a8ccc03ae120',
   eei:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2Fequine%20institute%20logo.webp?alt=media&token=cd9bd4e4-4846-434f-916f-3fb0e4d67269',
   crs:
@@ -63,20 +77,12 @@ const LOGOS = {
   thc: 'Images/ColorLogo.svg',
 };
 
-/** Weeks to generate (Week 10 trailer page already exists). */
+/**
+ * Schedule from Fall 2026 spreadsheet.
+ * Hand-built (not generated): Week 1 Mad Barn, Week 10 Double D trailer safety.
+ */
 const WEEKS = [
-  {
-    num: 1,
-    slug: 'week-01-nutrition',
-    start: '2026-09-01',
-    theme: 'Nutrition',
-    partner: 'Mad Barn',
-    partnerShort: 'Mad Barn',
-    logo: LOGOS.madBarn,
-    website: 'https://madbarn.com/',
-    about:
-      'Partner copy for Mad Barn will go here — nutrition education focus for Week 1 of the Horsemanship Challenge.',
-  },
+  // Week 1 Mad Barn — horsemanship-challenge-week-01-nutrition.html (hand-built)
   {
     num: 2,
     slug: 'week-02-anatomy',
@@ -93,42 +99,44 @@ const WEEKS = [
     num: 3,
     slug: 'week-03-hoof-care',
     start: '2026-09-14',
-    theme: 'Hoof Care',
+    theme: 'Hoof Care & Lameness',
     partner: 'CRS Horseshoes',
     partnerShort: 'CRS Horseshoes',
     logo: LOGOS.crs,
     website: 'https://www.crshorseshoes.com/',
     about:
-      'Partner copy for CRS Horseshoes will go here — hoof care and soundness focus for Week 3.',
+      'Partner copy for CRS Horseshoes will go here — hoof care and lameness focus for Week 3.',
   },
   {
     num: 4,
-    slug: 'week-04',
+    slug: 'week-04-ride',
     start: '2026-09-21',
-    theme: 'Theme TBD',
-    partner: null,
-    partnerShort: 'Partner TBD',
-    logo: null,
-    website: null,
-    about: 'Education partner and theme for Week 4 will be announced soon.',
+    theme: 'Ride Week',
+    host: true,
+    partner: 'The Horse Concierge',
+    partnerShort: 'The Horse Concierge',
+    logo: LOGOS.thc,
+    website: 'index.html',
+    about:
+      'Week 4 is hosted by The Horse Concierge — a Ride Week focused on app activities, practice, and participation. Daily activities and any guest content will be added here.',
   },
   {
     num: 5,
     slug: 'week-05-saddle-yef',
     start: '2026-09-28',
-    theme: 'Saddle & Tack',
+    theme: 'Saddle Fit',
     partner: 'Your Expert Fitter',
     partnerShort: 'Your Expert Fitter',
     logo: LOGOS.yef,
     website: 'https://www.yourexpertfitter.com/',
     about:
-      'Partner copy for Your Expert Fitter will go here — saddle fit and balance focus for Week 5.',
+      'Partner copy for Your Expert Fitter will go here — saddle fit focus for Week 5.',
   },
   {
     num: 6,
     slug: 'week-06-saddle-myler',
     start: '2026-10-05',
-    theme: 'Saddle & Tack',
+    theme: 'Bits & Communication',
     partner: 'Myler presented by Toklat',
     partnerShort: 'Toklat',
     logo: LOGOS.myler,
@@ -137,31 +145,32 @@ const WEEKS = [
     presentedBy: true,
     website: 'https://www.toklat.com/',
     about:
-      'Partner copy for Myler presented by Toklat will go here — saddle and tack focus for Week 6.',
+      'Partner copy for Myler presented by Toklat will go here — bits and communication focus for Week 6.',
   },
   {
     num: 7,
-    slug: 'week-07',
+    slug: 'week-07-ride',
     start: '2026-10-12',
-    theme: 'Theme TBD',
-    partner: null,
-    partnerShort: 'Partner TBD',
-    logo: null,
-    website: null,
+    theme: 'Ride Week',
+    host: true,
+    partner: 'The Horse Concierge',
+    partnerShort: 'The Horse Concierge',
+    logo: LOGOS.thc,
+    website: 'index.html',
     about:
-      'Education partner for Week 7 will be announced soon. (Mad Barn is Week 1 Nutrition only.)',
+      'Week 7 is hosted by The Horse Concierge — a Ride Week focused on app activities, practice, and participation. Daily activities and any guest content will be added here.',
   },
   {
     num: 8,
-    slug: 'week-08-emergency',
+    slug: 'week-08-equine-behavior',
     start: '2026-10-19',
-    theme: 'Emergency Preparedness',
-    partner: '4 Hooves Large Animal Services',
-    partnerShort: '4HLAS',
-    logo: LOGOS.fourH,
-    website: 'https://4hoovessmart.com/',
+    theme: 'Equine Behavior',
+    partner: 'University of Denver',
+    partnerShort: 'University of Denver',
+    logo: LOGOS.denver,
+    website: 'https://www.du.edu/',
     about:
-      'Partner copy for 4 Hooves Large Animal Services will go here — emergency preparedness focus for Week 8.',
+      'Partner copy for University of Denver will go here — equine behavior focus for Week 8.',
   },
   {
     num: 9,
@@ -177,38 +186,41 @@ const WEEKS = [
   },
   {
     num: 11,
-    slug: 'week-11',
+    slug: 'week-11-emergency',
     start: '2026-11-09',
-    theme: 'Theme TBD',
-    partner: null,
-    partnerShort: 'Partner TBD',
-    logo: null,
-    website: null,
-    about: 'Education partner and theme for Week 11 will be announced soon.',
+    theme: 'Emergency Preparedness',
+    partner: '4 Hooves Large Animal Services',
+    partnerShort: '4HLAS',
+    logo: LOGOS.fourH,
+    website: 'https://4hoovessmart.com/',
+    about:
+      'Partner copy for 4 Hooves Large Animal Services will go here — emergency preparedness focus for Week 11.',
   },
   {
     num: 12,
-    slug: 'week-12-equine-behavior',
+    slug: 'week-12-ride-catchup',
     start: '2026-11-16',
-    theme: 'Equine Behavior',
-    partner: 'University of Denver',
-    partnerShort: 'University of Denver',
-    logo: LOGOS.denver,
-    website: 'https://www.du.edu/',
-    about:
-      'Partner copy for University of Denver will go here — equine behavior focus for Week 12.',
-  },
-  {
-    num: 13,
-    slug: 'week-13-horse-history',
-    start: '2026-11-23',
-    theme: 'Generate a Horse’s History',
+    theme: 'Ride Week & Catch Up',
+    host: true,
     partner: 'The Horse Concierge',
     partnerShort: 'The Horse Concierge',
     logo: LOGOS.thc,
     website: 'index.html',
     about:
-      'Week 13 is led by The Horse Concierge — generate and share a horse’s history in the app. Full copy and daily content TBD.',
+      'Week 12 is hosted by The Horse Concierge — a Ride Week and catch-up window to finish activities, revisit earlier partner content, and stay on the board before the final week.',
+  },
+  {
+    num: 13,
+    slug: 'week-13-horse-history',
+    start: '2026-11-23',
+    theme: 'Horse History & Competition Wrap',
+    host: true,
+    partner: 'The Horse Concierge',
+    partnerShort: 'The Horse Concierge',
+    logo: LOGOS.thc,
+    website: 'index.html',
+    about:
+      'Week 13 is led by The Horse Concierge — generate a horse’s history in the app and wrap the competition. Daily content and wrap details TBD.',
   },
 ];
 
@@ -262,31 +274,53 @@ function partnerLinks(week) {
   }
   const external = /^https?:/i.test(week.website);
   const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : '';
+  const label = week.host ? 'The Horse Concierge' : 'Website';
   return `<div class="challenge-partner-links reveal reveal-delay-1">
-      <a href="${escapeHtml(week.website)}"${attrs}>Website</a>
+      <a href="${escapeHtml(week.website)}"${attrs}>${label}</a>
     </div>`;
 }
 
 function dayArticles(week) {
   const start = parseYmd(week.start);
+  const activityWeek = !!week.host;
   return DAY_NAMES.map((name, i) => {
     const d = addDays(start, i);
     const dateLabel = monthDay(d);
     const isSunday = i === 6;
-    const title = isSunday ? 'Recap &amp; Winner' : 'Day theme TBD';
-    const teaser = isSunday
-      ? 'Tally your points, catch up on any day you missed, and celebrate this week’s standout participants.'
-      : 'Daily lesson title, teaser, video, and resources will be added when partner content is ready.';
-    const body = isSunday
-      ? `<div class="challenge-day__resource">
+    let title;
+    let teaser;
+    let body;
+
+    if (isSunday) {
+      title = 'Recap &amp; Winner';
+      teaser =
+        'Tally your points, catch up on any day you missed, and celebrate this week’s standout participants.';
+      body = `<div class="challenge-day__resource">
             <h4 class="challenge-day__resource-title">Week ${week.num} recap</h4>
             <p class="body-text" style="font-size:0.9rem;">Review the points checklist above and finish any remaining actions in the app. After today, this full schedule stays open for arrears completion.</p>
           </div>
           <div class="challenge-day__placeholder">
             <p class="challenge-day__placeholder-label">Winner announcement</p>
             <p class="body-text" style="font-size:0.9rem; margin:0;">Weekly winner details will be posted here after scores are tallied.</p>
-          </div>`
-      : `<div class="challenge-day__placeholder">
+          </div>`;
+    } else if (activityWeek) {
+      title = 'Activity TBD';
+      teaser =
+        'Daily Ride Week activity, guest content (if any), and app actions will be added here.';
+      body = `<div class="challenge-day__placeholder">
+            <p class="challenge-day__placeholder-label">Activity placeholder</p>
+            <p class="body-text" style="font-size:0.9rem; margin:0;">Activity details, any guest lesson, and resources for ${name} will be added here.</p>
+          </div>
+          <div class="challenge-day__action">
+            <p class="challenge-day__action-label">Points TBD</p>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">App action for this day TBD.</p>
+            <button type="button" class="btn-ghost" data-thc-action="app">Open the App</button>
+          </div>`;
+    } else {
+      title = 'Day theme TBD';
+      teaser =
+        'Daily lesson title, teaser, video, and resources will be added when partner content is ready.';
+      body = `<div class="challenge-day__placeholder">
             <p class="challenge-day__placeholder-label">Content placeholder</p>
             <p class="body-text" style="font-size:0.9rem; margin:0;">Video, links, and app actions for ${name} will be added here.</p>
           </div>
@@ -295,6 +329,7 @@ function dayArticles(week) {
             <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">App action for this day TBD.</p>
             <button type="button" class="btn-ghost" data-thc-action="app">Open the App</button>
           </div>`;
+    }
 
     return `      <article class="challenge-day" data-day="${i}">
         <header class="challenge-day__header">
@@ -320,19 +355,33 @@ function renderWeek(week) {
   const unlock = unlockLong(week.start);
   const presented = week.presentedBy
     ? `<em>Myler</em> presented by <em>Toklat</em> — content wireframe ready for partner materials.`
+    : week.host
+      ? `Hosted by <em>${escapeHtml(week.partner)}</em> — activities and daily drip ready for content.`
+      : week.partner
+        ? `Presented by <em>${escapeHtml(week.partner)}</em> — content wireframe ready for partner materials.`
+        : `Partner and theme to be announced — wireframe ready for content.`;
+  const aboutLabel = week.host ? 'Hosted by' : 'Education partner';
+  const aboutH2 = week.host
+    ? `Hosted by<br><em>${escapeHtml(week.partner)}</em>`
     : week.partner
-      ? `Presented by <em>${escapeHtml(week.partner)}</em> — content wireframe ready for partner materials.`
-      : `Partner and theme to be announced — wireframe ready for content.`;
-  const aboutH2 = week.partner
-    ? `About<br><em>${escapeHtml(week.partner)}</em>`
-    : `Education partner<br><em>coming soon.</em>`;
+      ? `About<br><em>${escapeHtml(week.partner)}</em>`
+      : `Education partner<br><em>coming soon.</em>`;
   const heroPartner = week.partner || 'Partner TBD';
-  const ctaLine = week.partner
-    ? `Explore ${escapeHtml(week.partnerShort)} and download the app when Week ${week.num} actions go live.`
-    : `Download the app and check back when Week ${week.num} partner content is published.`;
-  const ctaBtn = week.website && /^https?:/i.test(week.website)
-    ? `<a class="btn-primary" href="${escapeHtml(week.website)}" target="_blank" rel="noopener noreferrer">Visit ${escapeHtml(week.partnerShort)}</a>`
-    : `<a class="btn-primary" href="horsemanship-challenge-hub.html">Back to Challenge Hub</a>`;
+  const ctaLine = week.host
+    ? `Complete Week ${week.num} activities in the app, and check back as daily content goes live.`
+    : week.partner
+      ? `Explore ${escapeHtml(week.partnerShort)} and download the app when Week ${week.num} actions go live.`
+      : `Download the app and check back when Week ${week.num} partner content is published.`;
+  const ctaBtn =
+    week.website && /^https?:/i.test(week.website)
+      ? `<a class="btn-primary" href="${escapeHtml(week.website)}" target="_blank" rel="noopener noreferrer">Visit ${escapeHtml(week.partnerShort)}</a>`
+      : `<a class="btn-primary" href="horsemanship-challenge-hub.html">Back to Challenge Hub</a>`;
+  const pointsNote = week.host
+    ? `Scoring details will be filled in when Week ${week.num} activities are confirmed.`
+    : `Scoring details will be filled in when ${escapeHtml(heroPartner)} confirms Week ${week.num} activities. Prize details can be added to this page when identified.`;
+  const scheduleIntro = week.host
+    ? `Titles stay visible all week. Locked days show a teaser until that morning — then activities open. After Sunday, the full week remains available. Replace each day’s placeholders as activities are confirmed.`
+    : `Titles stay visible all week. Locked days show a teaser until that morning — then content opens. After Sunday, the full week remains available. Replace each day’s placeholders as partner materials arrive.`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -346,7 +395,7 @@ function renderWeek(week) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260728b">
+<link rel="stylesheet" href="css/styles.css?v=20260813b">
 <meta property="og:title" content="Week ${week.num} · ${escapeHtml(week.theme)}">
 <meta property="og:description" content="${range} — ${escapeHtml(week.theme)}${week.partner ? ' with ' + escapeHtml(week.partner) : ''}. Wireframe for challenge content.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/${pathSlug}">
@@ -384,7 +433,7 @@ function renderWeek(week) {
       <div class="challenge-gate-locked__inner">
         <p class="section-label" style="justify-content:center;">Week ${week.num}</p>
         <h1 class="heading-lg" style="text-align:center;">${escapeHtml(week.theme)}<br>opens <em>${escapeHtml(unlock.replace(', 2026', ''))}.</em></h1>
-        <p class="body-text" style="margin:16px auto 0; text-align:center;">This week${week.partner ? ' with ' + escapeHtml(week.partner) : ''} unlocks Monday, ${escapeHtml(unlock)}. Until then, the full schedule stays closed.</p>
+        <p class="body-text" style="margin:16px auto 0; text-align:center;">This week${week.partner ? (week.host ? ' hosted by ' : ' with ') + escapeHtml(week.partner) : ''} unlocks Monday, ${escapeHtml(unlock)}. Until then, the full schedule stays closed.</p>
         <div class="hero-actions" style="justify-content:center; margin-top:28px;">
           <a class="btn-primary" href="horsemanship-challenge-hub.html">Back to Challenge Hub</a>
         </div>
@@ -408,7 +457,7 @@ function renderWeek(week) {
   </div>
 
   <section class="section section-sm" id="about-partner">
-    <div class="section-label reveal">Education partner</div>
+    <div class="section-label reveal">${aboutLabel}</div>
     <h2 class="heading-xl reveal">${aboutH2}</h2>
     <div class="gold-divider reveal"></div>
     <p class="body-text reveal" style="max-width:720px; margin-top:20px;">${escapeHtml(week.about)}</p>
@@ -419,17 +468,17 @@ function renderWeek(week) {
     <div class="section-label reveal">Week ${week.num} scoring</div>
     <h2 class="heading-xl reveal">Points<br><em>TBD.</em></h2>
     <ul class="challenge-points-list reveal reveal-delay-1">
-      <li><span class="challenge-points-list__pts">—</span> Partner / app actions for this week TBD</li>
+      <li><span class="challenge-points-list__pts">—</span> ${week.host ? 'App / Ride Week activities TBD' : 'Partner / app actions for this week TBD'}</li>
       <li><span class="challenge-points-list__pts">—</span> Live or webinar points TBD (if any)</li>
       <li><span class="challenge-points-list__pts">—</span> Ride / care tracking TBD</li>
     </ul>
-    <p class="funnel-panel-note reveal" style="margin-top:20px; max-width:560px;">Scoring details will be filled in when ${escapeHtml(heroPartner)} confirms Week ${week.num} activities.</p>
+    <p class="funnel-panel-note reveal" style="margin-top:20px; max-width:560px;">${pointsNote}</p>
   </section>
 
   <section class="section" style="padding-top:0;" id="schedule">
     <div class="section-label reveal">Daily schedule</div>
     <h2 class="heading-xl reveal">${escapeHtml(range.split(',')[0])}<br><em>2026</em></h2>
-    <p class="body-text reveal" style="max-width:640px; margin-top:16px;">Titles stay visible all week. Locked days show a teaser until that morning — then content opens. After Sunday, the full week remains available. Replace each day’s placeholders as partner materials arrive.</p>
+    <p class="body-text reveal" style="max-width:640px; margin-top:16px;">${scheduleIntro}</p>
     <p id="challenge-unlock-banner" class="challenge-unlock-banner" hidden></p>
 
     <div class="challenge-day-list">
@@ -483,8 +532,8 @@ ${dayArticles(week)}
 </dialog>
 
 <script src="js/main.js?v=20260728a"></script>
-<script src="js/thc-gating.js?v=20260715"></script>
-<script src="js/horsemanship-challenge-week.js?v=20260728b"></script>
+<script src="js/thc-gating.js?v=20260717d"></script>
+<script src="js/horsemanship-challenge-week.js?v=20260814b"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
@@ -493,6 +542,14 @@ ${dayArticles(week)}
 </html>
 `;
 }
+
+const obsolete = [
+  'horsemanship-challenge-week-04.html',
+  'horsemanship-challenge-week-07.html',
+  'horsemanship-challenge-week-08-emergency.html',
+  'horsemanship-challenge-week-11.html',
+  'horsemanship-challenge-week-12-equine-behavior.html',
+];
 
 let written = 0;
 for (const week of WEEKS) {
@@ -503,4 +560,26 @@ for (const week of WEEKS) {
   written += 1;
 }
 
+for (const file of obsolete) {
+  const outPath = path.join(ROOT, file);
+  if (fs.existsSync(outPath)) {
+    fs.unlinkSync(outPath);
+    console.log('Removed obsolete', file);
+  }
+}
+
 console.log('Done —', written, 'wireframe pages.');
+console.log('Hub card helper:');
+for (const week of WEEKS) {
+  const end = addDays(parseYmd(week.start), 6);
+  const endYmd =
+    end.getFullYear() +
+    '-' +
+    String(end.getMonth() + 1).padStart(2, '0') +
+    '-' +
+    String(end.getDate()).padStart(2, '0');
+  const label = shortRange(week.start) + (week.partnerShort ? ' · ' + week.partnerShort : '');
+  console.log(
+    `  W${week.num}: ${week.start}→${endYmd} | ${week.theme} | horsemanship-challenge-${week.slug}.html | ${label}`
+  );
+}
