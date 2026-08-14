@@ -4138,8 +4138,13 @@
   }
 
   /* ===== Trailer Safety week (Double D) ===== */
+  .page-hero--trailer-week {
+    align-items: center;
+    padding-top: 168px;
+    min-height: 640px;
+  }
   .page-hero--trailer-week .challenge-partner-logo-well {
-    margin: 0 auto 24px;
+    margin: 28px auto 28px;
   }
   .challenge-partner-logo-well {
     display: flex;
