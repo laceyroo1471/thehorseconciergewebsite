@@ -4518,6 +4518,16 @@
     text-align: center;
     word-break: break-word;
   }
+  .challenge-week-prize-visual {
+    margin: 0;
+  }
+  .challenge-week-prize-visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(var(--gold-rgb), 0.22);
+  }
   .challenge-unlock-banner {
     margin: 28px 0 0;
     padding: 14px 18px;
