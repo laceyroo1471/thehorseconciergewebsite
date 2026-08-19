@@ -62,6 +62,16 @@
         sessionStorage.setItem(PREVIEW_STORAGE_KEY, PREVIEW_KEY);
         return true;
       }
+      // Hash survives static-server redirects that strip ?query (e.g. serve .html → clean URL)
+      var hash = String(window.location.hash || '').replace(/^#/, '');
+      if (
+        hash === PREVIEW_KEY ||
+        hash === 'preview=' + PREVIEW_KEY ||
+        hash.indexOf('preview=' + PREVIEW_KEY) === 0
+      ) {
+        sessionStorage.setItem(PREVIEW_STORAGE_KEY, PREVIEW_KEY);
+        return true;
+      }
       return sessionStorage.getItem(PREVIEW_STORAGE_KEY) === PREVIEW_KEY;
     } catch (e) {
       return false;

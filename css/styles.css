@@ -4368,6 +4368,45 @@
     height: auto;
     max-height: 64px;
   }
+  /* YEF logo already includes gray field — skip white well */
+  .challenge-partner-logo-well--yef {
+    background: transparent;
+    border-color: rgba(var(--gold-rgb), 0.2);
+    padding: 0;
+  }
+  .challenge-partner-logo-well--yef .challenge-partner-logo-well__img {
+    max-height: 96px;
+  }
+  .challenge-partner-bio {
+    display: grid;
+    grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
+    gap: 32px 40px;
+    align-items: start;
+    max-width: 920px;
+    margin-top: 28px;
+  }
+  .challenge-partner-bio__photo {
+    margin: 0;
+  }
+  .challenge-partner-bio__photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(var(--gold-rgb), 0.25);
+  }
+  .challenge-partner-bio__copy .body-text + .body-text {
+    margin-top: 14px;
+  }
+  @media (max-width: 720px) {
+    .challenge-partner-bio {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .challenge-partner-bio__photo {
+      max-width: 280px;
+    }
+  }
   .challenge-partner-logo-well--dual {
     width: auto;
     max-width: min(320px, 92vw);
