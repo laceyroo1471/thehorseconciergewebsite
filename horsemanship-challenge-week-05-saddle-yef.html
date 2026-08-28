@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260819a">
+<link rel="stylesheet" href="css/styles.css?v=20260828j">
 <meta property="og:title" content="Week 5 · Saddle Fit with Your Expert Fitter">
 <meta property="og:description" content="September 28–October 4, 2026 — Learn saddle fit with Your Expert Fitter. Daily videos, Famous Saddles, app actions, and up to 50 points.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horsemanship-challenge-week-05-saddle-yef">
@@ -60,6 +60,9 @@
   <div class="page-hero page-hero--challenge">
     <div class="page-hero-bg"></div>
     <div class="page-hero-content">
+      
+      <div class="section-label">Week 5 · September 28–October 4, 2026</div>
+      <h1 class="heading-xl">Saddle Fit</h1>
       <div class="challenge-partner-logo-well challenge-partner-logo-well--wide challenge-partner-logo-well--yef reveal">
         <img
           src="Images/challenge-partners/yef/yef-logo.png"
@@ -69,8 +72,6 @@
           class="challenge-partner-logo-well__img"
         >
       </div>
-      <div class="section-label">Week 5 · September 28–October 4, 2026</div>
-      <h1 class="heading-xl">Saddle Fit</h1>
       <p class="funnel-tagline challenge-hero-tagline">Presented by <em>Your Expert Fitter</em> — fit that serves horse and rider.</p>
       <div class="hero-actions challenge-hero-actions">
         <a class="btn-primary" href="#schedule">View This Week’s Schedule</a>
@@ -136,7 +137,16 @@
         >Watch Opportunities · 5 pts</a>
       </div>
       <p class="funnel-panel-note" style="margin-bottom:16px;">Submit interest · <strong style="color:var(--cream);">5 pts</strong> — goes to The Horse Concierge and Your Expert Fitter.</p>
-      <form class="challenge-question-form" action="https://formsubmit.co/info@thehorseconcierge.com" method="POST">
+      <form
+        class="challenge-question-form"
+        action="https://formsubmit.co/info@thehorseconcierge.com"
+        method="POST"
+        data-challenge-point-action="week5-career-interest"
+        data-challenge-point-points="5"
+        data-challenge-point-week="5"
+        data-challenge-point-label="Saddle-fitting career interest"
+        data-challenge-point-partner="Your Expert Fitter"
+      >
         <input type="hidden" name="_subject" value="Horsemanship Challenge Week 5 — YEF Career Interest (5 pts)">
         <input type="hidden" name="_next" value="https://www.thehorseconcierge.com/horsemanship-challenge-week-05-saddle-yef#career-interest">
         <input type="hidden" name="_cc" value="yourexpertfitter@gmail.com">
@@ -162,6 +172,7 @@
         </div>
         <button type="submit" class="btn-primary">Submit Interest · 5 pts</button>
       </form>
+      <p class="challenge-point-track-status" role="status" hidden></p>
     </div>
   </section>
 
@@ -201,10 +212,29 @@
       <li><span class="challenge-points-list__pts">5 pts</span> Attend Saturday’s live Zoom saddle fitting</li>
     </ul>
 
+    <div class="challenge-board reveal" data-challenge-board="week" data-week="5" id="week-standings">
+      <p class="section-label">This week’s standings</p>
+      <h3 class="heading-lg">Top 5<br><em>this week.</em></h3>
+      <p class="challenge-board__note" data-board-note>Top 5 for this week’s prize. Winner announced next Wednesday.</p>
+      <ol class="challenge-board__list" data-board-list></ol>
+      <p class="challenge-board__you" data-board-you hidden></p>
+      <p class="challenge-board__empty" data-board-empty>Standings appear as soon as points are scored.</p>
+    </div>
+
+
     <div class="funnel-panel reveal reveal-delay-1 challenge-question-panel" id="case-study-submit" style="margin-top:40px; max-width:560px;">
       <div class="funnel-panel-title">Submit a horse for the case study · 5 pts</div>
       <p class="funnel-panel-note">Open all week. Use the same email as your challenge registration. One horse will be featured in Saturday’s live fitting.</p>
-      <form class="challenge-question-form" action="https://formsubmit.co/info@thehorseconcierge.com" method="POST">
+      <form
+        class="challenge-question-form"
+        action="https://formsubmit.co/info@thehorseconcierge.com"
+        method="POST"
+        data-challenge-point-action="week5-case-study"
+        data-challenge-point-points="5"
+        data-challenge-point-week="5"
+        data-challenge-point-label="Case study horse submit"
+        data-challenge-point-partner="Your Expert Fitter"
+      >
         <input type="hidden" name="_subject" value="Horsemanship Challenge Week 5 — Case Study Horse (5 pts)">
         <input type="hidden" name="_next" value="https://www.thehorseconcierge.com/horsemanship-challenge-week-05-saddle-yef#case-study-submit">
         <input type="hidden" name="_captcha" value="false">
@@ -229,6 +259,7 @@
         </div>
         <button type="submit" class="btn-primary">Submit Horse · 5 pts</button>
       </form>
+      <p class="challenge-point-track-status" role="status" hidden></p>
     </div>
   </section>
 
@@ -477,6 +508,10 @@
 
   <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
+    <a class="challenge-presenting challenge-presenting--footer" href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">
+      <span class="challenge-presenting__label">Presented in Partnership with</span>
+      <img class="challenge-presenting__logo" src="Images/challenge-partners/draw-it-out.png?v=20260828e" alt="Draw It Out" width="160" height="40">
+    </a>
     <div style="display:flex; gap:20px; flex-wrap:wrap;">
       <a href="https://www.yourexpertfitter.com/" target="_blank" rel="noopener noreferrer" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">Your Expert Fitter ↗</a>
       <a href="https://www.famous-saddles.com/" target="_blank" rel="noopener noreferrer" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">Famous Saddles ↗</a>
@@ -516,7 +551,8 @@
 <script src="js/main.js?v=20260728a"></script>
 <script src="js/thc-gating.js?v=20260717d"></script>
 <script src="js/horsemanship-challenge-week.js?v=20260819a"></script>
-<script src="js/horsemanship-challenge-points.js?v=20260814a"></script>
+<script src="js/horsemanship-challenge-points.js?v=20260827b"></script>
+<script src="js/horsemanship-challenge-leaderboard.js?v=20260828d"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

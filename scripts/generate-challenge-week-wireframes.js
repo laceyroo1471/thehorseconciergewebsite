@@ -61,7 +61,7 @@ const LOGOS = {
   madBarn:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Logos%2FMBlogo.png?alt=media&token=5cf42881-655b-4a1a-98c3-a8ccc03ae120',
   eei:
-    'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2Fequine%20institute%20logo.webp?alt=media&token=cd9bd4e4-4846-434f-916f-3fb0e4d67269',
+    'Images/challenge-partners/equine-education-institute.svg',
   crs:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2Fcrs.jpg?alt=media&token=bb9ad3a1-573f-4d28-8271-4edaed8beeb9',
   yef:
@@ -75,7 +75,13 @@ const LOGOS = {
   denver:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2Fdenver%20uni.svg?alt=media&token=a5e0bbb8-7bae-47a6-b2d8-ab9f001dabc9',
   thc: 'Images/ColorLogo.svg',
+  dio: 'Images/challenge-partners/draw-it-out.png?v=20260828e',
 };
+
+const PRESENTING_FOOTER = `    <a class="challenge-presenting challenge-presenting--footer" href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">
+      <span class="challenge-presenting__label">Presented in Partnership with</span>
+      <img class="challenge-presenting__logo" src="Images/challenge-partners/draw-it-out.png?v=20260828e" alt="Draw It Out" width="160" height="40">
+    </a>`;
 
 /**
  * Schedule from Fall 2026 spreadsheet.
@@ -111,14 +117,14 @@ const WEEKS = [
     num: 4,
     slug: 'week-04-ride',
     start: '2026-09-21',
-    theme: 'Ride Week',
+    theme: 'Riding & Saving',
     host: true,
     partner: 'The Horse Concierge',
     partnerShort: 'The Horse Concierge',
     logo: LOGOS.thc,
     website: 'index.html',
     about:
-      'Week 4 is hosted by The Horse Concierge — a Ride Week focused on app activities, practice, and participation. Daily activities and any guest content will be added here.',
+      'Week 4 is hosted by The Horse Concierge — riding plus practical ways to save money on horse ownership. Daily lessons and app activities will be added here.',
   },
   {
     num: 5,
@@ -151,14 +157,13 @@ const WEEKS = [
     num: 7,
     slug: 'week-07-ride',
     start: '2026-10-12',
-    theme: 'Ride Week',
-    host: true,
-    partner: 'The Horse Concierge',
-    partnerShort: 'The Horse Concierge',
-    logo: LOGOS.thc,
-    website: 'index.html',
+    theme: 'Recovery',
+    partner: 'Draw It Out',
+    partnerShort: 'Draw It Out',
+    logo: LOGOS.dio,
+    website: 'https://drawliniment.com/',
     about:
-      'Week 7 is hosted by The Horse Concierge — a Ride Week focused on app activities, practice, and participation. Daily activities and any guest content will be added here.',
+      'Week 7 is hosted by Draw It Out — a recovery week focused on helping horses bounce back after work. Daily lessons and activities will be added here.',
   },
   {
     num: 8,
@@ -238,6 +243,27 @@ function logoWell(week) {
         <span class="challenge-week-card__logo--empty" style="border:none;height:auto;"><span>Partner TBD</span></span>
       </div>`;
   }
+  if (week.host) {
+    return `<div class="challenge-partner-logo-well challenge-partner-logo-well--dual challenge-partner-logo-well--presenting reveal">
+        <img
+          src="${escapeHtml(week.logo)}"
+          alt="${escapeHtml(week.partnerShort)}"
+          width="200"
+          height="200"
+          class="challenge-partner-logo-well__img"
+        >
+        <span class="challenge-partner-logo-well__divider">in partnership with</span>
+        <a href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">
+          <img
+            src="${LOGOS.dio}"
+            alt="Draw It Out"
+            width="140"
+            height="160"
+            class="challenge-partner-logo-well__img"
+          >
+        </a>
+      </div>`;
+  }
   if (week.logoSecondary) {
     return `<div class="challenge-partner-logo-well challenge-partner-logo-well--dual reveal">
         <img
@@ -257,12 +283,17 @@ function logoWell(week) {
         >
       </div>`;
   }
-  return `<div class="challenge-partner-logo-well reveal">
+  const wellClass = week.logo.includes('equine-education-institute')
+    ? ' challenge-partner-logo-well--eei'
+    : week.logo.includes('draw-it-out')
+      ? ' challenge-partner-logo-well--presenting'
+      : '';
+  return `<div class="challenge-partner-logo-well${wellClass} reveal">
         <img
           src="${escapeHtml(week.logo)}"
           alt="${escapeHtml(week.partnerShort)}"
-          width="200"
-          height="200"
+          width="${week.logo.includes('equine-education-institute') ? '420' : '200'}"
+          height="${week.logo.includes('equine-education-institute') ? '100' : '200'}"
           class="challenge-partner-logo-well__img"
         >
       </div>`;
@@ -275,8 +306,11 @@ function partnerLinks(week) {
   const external = /^https?:/i.test(week.website);
   const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : '';
   const label = week.host ? 'The Horse Concierge' : 'Website';
+  const dioLink = week.host
+    ? `\n      <a href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">Draw It Out ↗</a>`
+    : '';
   return `<div class="challenge-partner-links reveal reveal-delay-1">
-      <a href="${escapeHtml(week.website)}"${attrs}>${label}</a>
+      <a href="${escapeHtml(week.website)}"${attrs}>${label}</a>${dioLink}
     </div>`;
 }
 
@@ -395,7 +429,7 @@ function renderWeek(week) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260813b">
+<link rel="stylesheet" href="css/styles.css?v=20260828j">
 <meta property="og:title" content="Week ${week.num} · ${escapeHtml(week.theme)}">
 <meta property="og:description" content="${range} — ${escapeHtml(week.theme)}${week.partner ? ' with ' + escapeHtml(week.partner) : ''}. Wireframe for challenge content.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/${pathSlug}">
@@ -445,9 +479,9 @@ function renderWeek(week) {
   <div class="page-hero page-hero--challenge">
     <div class="page-hero-bg"></div>
     <div class="page-hero-content">
-      ${logoWell(week)}
       <div class="section-label">Week ${week.num} · ${escapeHtml(range)}</div>
       <h1 class="heading-xl">${escapeHtml(week.theme)}</h1>
+      ${logoWell(week)}
       <p class="funnel-tagline challenge-hero-tagline">${presented}</p>
       <div class="hero-actions challenge-hero-actions">
         <a class="btn-primary" href="#schedule">View This Week’s Schedule</a>
@@ -472,6 +506,14 @@ function renderWeek(week) {
       <li><span class="challenge-points-list__pts">—</span> Live or webinar points TBD (if any)</li>
       <li><span class="challenge-points-list__pts">—</span> Ride / care tracking TBD</li>
     </ul>
+    <div class="challenge-board reveal" data-challenge-board="week" data-week="${week.num}" id="week-standings">
+      <p class="section-label">This week’s standings</p>
+      <h3 class="heading-lg">Top 5<br><em>this week.</em></h3>
+      <p class="challenge-board__note" data-board-note>Top 5 for this week’s prize. Winner announced next Wednesday.</p>
+      <ol class="challenge-board__list" data-board-list></ol>
+      <p class="challenge-board__you" data-board-you hidden></p>
+      <p class="challenge-board__empty" data-board-empty>Standings appear as soon as points are scored.</p>
+    </div>
     <p class="funnel-panel-note reveal" style="margin-top:20px; max-width:560px;">${pointsNote}</p>
   </section>
 
@@ -500,6 +542,7 @@ ${dayArticles(week)}
 
   <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
+${PRESENTING_FOOTER}
     <div style="display:flex; gap:20px; flex-wrap:wrap;">
       <a href="horsemanship-challenge-hub.html" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Challenge Hub</a>
     </div>
@@ -533,7 +576,11 @@ ${dayArticles(week)}
 
 <script src="js/main.js?v=20260728a"></script>
 <script src="js/thc-gating.js?v=20260717d"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="js/horsemanship-challenge-week.js?v=20260814b"></script>
+<script src="js/horsemanship-challenge-leaderboard.js?v=20260828d"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

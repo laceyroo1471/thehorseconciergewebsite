@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260813b">
+<link rel="stylesheet" href="css/styles.css?v=20260828j">
 <meta property="og:title" content="Week 11 · Emergency Preparedness">
 <meta property="og:description" content="November 9–15, 2026 — Emergency Preparedness with 4 Hooves Large Animal Services. Wireframe for challenge content.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horsemanship-challenge-week-11-emergency">
@@ -60,6 +60,9 @@
   <div class="page-hero page-hero--challenge">
     <div class="page-hero-bg"></div>
     <div class="page-hero-content">
+      
+      <div class="section-label">Week 11 · November 9–15, 2026</div>
+      <h1 class="heading-xl">Emergency Preparedness</h1>
       <div class="challenge-partner-logo-well reveal">
         <img
           src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2F4Hooves.webp?alt=media&amp;token=26f97c59-1887-4b68-b7f7-3562b304a679"
@@ -69,8 +72,6 @@
           class="challenge-partner-logo-well__img"
         >
       </div>
-      <div class="section-label">Week 11 · November 9–15, 2026</div>
-      <h1 class="heading-xl">Emergency Preparedness</h1>
       <p class="funnel-tagline challenge-hero-tagline">Presented by <em>4 Hooves Large Animal Services</em> — content wireframe ready for partner materials.</p>
       <div class="hero-actions challenge-hero-actions">
         <a class="btn-primary" href="#schedule">View This Week’s Schedule</a>
@@ -97,6 +98,16 @@
       <li><span class="challenge-points-list__pts">—</span> Live or webinar points TBD (if any)</li>
       <li><span class="challenge-points-list__pts">—</span> Ride / care tracking TBD</li>
     </ul>
+
+    <div class="challenge-board reveal" data-challenge-board="week" data-week="11" id="week-standings">
+      <p class="section-label">This week’s standings</p>
+      <h3 class="heading-lg">Top 5<br><em>this week.</em></h3>
+      <p class="challenge-board__note" data-board-note>Top 5 for this week’s prize. Winner announced next Wednesday.</p>
+      <ol class="challenge-board__list" data-board-list></ol>
+      <p class="challenge-board__you" data-board-you hidden></p>
+      <p class="challenge-board__empty" data-board-empty>Standings appear as soon as points are scored.</p>
+    </div>
+
     <p class="funnel-panel-note reveal" style="margin-top:20px; max-width:560px;">Scoring details will be filled in when 4 Hooves Large Animal Services confirms Week 11 activities. Prize details can be added to this page when identified.</p>
   </section>
 
@@ -283,6 +294,10 @@
 
   <footer style="border-top: 1px solid rgba(var(--gold-rgb),0.12); padding: 40px 60px; max-width:1400px; margin: 0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
     <div style="font-family: var(--font-display); font-size: 1rem; color: var(--cream);">The Horse Concierge™</div>
+    <a class="challenge-presenting challenge-presenting--footer" href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">
+      <span class="challenge-presenting__label">Presented in Partnership with</span>
+      <img class="challenge-presenting__logo" src="Images/challenge-partners/draw-it-out.png?v=20260828e" alt="Draw It Out" width="160" height="40">
+    </a>
     <div style="display:flex; gap:20px; flex-wrap:wrap;">
       <a href="horsemanship-challenge-hub.html" style="font-size:0.72rem; color:var(--text-dim); letter-spacing:0.1em;">← Challenge Hub</a>
     </div>
@@ -316,7 +331,11 @@
 
 <script src="js/main.js?v=20260728a"></script>
 <script src="js/thc-gating.js?v=20260717d"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="js/horsemanship-challenge-week.js?v=20260814b"></script>
+<script src="js/horsemanship-challenge-leaderboard.js?v=20260828d"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

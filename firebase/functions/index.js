@@ -3,22 +3,27 @@
 /**
  * Deploy to the thc-native Firebase project (same project as provider listings).
  *
- * Setup:
+ * Provider directory:
  * 1. Vercel → Project Settings → Git → Deploy Hooks → create hook for main branch.
  * 2. firebase functions:secrets:set VERCEL_DEPLOY_HOOK_URL
  * 3. cd firebase && firebase deploy --only functions:onProviderListingApproved
+ *
+ * Challenge scoring (auto-awards Hub + app actions):
+ *   cd firebase && firebase deploy --only functions
  *
  * Fires when a provider becomes visible in the directory (approved listing with slug).
  * Each approval triggers one Vercel redeploy so directory pages and sitemap stay current.
  */
 
 const { onDocumentWritten } = require('firebase-functions/v2/firestore');
-const { defineSecret } = require('firebase-functions/params');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { initializeApp } = require('firebase-admin/app');
 
 initializeApp();
 
-const vercelDeployHookUrl = defineSecret('VERCEL_DEPLOY_HOOK_URL');
+const config = require('./challenge-scoring-config');
+const scoring = require('./challenge-scoring');
+const leaderboard = require('./challenge-leaderboard');
 
 function becameVisibleInDirectory(before, after) {
   if (!after) return false;
@@ -45,7 +50,6 @@ async function requestRedeploy(hookUrl) {
 exports.onProviderListingApproved = onDocumentWritten(
   {
     document: 'providers/{providerId}',
-    secrets: [vercelDeployHookUrl],
   },
   async function (event) {
     const before = event.data.before;
@@ -55,7 +59,7 @@ exports.onProviderListingApproved = onDocumentWritten(
       return;
     }
 
-    const hookUrl = vercelDeployHookUrl.value();
+    const hookUrl = process.env.VERCEL_DEPLOY_HOOK_URL;
     if (!hookUrl) {
       console.error('VERCEL_DEPLOY_HOOK_URL secret is not set');
       return;
@@ -63,5 +67,64 @@ exports.onProviderListingApproved = onDocumentWritten(
 
     await requestRedeploy(hookUrl);
     console.log('Vercel redeploy triggered for provider', event.params.providerId);
+  }
+);
+
+function exportNameForCollection(collectionName) {
+  return 'onChallengeScore_' + collectionName;
+}
+
+config.watchedCollections().forEach(function (collectionName) {
+  exports[exportNameForCollection(collectionName)] = onDocumentWritten(
+    {
+      document: collectionName + '/{docId}',
+      memory: '256MiB',
+    },
+    async function (event) {
+      const after = event.data && event.data.after;
+      if (!after || !after.exists) return;
+      await scoring.scoreAppDocument(collectionName, event.params.docId, after.data() || {});
+    }
+  );
+});
+
+exports.onChallengeRegistrationWrite = onDocumentWritten(
+  {
+    document: 'challengeRegistrations/{uid}',
+    memory: '512MiB',
+    timeoutSeconds: 120,
+  },
+  async function (event) {
+    const after = event.data && event.data.after;
+    if (!after || !after.exists) return;
+    const before = event.data.before;
+    const beforeData = before && before.exists ? before.data() || {} : null;
+    await scoring.handleRegistrationWrite(event.params.uid, beforeData, after.data() || {});
+  }
+);
+
+exports.challengeScoringSweep = onSchedule(
+  {
+    schedule: 'every 12 hours',
+    memory: '512MiB',
+    timeoutSeconds: 540,
+  },
+  async function () {
+    const result = await scoring.sweepUnscoredRegistrations();
+    console.log('challenge scoring sweep', result);
+    const board = await leaderboard.rebuildLeaderboard();
+    console.log('challenge leaderboard sweep', board);
+  }
+);
+
+exports.challengeLeaderboardRefresh = onSchedule(
+  {
+    schedule: 'every 15 minutes',
+    memory: '512MiB',
+    timeoutSeconds: 120,
+  },
+  async function () {
+    const board = await leaderboard.rebuildLeaderboard();
+    console.log('challenge leaderboard refresh', board);
   }
 );

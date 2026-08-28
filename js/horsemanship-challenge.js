@@ -30,7 +30,10 @@
   var submitBtn = document.getElementById('challenge-register-submit');
   var signInBusyEl = document.getElementById('challenge-signin-busy');
   var signInErrEl = document.getElementById('challenge-signin-error');
+  var signInSuccessEl = document.getElementById('challenge-signin-success');
   var signInSubmitBtn = document.getElementById('challenge-signin-submit');
+  var forgotPasswordBtn = document.getElementById('challenge-forgot-password');
+  var forgotPasswordRegisterBtn = document.getElementById('challenge-forgot-password-register');
   var authTabs = document.getElementById('challenge-auth-tabs');
   var tabSignIn = document.getElementById('challenge-tab-signin');
   var tabRegister = document.getElementById('challenge-tab-register');
@@ -90,6 +93,15 @@
       signInErrEl.textContent = msg || '';
       signInErrEl.hidden = !msg;
     }
+    if (msg && signInSuccessEl) signInSuccessEl.hidden = true;
+  }
+
+  function showSignInSuccess(msg) {
+    if (signInSuccessEl) {
+      signInSuccessEl.textContent = msg || '';
+      signInSuccessEl.hidden = !msg;
+    }
+    if (msg && signInErrEl) signInErrEl.hidden = true;
   }
 
   function showSuccess(msg) {
@@ -112,6 +124,10 @@
         return 'That email already has a Horse Concierge account. Switch to Sign In and use your existing app password.';
       case 'auth/weak-password':
         return 'Password must be at least 6 characters.';
+      case 'auth/too-many-requests':
+        return 'Too many attempts. Please wait a few minutes and try again.';
+      case 'auth/missing-email':
+        return 'Enter your app email first, then tap Forgot password.';
       case 'permission-denied':
         return 'Could not save registration — Firestore rules may need updating for challengeRegistrations.';
       default:
@@ -388,6 +404,7 @@
   function openGuestTab(mode) {
     showError('');
     showSignInError('');
+    showSignInSuccess('');
     showSuccess('');
     setPanel(mode === 'register' ? 'register' : 'signin');
     if (mode === 'signin') {
@@ -395,6 +412,54 @@
       var signInEmail = document.getElementById('challenge-signin-email');
       if (signInEmail && email) signInEmail.value = email;
     }
+  }
+
+  function sendPasswordReset(preferredEmailId) {
+    showError('');
+    showSignInError('');
+    showSignInSuccess('');
+    showSuccess('');
+
+    var email = normalizeEmail(
+      val(preferredEmailId) || val('challenge-signin-email') || val('challenge-email')
+    );
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      openGuestTab('signin');
+      return showSignInError('Enter your app email above, then tap Forgot password.');
+    }
+
+    // Keep the email visible on Sign In after reset from Register tab
+    var signInEmail = document.getElementById('challenge-signin-email');
+    if (signInEmail) signInEmail.value = email;
+    openGuestTab('signin');
+    setSignInBusy('Sending password reset email…');
+
+    auth
+      .sendPasswordResetEmail(email)
+      .then(function () {
+        setSignInBusy('');
+        showSignInSuccess(
+          'Password reset email sent to ' +
+            email +
+            '. Check your inbox (and spam), set a new password, then sign in here with that same email.'
+        );
+      })
+      .catch(function (err) {
+        console.error(err);
+        setSignInBusy('');
+        showSignInError(mapAuthError(err && err.code) || (err && err.message) || 'Could not send reset email.');
+      });
+  }
+
+  if (forgotPasswordBtn) {
+    forgotPasswordBtn.addEventListener('click', function () {
+      sendPasswordReset('challenge-signin-email');
+    });
+  }
+  if (forgotPasswordRegisterBtn) {
+    forgotPasswordRegisterBtn.addEventListener('click', function () {
+      sendPasswordReset('challenge-email');
+    });
   }
 
   if (tabSignIn) {
@@ -461,6 +526,7 @@
     signInForm.addEventListener('submit', function (e) {
       e.preventDefault();
       showSignInError('');
+      showSignInSuccess('');
 
       var email = normalizeEmail(val('challenge-signin-email'));
       var password =
