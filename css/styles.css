@@ -3404,6 +3404,16 @@
     line-height: 1.4;
     color: var(--cream);
   }
+  .challenge-prizes-list a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--gold-rgb), 0.45);
+    text-underline-offset: 3px;
+  }
+  .challenge-prizes-list a:hover {
+    color: var(--gold);
+    text-decoration-color: var(--gold);
+  }
   .challenge-prizes-list__value {
     font-size: 0.72rem;
     font-weight: 500;
@@ -5168,6 +5178,16 @@
     font-weight: 400;
     line-height: 1.4;
     color: var(--cream);
+  }
+  .prize-grand__list a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--gold-rgb), 0.45);
+    text-underline-offset: 3px;
+  }
+  .prize-grand__list a:hover {
+    color: var(--gold);
+    text-decoration-color: var(--gold);
   }
   .prize-grand__hero {
     margin: 0;
