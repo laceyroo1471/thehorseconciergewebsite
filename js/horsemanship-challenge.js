@@ -183,12 +183,23 @@
     }
   }
 
-  function getReferralPartner() {
+  function getReferralFromUrl() {
     try {
       return new URLSearchParams(window.location.search).get('ref') || '';
     } catch (e) {
       return '';
     }
+  }
+
+  function getReferralPartner() {
+    return val('challenge-referral') || getReferralFromUrl();
+  }
+
+  function prefillReferralField() {
+    var input = document.getElementById('challenge-referral');
+    if (!input || input.value) return;
+    var fromUrl = getReferralFromUrl();
+    if (fromUrl) input.value = fromUrl;
   }
 
   function validateForm() {
@@ -592,6 +603,8 @@
   } catch (e) {
     setPanel('signin');
   }
+
+  prefillReferralField();
 
   auth.onAuthStateChanged(function (user) {
     if (redirecting) return;
