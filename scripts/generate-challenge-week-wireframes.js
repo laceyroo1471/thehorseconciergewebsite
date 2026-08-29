@@ -75,12 +75,12 @@ const LOGOS = {
   denver:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2Fdenver%20uni.svg?alt=media&token=a5e0bbb8-7bae-47a6-b2d8-ab9f001dabc9',
   thc: 'Images/ColorLogo.svg',
-  dio: 'Images/challenge-partners/draw-it-out.png?v=20260828e',
+  dio: 'Images/challenge-partners/draw-it-out.png?v=20260828f',
 };
 
 const PRESENTING_FOOTER = `    <a class="challenge-presenting challenge-presenting--footer" href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">
       <span class="challenge-presenting__label">Presented in Partnership with</span>
-      <img class="challenge-presenting__logo" src="Images/challenge-partners/draw-it-out.png?v=20260828e" alt="Draw It Out" width="160" height="40">
+      <img class="challenge-presenting__logo" src="Images/challenge-partners/draw-it-out.png?v=20260828f" alt="Draw It Out" width="160" height="40">
     </a>`;
 
 /**
@@ -429,7 +429,7 @@ function renderWeek(week) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260828j">
+<link rel="stylesheet" href="css/styles.css?v=20260828l">
 <meta property="og:title" content="Week ${week.num} · ${escapeHtml(week.theme)}">
 <meta property="og:description" content="${range} — ${escapeHtml(week.theme)}${week.partner ? ' with ' + escapeHtml(week.partner) : ''}. Wireframe for challenge content.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/${pathSlug}">

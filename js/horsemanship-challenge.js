@@ -7,6 +7,8 @@
   var FB_GROUP_URL = 'https://www.facebook.com/groups/1388463146804189';
   var HUB_URL = 'horsemanship-challenge-hub.html';
   var CHALLENGE_ID = 'horsemanship-2026';
+  /** Marks who agreed to the partner-email opt-in copy (not the earlier challenge-only wording). */
+  var EMAIL_CONSENT_VERSION = '2026-08-partners';
 
   var firebaseConfig = {
     apiKey: 'AIzaSyCpSLt4otffRYi3PUDrr_HvTXZrEtOeUzY',
@@ -217,7 +219,7 @@
       return showError('Please enter how many horses you own (use 0 if none).'), null;
     }
     if (!emailConsent) {
-      return showError('Please agree to receive challenge emails to continue.'), null;
+      return showError('Please agree to receive emails from the Challenge and its partners to continue.'), null;
     }
 
     return {
@@ -303,6 +305,9 @@
       horseCount: data.horseCount,
       emailConsent: true,
       emailConsentAt: firebase.firestore.FieldValue.serverTimestamp(),
+      emailConsentVersion: EMAIL_CONSENT_VERSION,
+      partnerEmailConsent: true,
+      partnerEmailConsentAt: firebase.firestore.FieldValue.serverTimestamp(),
       referralPartner: data.referralPartner || '',
       status: 'active',
       source: 'web',
@@ -339,6 +344,8 @@
         formData && typeof formData.horseCount === 'number' ? formData.horseCount : null,
       referralPartner: (formData && formData.referralPartner) || '',
       emailConsent: !!(formData && formData.emailConsent),
+      emailConsentVersion: EMAIL_CONSENT_VERSION,
+      partnerEmailConsent: !!(formData && formData.emailConsent),
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       userAgent: typeof navigator !== 'undefined' ? String(navigator.userAgent || '').slice(0, 300) : '',
       recovered: false,

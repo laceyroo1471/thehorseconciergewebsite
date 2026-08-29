@@ -4077,8 +4077,8 @@
     background: #0a0a0a;
   }
   .challenge-partner-card__logo--dio .challenge-partner-card__img {
-    max-width: 88px;
-    max-height: 100px;
+    max-width: 180px;
+    max-height: 36px;
   }
   .challenge-partner-card__sponsor-text {
     font-family: var(--font-display);
@@ -5309,8 +5309,8 @@
   }
   .challenge-presenting--hero .challenge-presenting__logo,
   .challenge-presenting--compact .challenge-presenting__logo {
-    max-width: min(120px, 42vw);
-    max-height: 140px;
+    max-width: min(220px, 72vw);
+    max-height: 40px;
   }
   .challenge-presenting--compact {
     padding: 8px 12px 10px;
@@ -5320,8 +5320,8 @@
     padding: 10px 14px 12px;
   }
   .challenge-presenting--week .challenge-presenting__logo {
-    max-width: min(120px, 42vw);
-    max-height: 140px;
+    max-width: min(220px, 72vw);
+    max-height: 40px;
   }
   .challenge-presenting--gate {
     display: flex;
@@ -5330,8 +5330,8 @@
     max-width: max-content;
   }
   .challenge-presenting--gate .challenge-presenting__logo {
-    max-width: min(112px, 40vw);
-    max-height: 130px;
+    max-width: min(200px, 68vw);
+    max-height: 36px;
   }
   .challenge-presenting--footer {
     flex-direction: column;
@@ -5343,8 +5343,8 @@
     color: var(--cream);
   }
   .challenge-presenting--footer .challenge-presenting__logo {
-    max-width: min(96px, 36vw);
-    max-height: 112px;
+    max-width: min(180px, 56vw);
+    max-height: 32px;
   }
   .challenge-presenting--dialog {
     display: flex;
@@ -5356,24 +5356,17 @@
     color: var(--cream);
   }
   .challenge-presenting--dialog .challenge-presenting__logo {
-    max-width: min(120px, 42vw);
-    max-height: 140px;
+    max-width: min(220px, 68vw);
+    max-height: 40px;
   }
   .challenge-prize-partner--dio,
   .prize-sponsor--dio {
     background: #0a0a0a;
   }
-  .challenge-prize-partner--dio {
-    height: auto;
-    min-height: 110px;
-  }
   .challenge-prize-partner--dio img,
   .prize-sponsor--dio img {
-    max-width: 88px;
-    max-height: 100px;
-  }
-  .prize-sponsor--dio {
-    min-height: 96px;
+    max-width: 148px;
+    max-height: 32px;
   }
   .challenge-week-card__logo:has(img[alt="Draw It Out"]) {
     background: #0a0a0a;
@@ -5382,18 +5375,19 @@
     color: rgba(245, 237, 220, 0.55);
   }
   .challenge-week-card__logo img[alt="Draw It Out"] {
-    max-width: 72px;
-    max-height: 72px;
+    max-width: 92%;
+    max-height: 28px;
   }
   .challenge-partner-logo-well--presenting img[alt="Draw It Out"] {
-    max-width: 160px;
-    max-height: 180px;
+    max-width: min(280px, 72vw);
+    max-height: 48px;
   }
   .challenge-partner-logo-well--presenting:not(.challenge-partner-logo-well--dual) {
     width: auto;
+    max-width: min(380px, 92vw);
     height: auto;
-    min-height: 180px;
-    padding: 18px 22px;
+    min-height: 0;
+    padding: 22px 28px;
   }
   .prize-placements {
     display: grid;
