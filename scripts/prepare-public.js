@@ -6,7 +6,7 @@ const path = require('path');
 const root = path.join(__dirname, '..');
 const out = path.join(root, 'public');
 
-const COPY_DIRS = ['css', 'js', 'Images', 'directory'];
+const COPY_DIRS = ['css', 'js', 'Images', 'directory', 'Week 2 Challenge Content'];
 const COPY_FILES = ['robots.txt', 'sitemap.xml'];
 
 function copyStaticAssets() {

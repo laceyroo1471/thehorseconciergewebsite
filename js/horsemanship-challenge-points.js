@@ -244,6 +244,15 @@
       });
   }
 
+  function fillAutofillForms(user) {
+    document.querySelectorAll('form[data-challenge-autofill-user]').forEach(function (form) {
+      var nameEl = form.querySelector('input[name="name"]');
+      var emailEl = form.querySelector('input[name="email"]');
+      if (nameEl && !nameEl.value) nameEl.value = (user && user.displayName) || '';
+      if (emailEl) emailEl.value = (user && user.email) || '';
+    });
+  }
+
   function wireLinksAndForms() {
     document.querySelectorAll('[data-challenge-point-action]').forEach(function (el) {
       if (el.tagName === 'FORM') {
@@ -264,6 +273,7 @@
   wireLinksAndForms();
 
   auth.onAuthStateChanged(function (user) {
+    fillAutofillForms(user);
     if (user) resumePendingIfAny(user);
   });
 })();
