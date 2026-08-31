@@ -1076,6 +1076,11 @@
   }
   .page-challenge .legal-doc {
     max-width: 760px;
+    color: var(--cream);
+  }
+  .legal-doc.reveal {
+    opacity: 1;
+    transform: none;
   }
 
   /* ===== MOBILE ===== */
