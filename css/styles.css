@@ -1070,6 +1070,13 @@
   .legal-doc ul { margin: 10px 0 18px 1.2rem; padding: 0; }
   .legal-doc li { margin-bottom: 10px; }
   .legal-doc .legal-meta { font-size: 0.88rem; color: var(--text-dim); margin-bottom: 8px; }
+  .legal-doc strong {
+    color: var(--cream);
+    font-weight: 500;
+  }
+  .page-challenge .legal-doc {
+    max-width: 760px;
+  }
 
   /* ===== MOBILE ===== */
   @media (max-width: 900px) {

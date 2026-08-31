@@ -19,6 +19,7 @@ const STATIC_PATHS = [
   '/directory',
   '/directory/states',
   '/horsemanship-challenge',
+  '/horsemanship-challenge-rules',
 ];
 
 const VALID_SLUG = /^[a-z0-9-]+$/;

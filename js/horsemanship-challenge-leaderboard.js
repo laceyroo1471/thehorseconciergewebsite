@@ -140,11 +140,14 @@
               ' · This week’s prize standings are final.';
           } else if (week && week.lockAt) {
             noteEl.textContent =
-              'Top 5 for this week’s prize. Winner announced Wednesday, ' +
+              'Top 5 for this week’s prize. Scoring closes Sunday, ' +
+              prettyDate(week.end) +
+              ' at 11:59 p.m. Eastern. Winner announced Wednesday, ' +
               prettyDate(week.lockAt) +
               '.';
           } else {
-            noteEl.textContent = 'Top 5 for this week’s prize. Winner announced next Wednesday.';
+            noteEl.textContent =
+              'Top 5 for this week’s prize. Weekly scoring closes Sunday at 11:59 p.m. Eastern. Winner announced the following Wednesday.';
           }
         }
       }
