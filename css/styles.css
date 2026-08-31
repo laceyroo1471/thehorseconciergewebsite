@@ -4950,7 +4950,15 @@
     border-color: rgba(var(--gold-rgb), 0.35);
   }
   .challenge-day--locked {
-    opacity: 0.88;
+    opacity: 0.72;
+    background: rgba(0, 0, 0, 0.28);
+  }
+  .challenge-day:not(.challenge-day--open) .challenge-day__body,
+  .challenge-day__body[hidden] {
+    display: none;
+  }
+  .challenge-day--locked .challenge-day__teaser {
+    display: none;
   }
   .challenge-day__header {
     padding: 24px 28px;
@@ -5060,6 +5068,10 @@
   .challenge-embed--video video {
     object-fit: contain;
     background: #000;
+  }
+  .challenge-embed--video-portrait {
+    max-width: 360px;
+    aspect-ratio: 9 / 16;
   }
   .challenge-choice-list {
     display: flex;

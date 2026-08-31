@@ -34,7 +34,20 @@
     return new Date(y, m, d);
   }
 
+  function readUrlFlag(name) {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var hashParams = new URLSearchParams(String(window.location.hash || '').replace(/^#/, ''));
+      return params.get(name) || hashParams.get(name);
+    } catch (e) {
+      return null;
+    }
+  }
+
   function startOfToday() {
+    var asOf = readUrlFlag('asOf') || readUrlFlag('previewDate');
+    var simulated = asOf ? parseYmdLocal(asOf) : null;
+    if (simulated) return simulated;
     var now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
   }
@@ -64,7 +77,9 @@
   }
 
   var previewAccess = hasPreviewAccess();
-  var forceOpen = FORCE_PAGE_ACCESS || previewAccess;
+  var forcePageAccess = FORCE_PAGE_ACCESS || previewAccess;
+  var explicitUnlockAll =
+    FORCE_UNLOCK_ALL || readUrlFlag('unlockAll') === '1' || readUrlFlag('unlockAll') === 'true';
 
   var weekStart = parseYmdLocal(WEEK_START);
   if (!weekStart) return;
@@ -77,7 +92,7 @@
   var lockedEl = document.getElementById('challenge-week-locked');
   var openEl = document.getElementById('challenge-week-open');
 
-  if (beforeWeek && !forceOpen) {
+  if (beforeWeek && !forcePageAccess) {
     if (lockedEl) lockedEl.hidden = false;
     if (openEl) openEl.hidden = true;
     return;
@@ -86,7 +101,7 @@
   if (lockedEl) lockedEl.hidden = true;
   if (openEl) openEl.hidden = false;
 
-  var unlockAll = FORCE_UNLOCK_ALL || afterWeek || forceOpen;
+  var unlockAll = explicitUnlockAll || afterWeek || (forcePageAccess && beforeWeek);
 
   var banner = document.getElementById('challenge-unlock-banner');
   if (banner) {
@@ -98,10 +113,10 @@
       banner.hidden = false;
       banner.textContent =
         'Preview mode: page access is forced open for partner review. Public access unlocks November 2, 2026.';
-    } else if (FORCE_UNLOCK_ALL && !afterWeek && !previewAccess) {
+    } else if (explicitUnlockAll && !afterWeek) {
       banner.hidden = false;
       banner.textContent =
-        'Preview mode: all days are unlocked for partner review. Daily drip activates when FORCE_UNLOCK_ALL is set to false.';
+        'Preview mode: all days are unlocked for partner review. Daily drip is the public default.';
     } else if (afterWeek) {
       banner.hidden = false;
       banner.textContent =

@@ -106,10 +106,14 @@
 
   function startOfToday() {
     var params = new URLSearchParams(window.location.search);
-    var asOf = params.get('asOf') || params.get('previewDate');
-    var preview = asOf ? parseYmdLocal(asOf) : null;
-    if (preview) return preview;
-    if (previewAccess) return parseYmdLocal('2026-11-23');
+    var hashParams = new URLSearchParams(String(window.location.hash || '').replace(/^#/, ''));
+    var asOf =
+      params.get('asOf') ||
+      params.get('previewDate') ||
+      hashParams.get('asOf') ||
+      hashParams.get('previewDate');
+    var simulated = asOf ? parseYmdLocal(asOf) : null;
+    if (simulated) return simulated;
     var now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
   }

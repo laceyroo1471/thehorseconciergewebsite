@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260828l">
+<link rel="stylesheet" href="css/styles.css?v=20260831b">
 <meta property="og:title" content="Week 1 · Nutrition Basics with Mad Barn">
 <meta property="og:description" content="August 31–September 6, 2026 — Learn nutrition basics with Mad Barn. Course, diet evaluation, Live Q&amp;A, and case study.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horsemanship-challenge-week-01-nutrition">
@@ -129,7 +129,7 @@
         <span class="challenge-points-list__pts">15 pts</span>
         <span>
           Complete Introduction to Equine Nutrition and upload your certification
-          <span class="challenge-points-list__detail">Full course is on Mad Barn from Day 1 — YouTube is a preview only</span>
+          <span class="challenge-points-list__detail">Full course is on Mad Barn from Day 1 — today’s video does not replace it</span>
         </span>
       </li>
       <li><span class="challenge-points-list__pts">5 pts × 2</span> Track up to 2 rides or hand walks with GPS in the app</li>
@@ -235,7 +235,7 @@
 
     <div class="funnel-panel reveal reveal-delay-1 challenge-question-panel" id="upload-cert" style="margin-top:28px; max-width:560px;">
       <div class="funnel-panel-title">Upload nutrition certification · 15 pts</div>
-      <p class="funnel-panel-note">The full course is open from Monday — work through it on Mad Barn at your own pace. Watching the Day 1 YouTube playlist does not earn the certification. When you finish on Mad Barn, upload a photo or PDF here while signed in — 15 points log automatically.</p>
+      <p class="funnel-panel-note">The full course is open from Monday — work through it on Mad Barn at your own pace. Watching today’s video does not earn the certification. When you finish on Mad Barn, upload a photo or PDF here while signed in — 15 points log automatically.</p>
       <div class="hero-actions" style="margin-bottom:20px;">
         <a class="btn-ghost" href="https://madbarn.com/courses/introduction-to-equine-nutrition/" target="_blank" rel="noopener noreferrer">Open the Full Course</a>
       </div>
@@ -295,22 +295,23 @@
         <div class="challenge-day__body">
           <div class="challenge-day__resource">
             <h4 class="challenge-day__resource-title">This week’s goal</h4>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Earn a basic certification in equine nutrition. That happens only by completing Mad Barn’s <strong style="color:var(--cream);">Introduction to Equine Nutrition</strong> on their course page — not by watching the YouTube playlist below.</p>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Earn a basic certification in equine nutrition. That happens only by completing Mad Barn’s <strong style="color:var(--cream);">Introduction to Equine Nutrition</strong> on their course page — not by watching today’s video.</p>
             <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">The entire course is available starting today. Work through it at your own pace and time this week. When you finish, come back here and <a href="#upload-cert" style="color:var(--gold);">upload your certification</a> for 15 points.</p>
             <a class="btn-primary" href="https://madbarn.com/courses/introduction-to-equine-nutrition/" target="_blank" rel="noopener noreferrer">Open the Full Course</a>
           </div>
-          <div class="challenge-embed challenge-embed--video">
-            <iframe
-              src="https://www.youtube.com/embed/videoseries?list=PLxMHb5lae7j-hmIzpAty2HUGT0hMa4RoK"
-              title="Introduction to Equine Nutrition — Mad Barn"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
+          <div class="challenge-embed challenge-embed--video challenge-embed--video-portrait">
+            <video
+              controls
+              playsinline
+              preload="metadata"
+              title="How to Feed an Underweight Horse — Mad Barn"
+            >
+              <source src="Week%201/How%20to%20feed%20an%20underweight%20horse%20(1).mp4" type="video/mp4">
+            </video>
           </div>
           <div class="challenge-day__resource">
-            <h4 class="challenge-day__resource-title">YouTube preview</h4>
-            <p class="body-text" style="margin-bottom:0; font-size:0.9rem;">This playlist is a look at the material. It does not issue the certification and cannot be dripped as the week’s course. Use the Mad Barn link above to take the official course and earn your certificate.</p>
+            <h4 class="challenge-day__resource-title">How to feed an underweight horse</h4>
+            <p class="body-text" style="margin-bottom:0; font-size:0.9rem;">A Mad Barn lesson for Day 1. This video does not issue the certification — take the official course above to earn your certificate.</p>
           </div>
           <div class="challenge-day__action">
             <p class="challenge-day__action-label">Also today · 10 points</p>
@@ -504,7 +505,7 @@
           </div>
           <div class="challenge-day__resource">
             <h4 class="challenge-day__resource-title">Finished the course?</h4>
-            <p class="body-text" style="margin-bottom:16px; font-size:0.9rem;">Finish the course on Mad Barn (not YouTube), then upload your certification for 15 points. Leave a review on Mad Barn if you’d like.</p>
+            <p class="body-text" style="margin-bottom:16px; font-size:0.9rem;">Finish the course on Mad Barn (not today’s video), then upload your certification for 15 points. Leave a review on Mad Barn if you’d like.</p>
             <a class="btn-primary" href="#upload-cert">Upload Certification · 15 pts</a>
           </div>
           <div class="challenge-day__placeholder">
@@ -572,7 +573,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="js/horsemanship-challenge-week.js?v=20260814b"></script>
+<script src="js/horsemanship-challenge-week.js?v=20260831a"></script>
 <script src="js/horsemanship-challenge-points.js?v=20260827b"></script>
 <script src="js/horsemanship-challenge-leaderboard.js?v=20260828d"></script>
 <script>
