@@ -88,6 +88,19 @@ config.watchedCollections().forEach(function (collectionName) {
   );
 });
 
+exports.onChallengePointEventWrite = onDocumentWritten(
+  {
+    document: 'challengePointEvents/{eventId}',
+    memory: '256MiB',
+    timeoutSeconds: 60,
+  },
+  async function (event) {
+    const after = event.data && event.data.after;
+    if (!after || !after.exists) return;
+    await scoring.handlePointEventWrite(after.data() || {});
+  }
+);
+
 exports.onChallengeRegistrationWrite = onDocumentWritten(
   {
     document: 'challengeRegistrations/{uid}',
@@ -112,6 +125,8 @@ exports.challengeScoringSweep = onSchedule(
   async function () {
     const result = await scoring.sweepUnscoredRegistrations();
     console.log('challenge scoring sweep', result);
+    const recounted = await scoring.recountAllScores();
+    console.log('challenge score recount', recounted);
     const board = await leaderboard.rebuildLeaderboard();
     console.log('challenge leaderboard sweep', board);
   }
@@ -124,6 +139,8 @@ exports.challengeLeaderboardRefresh = onSchedule(
     timeoutSeconds: 120,
   },
   async function () {
+    const recounted = await scoring.recountAllScores();
+    console.log('challenge score recount', recounted);
     const board = await leaderboard.rebuildLeaderboard();
     console.log('challenge leaderboard refresh', board);
   }

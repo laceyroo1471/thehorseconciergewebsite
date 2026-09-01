@@ -4,8 +4,14 @@
  * Horsemanship Challenge 2026 — scoring catalog.
  *
  * credit:
- *   anytime     — existing app data counts even if logged before the week opens
- *   week_window — only events whose timestamp falls on that week's dates (GPS / rides)
+ *   anytime          — existing app data can still earn the points (grand prize always)
+ *   week_window      — only events whose timestamp falls on that week's dates (GPS / rides)
+ *   grand_prize_only — totalPoints / overall standings only; never weeklyPoints
+ *
+ * Weekly prize cutoff:
+ *   Monday 12:00 a.m. through Sunday 11:59:59 p.m. America/New_York.
+ *   Actions credited after that Sunday do not count toward that week's prize.
+ *   They still count toward the grand prize if the action is awarded.
  *
  * status:
  *   live            — award automatically
@@ -57,7 +63,7 @@ var WEEKS = [
       label: 'Log diet in the app (Feed and Supplements)',
       points: 10,
       status: 'live',
-      collections: ['feedEntries'],
+      collections: ['feedEntries', 'feedRoomItems', 'horseFeedAssignments', 'supplementEntries'],
       credit: 'anytime',
     }),
     action({
@@ -349,6 +355,24 @@ var WEEKS = [
   ]),
 ];
 
+/**
+ * Grand-prize-only catalog. Not part of WEEKS, so these never get a Mon–Sun
+ * window and never appear on a weekly prize board.
+ * weekNumber must stay 'bonus' (never 1–13). Award via challengeActions write.
+ */
+var BONUS_ACTIONS = [
+  action({
+    actionId: 'referral-bonus-2026',
+    label: 'Referral bonus (grand prize only)',
+    points: null,
+    status: 'manual',
+    source: 'manual',
+    credit: 'grand_prize_only',
+    weekNumber: 'bonus',
+    maxCount: 1,
+  }),
+];
+
 function allActions() {
   var list = [];
   WEEKS.forEach(function (w) {
@@ -371,6 +395,12 @@ function hubActionById(actionId) {
   });
 }
 
+function bonusActionById(actionId) {
+  return BONUS_ACTIONS.find(function (a) {
+    return a.actionId === actionId;
+  }) || null;
+}
+
 function watchedCollections() {
   var set = {};
   allActions().forEach(function (a) {
@@ -384,8 +414,10 @@ function watchedCollections() {
 module.exports = {
   CHALLENGE_ID: CHALLENGE_ID,
   WEEKS: WEEKS,
+  BONUS_ACTIONS: BONUS_ACTIONS,
   allActions: allActions,
   actionsForCollection: actionsForCollection,
   hubActionById: hubActionById,
+  bonusActionById: bonusActionById,
   watchedCollections: watchedCollections,
 };

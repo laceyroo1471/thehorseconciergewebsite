@@ -2,7 +2,8 @@
 
 /**
  * Builds public leaderboards from challengeScores.
- * Weekly winners freeze Wednesday (America/New_York) after that week ends.
+ * Weekly prize scoring closes Sunday 11:59:59 p.m. America/New_York.
+ * Weekly winners are announced Wednesday after that week ends.
  * To hold a week for extra validation, set weeks.{n}.holdLock = true on
  * challengeLeaderboards/horsemanship-2026 in the Firebase console.
  */

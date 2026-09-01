@@ -119,15 +119,22 @@
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
 
-    var regUpdate = {
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    };
-    regUpdate['pointActions.' + action.actionId] = actionPayload;
-
-    var regWrite = db
-      .collection('challengeRegistrations')
-      .doc(user.uid)
-      .set(regUpdate, { merge: true });
+    var regRef = db.collection('challengeRegistrations').doc(user.uid);
+    var regWrite = regRef
+      .update(
+        new firebase.firestore.FieldPath('pointActions', action.actionId),
+        actionPayload,
+        'updatedAt',
+        firebase.firestore.FieldValue.serverTimestamp()
+      )
+      .catch(function () {
+        var nested = {
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          pointActions: {},
+        };
+        nested.pointActions[action.actionId] = actionPayload;
+        return regRef.set(nested, { merge: true });
+      });
 
     var eventId = user.uid + '__' + action.actionId;
     var eventWrite = db

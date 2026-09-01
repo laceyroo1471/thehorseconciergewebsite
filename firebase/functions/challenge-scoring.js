@@ -1,6 +1,6 @@
 'use strict';
 
-const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
 const config = require('./challenge-scoring-config');
 const leaderboard = require('./challenge-leaderboard');
 
@@ -85,6 +85,54 @@ function weekBounds(startYmd, endYmd) {
   var endMs = nyWallClockToUtcMs(nextYmd(endYmd), 0, 0, 0, 0) - 1;
   if (!startMs || !endMs) return null;
   return { startMs: startMs, endMs: endMs };
+}
+
+function weekMetaByNumber() {
+  var map = {};
+  (config.WEEKS || []).forEach(function (w) {
+    map[String(w.weekNumber)] = w;
+  });
+  return map;
+}
+
+function actionEarnedMs(row) {
+  return toMillis(row.earnedAt) || toMillis(row.clickedAt) || toMillis(row.createdAt);
+}
+
+function isGrandPrizeOnlyAction(row) {
+  if (!row) return false;
+  if (row.credit === 'grand_prize_only') return true;
+  var week = String(row.weekNumber == null ? '' : row.weekNumber);
+  if (week === 'bonus' || week === 'credit' || week === '0') return true;
+  var actionId = String(row.actionId || '');
+  return actionId.indexOf('referral-bonus') === 0;
+}
+
+function isAnytimeCredit(row) {
+  if (!row) return false;
+  if (row.credit === 'week_window' || row.credit === 'grand_prize_only') return false;
+  if (row.credit === 'anytime') return true;
+  var actionId = String(row.actionId || '');
+  if (actionId.indexOf('referral-bonus') === 0) return false;
+  return true;
+}
+
+/**
+ * Weekly prize: credited Mon 12:00 a.m.–Sun 11:59:59 p.m. Eastern.
+ * Anytime actions (existing feed, hub clicks) still count for that catalog
+ * week if they were awarded before the week opened — e.g. a preview backfill
+ * on Aug 28 still counts for Week 1. Awards after Sunday close stay grand-prize only.
+ */
+function countsTowardWeeklyPrize(row, weekMeta) {
+  if (isGrandPrizeOnlyAction(row)) return false;
+  if (!weekMeta) return false;
+  var bounds = weekBounds(weekMeta.start, weekMeta.end);
+  if (!bounds) return false;
+  var ms = actionEarnedMs(row);
+  if (!ms && isAnytimeCredit(row)) ms = bounds.startMs;
+  if (!ms) return false;
+  if (isAnytimeCredit(row) && ms < bounds.startMs) ms = bounds.startMs;
+  return ms >= bounds.startMs && ms <= bounds.endMs;
 }
 
 function userIdFrom(data) {
@@ -228,6 +276,23 @@ function actionDocId(uid, actionId, relatedDocId) {
   return base;
 }
 
+function pointActionsFromRegistration(registration) {
+  var out = {};
+  var nested = (registration && registration.pointActions) || {};
+  Object.keys(nested).forEach(function (key) {
+    if (nested[key] && typeof nested[key] === 'object') out[key] = nested[key];
+  });
+  Object.keys(registration || {}).forEach(function (key) {
+    if (key.indexOf('pointActions.') !== 0) return;
+    var actionId = key.slice('pointActions.'.length);
+    if (!actionId || out[actionId]) return;
+    if (registration[key] && typeof registration[key] === 'object') {
+      out[actionId] = registration[key];
+    }
+  });
+  return out;
+}
+
 async function loadRegistration(uid) {
   var snap = await db().collection('challengeRegistrations').doc(uid).get();
   if (!snap.exists) return null;
@@ -253,6 +318,7 @@ async function loadApprovedActions(uid) {
 async function recountScores(uid, opts) {
   opts = opts || {};
   var rows = await loadApprovedActions(uid);
+  var weeks = weekMetaByNumber();
   var total = 0;
   var weeklyPoints = {};
   var weeklyActionCounts = {};
@@ -261,6 +327,7 @@ async function recountScores(uid, opts) {
     var pts = Number(row.pointsAwarded) || 0;
     var week = String(row.weekNumber || '');
     total += pts;
+    if (!countsTowardWeeklyPrize(row, weeks[week])) return;
     weeklyPoints[week] = (weeklyPoints[week] || 0) + pts;
     if (!weeklyActionCounts[week]) weeklyActionCounts[week] = {};
     var id = row.actionId || 'unknown';
@@ -324,6 +391,11 @@ async function award(uid, action, opts) {
     if (already >= maxCount) return { awarded: false, reason: 'max_count' };
   }
 
+  var earnedAt =
+    opts.earnedAtMs && !isNaN(opts.earnedAtMs)
+      ? Timestamp.fromMillis(opts.earnedAtMs)
+      : FieldValue.serverTimestamp();
+
   await ref.set({
     userId: uid,
     challengeId: CHALLENGE_ID,
@@ -337,6 +409,7 @@ async function award(uid, action, opts) {
     relatedCollection: opts.collectionName || null,
     relatedDocId: relatedDocId || null,
     credit: action.credit,
+    earnedAt: earnedAt,
     testPreview: !!opts.testPreview,
     createdAt: FieldValue.serverTimestamp(),
     idempotencyKey: id,
@@ -344,6 +417,59 @@ async function award(uid, action, opts) {
 
   if (!opts.skipRecount) await recountScores(uid, { skipLeaderboard: opts.skipLeaderboard });
   return { awarded: true, points: action.points, actionId: action.actionId };
+}
+
+/** Write an approved catalog action with status: 'manual'. Idempotent by uid + actionId. */
+async function awardManual(uid, action, opts) {
+  opts = opts || {};
+  if (!action || action.status !== 'manual') return { awarded: false, reason: 'not_manual' };
+  var points = Number(opts.points != null ? opts.points : action.points) || 0;
+  if (points <= 0) return { awarded: false, reason: 'no_points' };
+
+  var relatedDocId = opts.relatedDocId || '';
+  var maxCount = action.maxCount || 1;
+  var id = actionDocId(uid, action.actionId, maxCount > 1 ? relatedDocId : '');
+  var ref = db().collection('challengeActions').doc(id);
+  var existing = await ref.get();
+  if (existing.exists) {
+    return { awarded: false, reason: 'duplicate', actionId: action.actionId, docId: id };
+  }
+
+  if (maxCount > 1) {
+    var rows = await loadApprovedActions(uid);
+    var already = rows.filter(function (row) {
+      return row.actionId === action.actionId;
+    }).length;
+    if (already >= maxCount) return { awarded: false, reason: 'max_count' };
+  }
+
+  var earnedAt =
+    opts.earnedAtMs && !isNaN(opts.earnedAtMs)
+      ? Timestamp.fromMillis(opts.earnedAtMs)
+      : FieldValue.serverTimestamp();
+
+  await ref.set({
+    userId: uid,
+    challengeId: CHALLENGE_ID,
+    weekNumber: action.weekNumber || 'bonus',
+    actionId: action.actionId,
+    label: action.label,
+    pointsAwarded: points,
+    source: 'manual',
+    verification: 'manual',
+    verificationStatus: 'approved',
+    relatedCollection: opts.collectionName || null,
+    relatedDocId: relatedDocId || null,
+    credit: action.credit || 'grand_prize_only',
+    earnedAt: earnedAt,
+    testPreview: !!opts.testPreview,
+    createdAt: FieldValue.serverTimestamp(),
+    idempotencyKey: id,
+    note: opts.note || null,
+  });
+
+  if (!opts.skipRecount) await recountScores(uid, { skipLeaderboard: opts.skipLeaderboard });
+  return { awarded: true, points: points, actionId: action.actionId, docId: id };
 }
 
 async function scoreAppDocument(collectionName, docId, data) {
@@ -357,10 +483,13 @@ async function scoreAppDocument(collectionName, docId, data) {
     var action = matches[i];
     if (!qualifies(action, data, collectionName)) continue;
     if (action.credit === 'week_window' && !inWeekWindow(action, data)) continue;
+    var earnedAtMs =
+      action.credit === 'week_window' ? eventMillis(data) || Date.now() : Date.now();
     await award(uid, action, {
       relatedDocId: docId,
       collectionName: collectionName,
       source: 'app',
+      earnedAtMs: earnedAtMs,
     });
   }
 }
@@ -370,7 +499,8 @@ async function scoreHubPointAction(uid, actionId, payload) {
   if (!registration) return;
   var action = config.hubActionById(actionId);
   if (!action) return;
-  await award(uid, action, { source: 'hub' });
+  var earnedAtMs = toMillis(payload && payload.clickedAt) || toMillis(payload && payload.updatedAt) || Date.now();
+  await award(uid, action, { source: 'hub', earnedAtMs: earnedAtMs });
 }
 
 function backfillInProgress(registration) {
@@ -380,11 +510,12 @@ function backfillInProgress(registration) {
   return !!(started && Date.now() - started < BACKFILL_LOCK_MS);
 }
 
-async function backfillUser(uid) {
+async function backfillUser(uid, opts) {
+  opts = opts || {};
   var registration = await loadRegistration(uid);
   if (!registration) return { backfilled: 0 };
-  if (registration.scoringBackfillAt) return { backfilled: 0, skipped: true };
-  if (backfillInProgress(registration)) return { backfilled: 0, skipped: true };
+  if (!opts.force && registration.scoringBackfillAt) return { backfilled: 0, skipped: true };
+  if (!opts.force && backfillInProgress(registration)) return { backfilled: 0, skipped: true };
 
   await db()
     .collection('challengeRegistrations')
@@ -413,17 +544,20 @@ async function backfillUser(uid) {
         var data = docs[d].data() || {};
         if (!qualifies(action, data, col)) continue;
         if (action.credit === 'week_window' && !inWeekWindow(action, data)) continue;
+        var earnedAtMs =
+          action.credit === 'week_window' ? eventMillis(data) || Date.now() : Date.now();
         var result = await award(uid, action, {
           relatedDocId: docs[d].id,
           collectionName: col,
           source: 'app',
+          earnedAtMs: earnedAtMs,
         });
         if (result.awarded) awarded += 1;
       }
     }
   }
 
-  var pointActions = registration.pointActions || {};
+  var pointActions = pointActionsFromRegistration(registration);
   var keys = Object.keys(pointActions);
   for (var k = 0; k < keys.length; k++) {
     await scoreHubPointAction(uid, keys[k], pointActions[keys[k]]);
@@ -437,11 +571,19 @@ async function backfillUser(uid) {
   return { backfilled: awarded };
 }
 
+async function handlePointEventWrite(data) {
+  if (!data) return;
+  var uid = String(data.userId || '').trim();
+  var actionId = String(data.actionId || '').trim();
+  if (!uid || !actionId) return;
+  await scoreHubPointAction(uid, actionId, data);
+}
+
 async function handleRegistrationWrite(uid, beforeData, afterData) {
   if (!afterData) return;
 
-  var beforeActions = (beforeData && beforeData.pointActions) || {};
-  var afterActions = afterData.pointActions || {};
+  var beforeActions = pointActionsFromRegistration(beforeData);
+  var afterActions = pointActionsFromRegistration(afterData);
   var newKeys = Object.keys(afterActions).filter(function (key) {
     return !beforeActions[key];
   });
@@ -468,16 +610,34 @@ async function sweepUnscoredRegistrations() {
   return { scanned: docs.length, backfilled: ran };
 }
 
+async function recountAllScores() {
+  var snap = await db().collection('challengeRegistrations').where('challengeId', '==', CHALLENGE_ID).get();
+  var n = 0;
+  var docs = snap.docs || [];
+  for (var i = 0; i < docs.length; i++) {
+    var data = docs[i].data() || {};
+    if (data.status === 'inactive') continue;
+    await recountScores(docs[i].id, { skipLeaderboard: true });
+    n += 1;
+  }
+  return { recounted: n };
+}
+
 module.exports = {
   scoreAppDocument: scoreAppDocument,
   scoreHubPointAction: scoreHubPointAction,
   backfillUser: backfillUser,
   handleRegistrationWrite: handleRegistrationWrite,
+  handlePointEventWrite: handlePointEventWrite,
   sweepUnscoredRegistrations: sweepUnscoredRegistrations,
   recountScores: recountScores,
+  recountAllScores: recountAllScores,
   userIdFrom: userIdFrom,
   backfillInProgress: backfillInProgress,
   award: award,
+  awardManual: awardManual,
   qualifies: qualifies,
   eventMillis: eventMillis,
+  countsTowardWeeklyPrize: countsTowardWeeklyPrize,
+  isGrandPrizeOnlyAction: isGrandPrizeOnlyAction,
 };
