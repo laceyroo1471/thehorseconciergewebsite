@@ -24,6 +24,7 @@ initializeApp();
 const config = require('./challenge-scoring-config');
 const scoring = require('./challenge-scoring');
 const leaderboard = require('./challenge-leaderboard');
+const weighWednesday = require('./challenge-weigh-wednesday');
 
 function becameVisibleInDirectory(before, after) {
   if (!after) return false;
@@ -143,5 +144,18 @@ exports.challengeLeaderboardRefresh = onSchedule(
     console.log('challenge score recount', recounted);
     const board = await leaderboard.rebuildLeaderboard();
     console.log('challenge leaderboard refresh', board);
+  }
+);
+
+exports.challengeWeighWednesdayClose = onSchedule(
+  {
+    schedule: '0 20 * * 0',
+    timeZone: 'America/New_York',
+    memory: '512MiB',
+    timeoutSeconds: 300,
+  },
+  async function () {
+    const result = await weighWednesday.closeAndScore();
+    console.log('weigh wednesday close', result);
   }
 );

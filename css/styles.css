@@ -5684,3 +5684,209 @@
     }
   }
 
+  /* ===== What's It Weigh Wednesday ===== */
+  .thc-dialog--weigh {
+    width: min(660px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+  }
+  .thc-dialog__media--weigh {
+    aspect-ratio: auto;
+    height: 190px;
+  }
+  .thc-dialog__media--weigh img {
+    object-fit: cover;
+    object-position: center top;
+  }
+  .weigh-dialog__body {
+    text-align: left;
+    padding: 22px 24px 26px;
+  }
+  .weigh-dialog__body .thc-dialog__eyebrow,
+  .weigh-dialog__body .thc-dialog__title {
+    text-align: left;
+  }
+  .weigh-dialog__body .thc-dialog__text {
+    margin: 0 0 18px;
+    max-width: none;
+  }
+  .weigh-flyer-link {
+    display: inline-block;
+    margin: 0 0 18px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-bottom: 1px solid rgba(var(--gold-rgb), 0.4);
+    padding-bottom: 2px;
+  }
+  .weigh-form__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .weigh-item {
+    display: grid;
+    grid-template-columns: 26px 1fr 150px;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(var(--gold-rgb), 0.14);
+    border-radius: 3px;
+  }
+  .weigh-item__num {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    color: var(--gold);
+    text-align: center;
+  }
+  .weigh-item__vessel {
+    margin: 0;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .weigh-item__product {
+    margin: 3px 0 0;
+    font-size: 0.84rem;
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--cream);
+  }
+  .weigh-item__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .weigh-item__field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .weigh-item__field span {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    order: 2;
+  }
+  .weigh-item__field .form-input {
+    padding: 9px 8px;
+    text-align: center;
+    font-size: 0.88rem;
+    order: 1;
+  }
+  .weigh-item__field .form-input:disabled {
+    opacity: 0.65;
+  }
+  .weigh-form__hint {
+    margin: 14px 0 0;
+    font-size: 0.72rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+  .weigh-form__status {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--cream);
+    background: rgba(var(--gold-rgb), 0.1);
+    border-left: 2px solid var(--gold);
+  }
+  .weigh-form__status--error {
+    background: rgba(190, 80, 60, 0.14);
+    border-left-color: #c8664c;
+  }
+  .weigh-form__status--success {
+    padding: 14px 16px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--cream);
+    background: rgba(var(--gold-rgb), 0.2);
+    border-left-width: 3px;
+  }
+  .weigh-form__status--success::before {
+    content: '✓';
+    margin-right: 8px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .weigh-form .thc-dialog__actions {
+    justify-content: flex-start;
+    margin-top: 20px;
+  }
+  /* The button classes set display, which would otherwise beat the hidden attribute. */
+  .weigh-card[hidden],
+  [data-weigh-open][hidden],
+  [data-weigh-submit][hidden] {
+    display: none;
+  }
+  .weigh-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+    max-width: 640px;
+    margin: 0 auto 32px;
+    padding: 22px 26px;
+    background: var(--earth);
+    border: 1px solid rgba(var(--gold-rgb), 0.28);
+    border-radius: 4px;
+  }
+  .weigh-card--recorded {
+    border-color: rgba(var(--gold-rgb), 0.55);
+    background: rgba(var(--gold-rgb), 0.09);
+  }
+  .weigh-card--recorded .weigh-card__eyebrow::before {
+    content: '✓';
+    margin-right: 6px;
+    font-weight: 700;
+  }
+  .weigh-card__eyebrow {
+    margin: 0 0 6px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .weigh-card__title {
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--cream);
+  }
+  .weigh-card__note {
+    margin: 0;
+    max-width: 46ch;
+    font-size: 0.78rem;
+    font-weight: 300;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  @media (max-width: 640px) {
+    .thc-dialog__media--weigh {
+      height: 140px;
+    }
+    .weigh-dialog__body {
+      padding: 20px 16px 24px;
+    }
+    .weigh-item {
+      grid-template-columns: 22px 1fr;
+      row-gap: 10px;
+    }
+    .weigh-item__fields {
+      grid-column: 1 / -1;
+    }
+    .weigh-card {
+      padding: 20px 18px;
+    }
+  }
+

@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260831b">
+<link rel="stylesheet" href="css/styles.css?v=20260901d">
 <meta property="og:title" content="Week 1 · Nutrition Basics with Mad Barn">
 <meta property="og:description" content="August 31–September 6, 2026 — Learn nutrition basics with Mad Barn. Course, diet evaluation, Live Q&amp;A, and case study.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horsemanship-challenge-week-01-nutrition">
@@ -117,6 +117,15 @@
   </section>
 
   <section class="section" style="padding-top:0;" id="points">
+    <div class="weigh-card" data-weigh-wednesday-card hidden>
+      <div class="weigh-card__body">
+        <p class="weigh-card__eyebrow">Mid-week bonus</p>
+        <h3 class="weigh-card__title" data-weigh-card-title>What’s It Weigh Wednesday</h3>
+        <p class="weigh-card__note" data-weigh-card-note>Mid-week bonus · up to 9 points. Guess all 6 weights (lb / oz). Closest overall wins.</p>
+      </div>
+      <button type="button" class="btn-primary" data-weigh-open>Enter my guesses</button>
+    </div>
+
     <div class="section-label reveal">Week 1 scoring</div>
     <h2 class="heading-xl reveal">Up to <em>50 points</em><br>this week.</h2>
     <ul class="challenge-points-list reveal reveal-delay-1">
@@ -584,9 +593,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="js/horsemanship-challenge-week.js?v=20260831a"></script>
+<script src="js/horsemanship-challenge-week.js?v=20260901c"></script>
 <script src="js/horsemanship-challenge-points.js?v=20260831f"></script>
 <script src="js/horsemanship-challenge-leaderboard.js?v=20260831c"></script>
+<script src="js/challenge-weigh-wednesday.js?v=20260901d"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
