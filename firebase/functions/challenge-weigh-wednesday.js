@@ -197,6 +197,24 @@ async function closeAndScore(opts) {
     { merge: true }
   );
 
+  // Write each person's place onto their registration so the Hub card
+  // can say "You placed 6th · 47.8% average off" without a new collection read.
+  for (var p = 0; p < results.length; p++) {
+    var row = results[p];
+    try {
+      await db()
+        .collection('challengeRegistrations')
+        .doc(row.userId)
+        .update({
+          'weighWednesday.place': row.place,
+          'weighWednesday.avgPct': row.avgPct,
+          'weighWednesday.points': row.points,
+        });
+    } catch (err) {
+      console.warn('weigh wednesday place write skipped', row.userId, err && err.message);
+    }
+  }
+
   await leaderboard.rebuildLeaderboard();
   return {
     scored: true,

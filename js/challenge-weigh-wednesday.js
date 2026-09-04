@@ -58,6 +58,8 @@
   var statusEl = null;
   var currentUser = null;
   var hasSubmitted = false;
+  var myPlace = 0;
+  var myAvgPct = null;
 
   function inWindow() {
     if (preview) return true;
@@ -95,6 +97,34 @@
     var block = data && data.weighWednesday;
     if (!block || !block.guesses) return null;
     return block.guesses;
+  }
+
+  function ordinal(n) {
+    var place = Number(n);
+    if (!place || place < 1) return '';
+    var mod100 = place % 100;
+    if (mod100 >= 11 && mod100 <= 13) return place + 'th';
+    switch (place % 10) {
+      case 1:
+        return place + 'st';
+      case 2:
+        return place + 'nd';
+      case 3:
+        return place + 'rd';
+      default:
+        return place + 'th';
+    }
+  }
+
+  function formatAvgPct(pct) {
+    var n = Number(pct);
+    if (isNaN(n) || n < 0) return '';
+    return n.toFixed(1) + '%';
+  }
+
+  function personalResultNote() {
+    if (!myPlace || myAvgPct == null || isNaN(Number(myAvgPct))) return '';
+    return 'You placed ' + ordinal(myPlace) + ' · ' + formatAvgPct(myAvgPct) + ' average off.';
   }
 
   function isCompleteGuesses(guesses) {
@@ -279,15 +309,18 @@
       var openBtn = card.querySelector('[data-weigh-open]');
       var eyebrow = card.querySelector('.weigh-card__eyebrow');
       card.classList.toggle('weigh-card--recorded', hasSubmitted);
+      var scoredNote = personalResultNote();
       if (eyebrow) {
-        eyebrow.textContent = hasSubmitted ? 'Entry recorded' : 'Mid-week bonus';
+        eyebrow.textContent = scoredNote ? 'Results in' : hasSubmitted ? 'Entry recorded' : 'Mid-week bonus';
       }
       if (hasSubmitted) {
         if (title) title.textContent = 'What’s It Weigh Wednesday';
         if (note) {
-          note.textContent = windowClosed()
-            ? 'Your guesses are in. Results post after Sunday 8:00 PM ET.'
-            : 'Your six guesses are locked in. Results score automatically Sunday evening.';
+          note.textContent = scoredNote
+            ? scoredNote
+            : windowClosed()
+              ? 'Your guesses are in. Results post after Sunday 8:00 PM ET.'
+              : 'Your six guesses are locked in. Results score automatically Sunday evening.';
         }
         if (openBtn) {
           openBtn.hidden = false;
@@ -466,12 +499,21 @@
 
   function applyRegistration(data) {
     var guesses = guessesFromRegistration(data);
+    var block = data && data.weighWednesday;
     hasSubmitted = isCompleteGuesses(guesses);
+    myPlace = block && block.place ? Number(block.place) : 0;
+    myAvgPct = block && block.avgPct != null ? Number(block.avgPct) : null;
     if (hasSubmitted) {
       clearPending();
       fillForm(guesses);
       setFormLocked(true);
-      setStatus('Recorded — your six guesses are locked in. Results score automatically Sunday evening.', false, true);
+      var scoredNote = personalResultNote();
+      setStatus(
+        scoredNote ||
+          'Recorded — your six guesses are locked in. Results score automatically Sunday evening.',
+        false,
+        true
+      );
     } else if (data && data.weighWednesday && data.weighWednesday.dismissedAt) {
       markDismissedLocal();
     }
@@ -533,6 +575,9 @@
       auth.onAuthStateChanged(function (user) {
         currentUser = user;
         if (!user || !db) {
+          hasSubmitted = false;
+          myPlace = 0;
+          myAvgPct = null;
           updateCards();
           return;
         }
