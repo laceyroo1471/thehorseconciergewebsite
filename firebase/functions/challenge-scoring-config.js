@@ -176,6 +176,30 @@ var WEEKS = [
 
   week(2, '2026-09-07', '2026-09-13', 'Anatomy and Conformation', 'Conformation Photos', [
     action({
+      actionId: 'week2-eei-class-pick',
+      label: 'Explore Equine Institute offerings and submit a course choice',
+      points: 10,
+      status: 'live',
+      source: 'hub',
+      credit: 'anytime',
+    }),
+    action({
+      actionId: 'week2-hamstring-hunt',
+      label: 'Complete the Hamstring Hunt',
+      points: 5,
+      status: 'live',
+      source: 'hub',
+      credit: 'anytime',
+    }),
+    action({
+      actionId: 'week2-movement-notice',
+      label: 'Name one thing you would watch for in movement',
+      points: 5,
+      status: 'live',
+      source: 'hub',
+      credit: 'anytime',
+    }),
+    action({
       actionId: 'week2-conformation-photos',
       label: 'Add conformation photos in the app',
       collections: ['conformationPhotos', 'horsePhotos'],
