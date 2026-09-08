@@ -263,6 +263,14 @@
     return now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
   }
 
+  function weekNumberFromCard(card) {
+    var explicit = card.getAttribute('data-week');
+    if (explicit) return parseInt(explicit, 10) || 0;
+    var label = card.querySelector('.challenge-week-card__num');
+    var match = label && String(label.textContent || '').match(/Week\s+(\d+)/i);
+    return match ? parseInt(match[1], 10) : 0;
+  }
+
   function currentWeekNumber() {
     var ymd = todayYmd();
     var found = 0;
@@ -270,11 +278,30 @@
       var start = card.getAttribute('data-week-start') || '';
       var end = card.getAttribute('data-week-end') || '';
       if (!start || !end || ymd < start || ymd > end) return;
-      var label = card.querySelector('.challenge-week-card__num');
-      var match = label && String(label.textContent || '').match(/Week\s+(\d+)/i);
-      found = match ? parseInt(match[1], 10) : found;
+      found = weekNumberFromCard(card) || found;
     });
     return found || 0;
+  }
+
+  function paintWeekCardPoints(registration) {
+    var weekly = (registration && registration.weeklyPoints) || {};
+    document.querySelectorAll('#challenge-week-grid .challenge-week-card').forEach(function (card) {
+      var weekNum = weekNumberFromCard(card);
+      var el = card.querySelector('.challenge-week-card__pts');
+      if (!el) {
+        el = document.createElement('span');
+        el.className = 'challenge-week-card__pts';
+        card.appendChild(el);
+      }
+      var isOpen = card.classList.contains('challenge-week-card--open');
+      if (!isOpen || !weekNum) {
+        el.hidden = true;
+        return;
+      }
+      var pts = Number(weekly[String(weekNum)] || weekly[weekNum] || 0);
+      el.hidden = false;
+      el.textContent = pts === 1 ? '1 pt' : pts + ' pts';
+    });
   }
 
   function showHub(registration) {
@@ -308,6 +335,7 @@
     }
     wireFb();
     unlockWeekCards();
+    if (!previewAccess) paintWeekCardPoints(registration);
   }
 
   function loadRegistration(uid) {
