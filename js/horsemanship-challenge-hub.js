@@ -254,6 +254,29 @@
     unlockScheduleCards('challenge-prize-grid', 'prize');
   }
 
+  function pad2(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  function todayYmd() {
+    var now = new Date();
+    return now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
+  }
+
+  function currentWeekNumber() {
+    var ymd = todayYmd();
+    var found = 0;
+    document.querySelectorAll('#challenge-week-grid [data-week-start][data-week-end]').forEach(function (card) {
+      var start = card.getAttribute('data-week-start') || '';
+      var end = card.getAttribute('data-week-end') || '';
+      if (!start || !end || ymd < start || ymd > end) return;
+      var label = card.querySelector('.challenge-week-card__num');
+      var match = label && String(label.textContent || '').match(/Week\s+(\d+)/i);
+      found = match ? parseInt(match[1], 10) : found;
+    });
+    return found || 0;
+  }
+
   function showHub(registration) {
     if (loadingEl) loadingEl.hidden = true;
     if (deniedEl) deniedEl.hidden = true;
@@ -267,10 +290,20 @@
         pointsEl.hidden = true;
       } else {
         var total = Number(registration && registration.pointsTotal) || 0;
+        var weekNum = currentWeekNumber();
+        var weeklyMap = (registration && registration.weeklyPoints) || {};
+        var weekly = weekNum ? Number(weeklyMap[String(weekNum)] || weeklyMap[weekNum] || 0) : 0;
         pointsEl.hidden = false;
-        var label = total === 1 ? '1 point so far' : total + ' points so far';
+        var weekLabel = weekly === 1 ? '1 point this week' : weekly + ' points this week';
+        var totalLabel = total === 1 ? '1 point total' : total + ' points total';
+        var meta = weekNum
+          ? 'Week ' + weekNum + ' · Your Challenge score'
+          : 'Your Challenge score';
         pointsEl.innerHTML =
-          label + '<span class="challenge-hub-points__meta">Your Challenge score</span>';
+          (weekNum ? weekLabel + ' · ' + totalLabel : totalLabel) +
+          '<span class="challenge-hub-points__meta">' +
+          meta +
+          '</span>';
       }
     }
     wireFb();

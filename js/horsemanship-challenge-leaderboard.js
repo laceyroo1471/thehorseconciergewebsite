@@ -95,12 +95,17 @@
     if (!latestUser) return '';
     var found = (rows || []).filter(isYou)[0];
     if (found) {
-      return 'You’re #' + found.rank + ' with ' + found.points + ' pts.';
+      return kind === 'week'
+        ? 'You have ' + found.points + ' pts this week · #' + found.rank + '.'
+        : 'You’re #' + found.rank + ' with ' + found.points + ' pts.';
+    }
+    if (kind === 'week') {
+      return myPoints > 0
+        ? 'You have ' + myPoints + ' pts this week — keep going for a top-5 spot.'
+        : 'You have 0 pts this week so far.';
     }
     if (myPoints > 0) {
-      return kind === 'week'
-        ? 'You’re on the board with ' + myPoints + ' pts — keep going for a top-5 spot.'
-        : 'You’re on the board with ' + myPoints + ' pts — keep going for a top-20 spot.';
+      return 'You’re on the board with ' + myPoints + ' pts — keep going for a top-20 spot.';
     }
     return '';
   }
@@ -159,6 +164,9 @@
         youEl.hidden = !line;
         youEl.textContent = line;
       }
+      if (kind === 'week') {
+        fillWeekHeroPoints(weekNum, myPoints);
+      }
     });
 
     document.querySelectorAll('[data-week-winner]').forEach(function (el) {
@@ -182,6 +190,34 @@
         el.hidden = true;
       }
     });
+  }
+
+  function fillWeekHeroPoints(weekNum, myPoints) {
+    var config = document.getElementById('challenge-week-config');
+    var pageWeek = config && config.getAttribute('data-week-number');
+    if (pageWeek && String(pageWeek) !== String(weekNum)) return;
+    var el = document.getElementById('challenge-week-points');
+    if (!el) {
+      var hero = document.querySelector('.page-hero--challenge .page-hero-content');
+      if (!hero) return;
+      el = document.createElement('p');
+      el.id = 'challenge-week-points';
+      el.className = 'challenge-hub-points';
+      var actions = hero.querySelector('.challenge-hero-actions');
+      if (actions) hero.insertBefore(el, actions);
+      else hero.appendChild(el);
+    }
+    if (!latestUser) {
+      el.hidden = true;
+      return;
+    }
+    el.hidden = false;
+    var n = Number(myPoints) || 0;
+    el.innerHTML =
+      (n === 1 ? '1 point this week' : n + ' points this week') +
+      '<span class="challenge-hub-points__meta">Your Week ' +
+      escapeHtml(String(weekNum || pageWeek || '')) +
+      ' score</span>';
   }
 
   function applyBoardSnap(snap) {
