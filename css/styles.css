@@ -4771,8 +4771,14 @@
   .challenge-point-track-status--error {
     color: #e8b4b4;
   }
+  .challenge-point-track-status--success {
+    font-weight: 500;
+  }
   .challenge-point-track-status[hidden] {
     display: none !important;
+  }
+  .challenge-question-form--received {
+    opacity: 0.78;
   }
   .challenge-discount-code {
     margin: 0;

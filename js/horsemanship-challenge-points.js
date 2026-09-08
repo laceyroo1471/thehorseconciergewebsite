@@ -8,20 +8,21 @@
  *   data-challenge-point-label="Mad Barn nutrition evaluation"
  *
  * Forms (same attributes on the <form>):
- *   data-challenge-point-action="week1-question"
+ *   data-challenge-point-action="week2-eei-class-pick"
  *
  * On click / submit (signed-in challenge user):
  *   1) Writes challengeRegistrations/{uid}.pointActions[actionId] (idempotent)
  *   2) Best-effort audit row in challengePointEvents
  *   3) Cloud Functions copy that into challengeActions / challengeScores
+ *   4) Forms email via Formsubmit ajax so the page does not refresh
  *
- * Not signed in → prompt to sign in. Link clicks remember the pending action
- * for this tab; forms ask for sign-in first so the email still goes through.
+ * Not signed in → prompt to sign in. Forms never native-POST unsigned.
  */
 (function () {
   var CHALLENGE_ID = 'horsemanship-2026';
   var DOOR_SIGNIN = 'horsemanship-challenge.html?signin=1#register';
   var PENDING_KEY = 'thcChallengePendingPointAction';
+  var FORMSUBMIT_AJAX = 'https://formsubmit.co/ajax/info@thehorseconcierge.com';
 
   var firebaseConfig = {
     apiKey: 'AIzaSyCpSLt4otffRYi3PUDrr_HvTXZrEtOeUzY',
@@ -37,24 +38,30 @@
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   var auth = firebase.auth();
   var db = firebase.firestore();
+  var latestRegistration = null;
 
   function statusTarget(fromEl) {
-    if (fromEl) {
-      var panel = fromEl.closest ? fromEl.closest('.funnel-panel') : null;
-      if (panel) {
-        var local = panel.querySelector('.challenge-point-track-status');
+    if (fromEl && fromEl.closest) {
+      var host = fromEl.closest('.funnel-panel, .challenge-day__action, .challenge-question-panel');
+      if (host) {
+        var local = host.querySelector('.challenge-point-track-status');
         if (local) return local;
       }
+    }
+    if (fromEl && fromEl.parentNode) {
+      var sibling = fromEl.parentNode.querySelector('.challenge-point-track-status');
+      if (sibling) return sibling;
     }
     return document.getElementById('challenge-point-track-status');
   }
 
-  function setStatus(fromEl, msg, isError) {
+  function setStatus(fromEl, msg, isError, isSuccess) {
     var el = statusTarget(fromEl);
     if (!el) return;
     el.hidden = !msg;
     el.textContent = msg || '';
     el.classList.toggle('challenge-point-track-status--error', !!isError);
+    el.classList.toggle('challenge-point-track-status--success', !!isSuccess && !isError);
   }
 
   function readActionFromEl(el) {
@@ -102,6 +109,48 @@
     if (!win) {
       window.location.href = href;
     }
+  }
+
+  function identityFrom(user, registration) {
+    var name = '';
+    if (registration && registration.name) name = String(registration.name).trim();
+    if (!name && user && user.displayName) name = String(user.displayName).trim();
+    var email = '';
+    if (user && user.email) email = String(user.email).trim();
+    if (!email && registration && registration.email) email = String(registration.email).trim();
+    if (!name && email) name = email;
+    return { name: name, email: email };
+  }
+
+  function applyIdentityToForm(form, user, registration) {
+    if (!form) return identityFrom(user, registration);
+    var id = identityFrom(user, registration);
+    var nameEl = form.querySelector('input[name="name"]');
+    var emailEl = form.querySelector('input[name="email"]');
+    if (nameEl && !String(nameEl.value || '').trim() && id.name) nameEl.value = id.name;
+    if (emailEl && id.email) emailEl.value = id.email;
+    return id;
+  }
+
+  function setFormBusy(form, busy) {
+    if (!form) return;
+    form.querySelectorAll('button[type="submit"]').forEach(function (btn) {
+      btn.disabled = !!busy;
+    });
+  }
+
+  function showFormReceived(form, action, already) {
+    if (!form || !action) return;
+    form.setAttribute('data-challenge-points-logged', '1');
+    form.classList.add('challenge-question-form--received');
+    form.querySelectorAll('input, textarea, select, button').forEach(function (el) {
+      if (el.type === 'hidden') return;
+      el.disabled = true;
+    });
+    var msg = already
+      ? action.points + ' points already logged for “' + action.label + '”.'
+      : action.points + ' points received for “' + action.label + '”. You’re all set.';
+    setStatus(form, msg, false, true);
   }
 
   function writePointAction(user, action) {
@@ -182,7 +231,7 @@
     return writePointAction(user, action)
       .then(function () {
         clearPending();
-        setStatus(el, action.points + ' points logged for “' + action.label + '”. Opening the link.');
+        setStatus(el, action.points + ' points logged for “' + action.label + '”. Opening the link.', false, true);
         openDestination(action.href);
       })
       .catch(function (err) {
@@ -196,8 +245,45 @@
       });
   }
 
-  function nativeSubmit(form) {
-    HTMLFormElement.prototype.submit.call(form);
+  function sendFormEmail(form) {
+    var actionUrl = (form.getAttribute('action') || '').trim();
+    var ajaxUrl = FORMSUBMIT_AJAX;
+    if (actionUrl.indexOf('https://formsubmit.co/') === 0) {
+      ajaxUrl = actionUrl.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
+    }
+
+    var hasFile = !!form.querySelector('input[type="file"]');
+    var request;
+    if (hasFile) {
+      var fd = new FormData(form);
+      fd.delete('_next');
+      request = fetch(ajaxUrl, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: fd,
+      });
+    } else {
+      var data = {};
+      new FormData(form).forEach(function (value, key) {
+        if (key === '_next') return;
+        data[key] = value;
+      });
+      request = fetch(ajaxUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+    }
+
+    return request.then(function (res) {
+      if (!res.ok) throw new Error('formsubmit ' + res.status);
+      return res.json().catch(function () {
+        return {};
+      });
+    });
   }
 
   function handleTrackedClick(e) {
@@ -222,41 +308,69 @@
     var action = readActionFromEl(form);
     if (!action) return;
 
+    e.preventDefault();
+
+    if (form.getAttribute('data-challenge-points-logged') === '1') {
+      setStatus(form, 'Already received — your points are logged.', false, true);
+      return;
+    }
+
     var user = auth.currentUser;
     if (!user) {
-      e.preventDefault();
       promptSignIn(form, action);
       return;
     }
 
-    if (form.getAttribute('data-challenge-points-logged') === '1') return;
+    applyIdentityToForm(form, user, latestRegistration);
+    var id = identityFrom(user, latestRegistration);
+    if (!id.email) {
+      setStatus(form, 'Stay signed in with your Challenge account so we can credit these points.', true);
+      return;
+    }
 
-    e.preventDefault();
+    setFormBusy(form, true);
     setStatus(form, 'Saving your ' + action.points + ' points…');
     writePointAction(user, action)
       .then(function () {
-        form.setAttribute('data-challenge-points-logged', '1');
-        setStatus(form, action.points + ' points logged for “' + action.label + '”. Sending your form…');
-        nativeSubmit(form);
+        return sendFormEmail(form).catch(function (err) {
+          console.warn('form email skipped', err);
+          return { emailFailed: true };
+        });
+      })
+      .then(function (emailResult) {
+        showFormReceived(form, action, false);
+        if (emailResult && emailResult.emailFailed) {
+          setStatus(
+            form,
+            action.points + ' points received for “' + action.label + '”. You’re all set.',
+            false,
+            true
+          );
+        }
       })
       .catch(function (err) {
         console.error(err);
-        form.setAttribute('data-challenge-points-logged', '1');
+        setFormBusy(form, false);
         setStatus(
           form,
-          'Could not save points automatically — sending your form anyway. Email info@thehorseconcierge.com if the points don’t show.',
+          'Could not save points. Stay signed in and try again, or email info@thehorseconcierge.com.',
           true
         );
-        nativeSubmit(form);
       });
   }
 
-  function fillAutofillForms(user) {
+  function fillAutofillForms(user, registration) {
     document.querySelectorAll('form[data-challenge-autofill-user]').forEach(function (form) {
-      var nameEl = form.querySelector('input[name="name"]');
-      var emailEl = form.querySelector('input[name="email"]');
-      if (nameEl && !nameEl.value) nameEl.value = (user && user.displayName) || '';
-      if (emailEl) emailEl.value = (user && user.email) || '';
+      applyIdentityToForm(form, user, registration);
+    });
+  }
+
+  function markClaimedForms(registration) {
+    var actions = (registration && registration.pointActions) || {};
+    document.querySelectorAll('form[data-challenge-point-action]').forEach(function (form) {
+      var action = readActionFromEl(form);
+      if (!action) return;
+      if (actions[action.actionId]) showFormReceived(form, action, true);
     });
   }
 
@@ -277,10 +391,33 @@
     claimAndOpen(user, pending, null);
   }
 
+  function loadRegistration(uid) {
+    return db
+      .collection('challengeRegistrations')
+      .doc(uid)
+      .get()
+      .then(function (snap) {
+        return snap.exists ? snap.data() || {} : null;
+      })
+      .catch(function (err) {
+        console.warn('challenge registration read skipped', err);
+        return null;
+      });
+  }
+
   wireLinksAndForms();
 
   auth.onAuthStateChanged(function (user) {
-    fillAutofillForms(user);
-    if (user) resumePendingIfAny(user);
+    if (!user) {
+      latestRegistration = null;
+      fillAutofillForms(null, null);
+      return;
+    }
+    loadRegistration(user.uid).then(function (registration) {
+      latestRegistration = registration;
+      fillAutofillForms(user, registration);
+      markClaimedForms(registration);
+      resumePendingIfAny(user);
+    });
   });
 })();
