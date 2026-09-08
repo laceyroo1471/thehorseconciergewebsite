@@ -5782,6 +5782,12 @@
   .weigh-item__field .form-input:disabled {
     opacity: 0.65;
   }
+  .weigh-item--pct {
+    grid-template-columns: 26px 1fr 110px;
+  }
+  .weigh-item--pct .weigh-item__fields {
+    grid-template-columns: 1fr;
+  }
   .weigh-form__hint {
     margin: 14px 0 0;
     font-size: 0.72rem;
@@ -5823,7 +5829,9 @@
   /* The button classes set display, which would otherwise beat the hidden attribute. */
   .weigh-card[hidden],
   [data-weigh-open][hidden],
-  [data-weigh-submit][hidden] {
+  [data-weigh-submit][hidden],
+  [data-weigh-w2-open][hidden],
+  [data-weigh-w2-submit][hidden] {
     display: none;
   }
   .weigh-card {

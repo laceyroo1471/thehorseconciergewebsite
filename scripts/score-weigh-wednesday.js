@@ -6,9 +6,9 @@
  * The scheduled Cloud Function does this automatically Sunday 8:00 p.m. Eastern.
  * Use this only if that run was skipped (for example the weights were entered late).
  *
- *   node scripts/score-weigh-wednesday.js --dry-run   preview the ranking, award nothing
- *   node scripts/score-weigh-wednesday.js --force     score now, before Sunday close
- *   node scripts/score-weigh-wednesday.js             score if the window has closed
+ *   node scripts/score-weigh-wednesday.js --contest weigh-wednesday-w2 --dry-run
+ *   node scripts/score-weigh-wednesday.js --contest weigh-wednesday-w2 --force
+ *   node scripts/score-weigh-wednesday.js --contest weigh-wednesday-w1
  *
  * Awarding is idempotent — a second run will not double-credit anyone.
  */
@@ -35,11 +35,16 @@ function toMillis(val) {
   return Number(val) || 0;
 }
 
-async function dryRun(db, contest) {
-  var snap = await db.collection('challengeContests').doc(contest.CONTEST_ID).get();
+async function dryRun(db, contest, contestId) {
+  var spec = contest.CONTESTS[contestId];
+  if (!spec) {
+    console.error('\nUnknown contest: ' + contestId);
+    process.exit(1);
+  }
+  var snap = await db.collection('challengeContests').doc(contestId).get();
   var data = snap.exists ? snap.data() || {} : {};
   if (!data.actuals) {
-    console.error('\nNo weights stored yet. Run: node scripts/set-weigh-actuals.js --show');
+    console.error('\nNo actuals stored yet for ' + contestId + '.');
     process.exit(1);
   }
 
@@ -49,12 +54,12 @@ async function dryRun(db, contest) {
     var reg = doc.data() || {};
     if (reg.status === 'inactive') return;
     if (reg.excludeFromLeaderboard === true || reg.staffAccount === true) return;
-    var block = reg.weighWednesday || {};
-    if (block.contestId && block.contestId !== contest.CONTEST_ID) return;
-    if (!contest.isCompleteGuesses(block.guesses)) return;
+    var block = reg[spec.field] || {};
+    if (block.contestId && block.contestId !== contestId) return;
+    if (!contest.isCompleteGuessesFor(spec, block.guesses)) return;
     rows.push({
       name: reg.name || doc.id,
-      avgPct: contest.averagePercentDiff(block.guesses, data.actuals),
+      avgPct: contest.averagePercentDiffFor(spec, block.guesses, data.actuals),
       submittedAt: toMillis(block.submittedAt),
     });
   });
@@ -85,6 +90,8 @@ async function main() {
   var isDryRun = argv.indexOf('--dry-run') !== -1;
   var force = argv.indexOf('--force') !== -1;
   var rescore = argv.indexOf('--rescore') !== -1;
+  var contestFlag = argv.indexOf('--contest');
+  var contestId = contestFlag !== -1 ? argv[contestFlag + 1] : 'weigh-wednesday-w2';
 
   var contest = loadContestModule();
   adminBoot.initAdmin();
@@ -92,11 +99,11 @@ async function main() {
   var db = admin.firestore();
 
   if (isDryRun) {
-    await dryRun(db, contest);
+    await dryRun(db, contest, contestId);
     return;
   }
 
-  var result = await contest.closeAndScore({ force: force, rescore: rescore });
+  var result = await contest.closeAndScore({ contestId: contestId, force: force, rescore: rescore });
   if (!result.scored) {
     if (result.reason === 'missing_actuals') {
       console.error('\nNo weights stored yet. Enter them first:');
