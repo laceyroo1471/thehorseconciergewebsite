@@ -6,7 +6,8 @@
  * The scheduled Cloud Function does this automatically Sunday 8:00 p.m. Eastern.
  * Use this only if that run was skipped (for example the weights were entered late).
  *
- *   node scripts/score-weigh-wednesday.js --contest weigh-wednesday-w2 --dry-run
+ *   node scripts/score-weigh-wednesday.js --contest weigh-wednesday-w3 --dry-run
+ *   node scripts/score-weigh-wednesday.js --contest weigh-wednesday-w3 --force
  *   node scripts/score-weigh-wednesday.js --contest weigh-wednesday-w2 --force
  *   node scripts/score-weigh-wednesday.js --contest weigh-wednesday-w1
  *
@@ -91,7 +92,7 @@ async function main() {
   var force = argv.indexOf('--force') !== -1;
   var rescore = argv.indexOf('--rescore') !== -1;
   var contestFlag = argv.indexOf('--contest');
-  var contestId = contestFlag !== -1 ? argv[contestFlag + 1] : 'weigh-wednesday-w2';
+  var contestId = contestFlag !== -1 ? argv[contestFlag + 1] : 'weigh-wednesday-w3';
 
   var contest = loadContestModule();
   adminBoot.initAdmin();
@@ -106,7 +107,9 @@ async function main() {
   var result = await contest.closeAndScore({ contestId: contestId, force: force, rescore: rescore });
   if (!result.scored) {
     if (result.reason === 'missing_actuals') {
-      console.error('\nNo weights stored yet. Enter them first:');
+      console.error('\nNo official values stored yet. Enter them first:');
+      console.error('  node scripts/set-weigh-w3-actuals.js');
+      console.error('  node scripts/set-weigh-w2-actuals.js');
       console.error('  node scripts/set-weigh-actuals.js --scoopBeet 2,4 ... ');
     } else if (result.reason === 'not_closed') {
       console.error('\nContest is still open (closes Sunday 8:00 p.m. Eastern).');

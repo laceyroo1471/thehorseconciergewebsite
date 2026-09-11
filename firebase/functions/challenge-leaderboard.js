@@ -124,6 +124,31 @@ function winnerFromStandings(standings) {
   };
 }
 
+function placeFromStandings(standings, rank) {
+  if (!standings || !standings.length) return null;
+  var want = Number(rank) || 0;
+  for (var i = 0; i < standings.length; i++) {
+    if (Number(standings[i].rank) === want) {
+      return {
+        displayName: standings[i].displayName,
+        userId: standings[i].userId,
+        points: standings[i].points,
+        rank: want,
+      };
+    }
+  }
+  return null;
+}
+
+function publicWinner(row) {
+  if (!row || !row.displayName) return null;
+  return {
+    displayName: row.displayName,
+    points: row.points,
+    rank: row.rank || 1,
+  };
+}
+
 async function rebuildLeaderboard() {
   var scoresSnap = await db().collection('challengeScores').where('challengeId', '==', CHALLENGE_ID).get();
   var regsSnap = await db().collection('challengeRegistrations').where('challengeId', '==', CHALLENGE_ID).get();
@@ -181,6 +206,10 @@ async function rebuildLeaderboard() {
     var shouldLock = !prev.holdLock && !!lockAt && today >= lockAt;
     var locked = !!prev.locked || shouldLock;
     var winner = prev.locked && prev.winner ? prev.winner : shouldLock ? winnerFromStandings(standings) : null;
+    var secondWinner = null;
+    if (locked && winner) {
+      secondWinner = prev.secondWinner || placeFromStandings(standings, 2);
+    }
 
     weeks[key] = {
       weekNumber: week.weekNumber,
@@ -191,6 +220,7 @@ async function rebuildLeaderboard() {
       holdLock: !!prev.holdLock,
       standings: standings,
       winner: winner,
+      secondWinner: secondWinner,
     };
   });
 
@@ -216,9 +246,8 @@ async function rebuildLeaderboard() {
       lockAt: w.lockAt,
       locked: w.locked,
       standings: stripIds(w.standings),
-      winner: w.winner
-        ? { displayName: w.winner.displayName, points: w.winner.points, rank: 1 }
-        : null,
+      winner: publicWinner(w.winner),
+      secondWinner: publicWinner(w.secondWinner),
     };
   });
 

@@ -157,13 +157,31 @@ function looksLikeGps(data) {
 }
 
 function hasComment(data) {
-  var text = String(data.notes || data.comment || data.comments || data.caption || '').trim();
+  var text = String(
+    data.trailNotes ||
+      data.horseNotes ||
+      data.notes ||
+      data.comment ||
+      data.comments ||
+      data.caption ||
+      ''
+  ).trim();
   return text.length > 0;
 }
 
 function hasObservation(data) {
   var text = String(
-    data.observations || data.observation || data.fitNotes || data.notes || data.comment || ''
+    data.observations ||
+      data.observation ||
+      data.fitNotes ||
+      data.notes ||
+      data.note ||
+      data.comment ||
+      data.text ||
+      data.body ||
+      data.content ||
+      data.message ||
+      ''
   ).trim();
   return text.length > 0;
 }
@@ -192,6 +210,7 @@ function fieldBlob(data) {
     data.tackType,
     data.discipline,
     data.itemType,
+    data.serviceCategory,
     data.name,
     data.title,
     data.notes,
@@ -229,6 +248,18 @@ function isTrailerMaintenance(data) {
   return /trailer/.test(type) && /mainten/.test(type);
 }
 
+function isFarrierCareTeam(data) {
+  if (!data || isArchived(data)) return false;
+  return /farrier/.test(String(data.serviceCategory || '').toLowerCase());
+}
+
+function isHistoryNote(data) {
+  if (!data || isArchived(data)) return false;
+  if (String(data.type || '').toLowerCase() !== 'note') return false;
+  if (String(data.source || '').toLowerCase() === 'owner_checkin') return false;
+  return hasObservation(data);
+}
+
 function qualifies(action, data, collectionName) {
   if (!data || isArchived(data)) return false;
   if (action.photoKind && !kindMatches(data, action.photoKind, collectionName)) return false;
@@ -245,6 +276,10 @@ function qualifies(action, data, collectionName) {
     case 'trailerMaintenance':
       if (collectionName === 'careRecords') return isTrailerMaintenance(data);
       return true;
+    case 'farrier':
+      return isFarrierCareTeam(data);
+    case 'historyNote':
+      return isHistoryNote(data);
     case 'exists':
     default:
       return true;
@@ -252,6 +287,17 @@ function qualifies(action, data, collectionName) {
 }
 
 function eventMillis(data) {
+  var dateVal = data && data.date;
+  if (typeof dateVal === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateVal.trim())) {
+    return (
+      toMillis(data.startedAt) ||
+      toMillis(data.startTime) ||
+      toMillis(data.activityAt) ||
+      nyWallClockToUtcMs(dateVal.trim(), 12, 0, 0, 0) ||
+      toMillis(data.createdAt) ||
+      toMillis(data.updatedAt)
+    );
+  }
   return (
     toMillis(data.startedAt) ||
     toMillis(data.startTime) ||
@@ -494,11 +540,35 @@ async function scoreAppDocument(collectionName, docId, data) {
   }
 }
 
+function normalizeQuizAnswer(value) {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function hubQuizShouldAward(action, payload, registration) {
+  if (!action || !action.requireCorrect) return true;
+  var expected = normalizeQuizAnswer(action.correctAnswer);
+  if (!expected) return false;
+
+  var stored = pointActionsFromRegistration(registration)[action.actionId] || {};
+  if (stored.correct === false || stored.status === 'incorrect') return false;
+  var storedAnswer = normalizeQuizAnswer(stored.selectedAnswer || stored.answer || stored.q1);
+  if (storedAnswer && storedAnswer !== expected) return false;
+
+  var submitted = normalizeQuizAnswer(
+    payload && (payload.selectedAnswer || payload.answer || payload.q1)
+  );
+  return !!(submitted && submitted === expected);
+}
+
 async function scoreHubPointAction(uid, actionId, payload) {
   var registration = await loadRegistration(uid);
   if (!registration) return;
   var action = config.hubActionById(actionId);
   if (!action) return;
+  if (!hubQuizShouldAward(action, payload, registration)) return;
   var earnedAtMs = toMillis(payload && payload.clickedAt) || toMillis(payload && payload.updatedAt) || Date.now();
   await award(uid, action, { source: 'hub', earnedAtMs: earnedAtMs });
 }
@@ -638,6 +708,7 @@ module.exports = {
   awardManual: awardManual,
   qualifies: qualifies,
   eventMillis: eventMillis,
+  inWeekWindow: inWeekWindow,
   countsTowardWeeklyPrize: countsTowardWeeklyPrize,
   isGrandPrizeOnlyAction: isGrandPrizeOnlyAction,
 };

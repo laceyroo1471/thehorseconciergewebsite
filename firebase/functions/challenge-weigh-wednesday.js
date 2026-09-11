@@ -4,7 +4,8 @@
  * What's It Weigh Wednesday — rank complete guesses and award weekly points.
  *
  * Week 1 (weigh-wednesday-w1): lb/oz feed fills. Closed Sep 6, 2026.
- * Week 2 (weigh-wednesday-w2): organ % of body weight. Closes Sep 13, 2026 8:00 PM ET.
+ * Week 2 (weigh-wednesday-w2): organ % of body weight. Closed Sep 13, 2026 8:00 PM ET.
+ * Week 3 (weigh-wednesday-w3): peak ground force (lb) on a 1,000-lb horse. Closes Sep 20, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -37,6 +38,16 @@ var CONTESTS = {
     placePrefix: 'week2-weigh-place-',
     title: "What's It Weigh Wednesday",
     itemIds: ['heartAdult', 'heartArabian', 'heartDraft', 'heartRacing', 'kidneysAdult', 'liverAdult'],
+  },
+  'weigh-wednesday-w3': {
+    contestId: 'weigh-wednesday-w3',
+    weekNumber: 3,
+    closeMs: Date.parse('2026-09-20T20:00:00-04:00'),
+    unit: 'pounds',
+    field: 'weighWednesdayW3',
+    placePrefix: 'week3-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    itemIds: ['walkFore', 'walkHind', 'trotFore', 'trotHind', 'canterTrailFore'],
   },
 };
 
@@ -74,6 +85,15 @@ function toOunces(row) {
   return lb * 16 + oz;
 }
 
+function toPounds(row) {
+  if (row == null) return NaN;
+  if (typeof row === 'number') return row >= 0 ? row : NaN;
+  if (typeof row !== 'object') return NaN;
+  var lb = Number(row.lb);
+  if (isNaN(lb) || lb < 0) return NaN;
+  return lb;
+}
+
 function toValue(row, unit) {
   if (unit === 'percent') {
     if (row == null) return NaN;
@@ -83,6 +103,7 @@ function toValue(row, unit) {
     if (isNaN(pct) || pct < 0) return NaN;
     return pct;
   }
+  if (unit === 'pounds') return toPounds(row);
   return toOunces(row);
 }
 
@@ -310,5 +331,6 @@ module.exports = {
   averagePercentDiff: averagePercentDiff,
   averagePercentDiffFor: averagePercentDiffFor,
   toOunces: toOunces,
+  toPounds: toPounds,
   toValue: toValue,
 };

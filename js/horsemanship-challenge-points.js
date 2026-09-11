@@ -77,9 +77,102 @@
       weekNumber: parseInt(el.getAttribute('data-challenge-point-week') || '0', 10) || 0,
       label: (el.getAttribute('data-challenge-point-label') || actionId).trim(),
       partner: (el.getAttribute('data-challenge-point-partner') || '').trim(),
+      correctAnswer: (el.getAttribute('data-challenge-correct') || '').trim(),
       href: href,
       isForm: isForm,
     };
+  }
+
+  function normalizeQuizAnswer(value) {
+    return String(value || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  }
+
+  function selectedQuizAnswer(form) {
+    if (!form) return '';
+    var checked = form.querySelector('input[type="radio"]:checked');
+    if (checked) return String(checked.value || '').trim();
+    var text = form.querySelector('textarea[name="q1"], input[name="q1"]:not([type="radio"])');
+    return text ? String(text.value || '').trim() : '';
+  }
+
+  function isGradedQuiz(action) {
+    return !!(action && action.correctAnswer);
+  }
+
+  function lockFormFields(form) {
+    if (!form) return;
+    form.querySelectorAll('input, textarea, select, button').forEach(function (el) {
+      if (el.type === 'hidden') return;
+      el.disabled = true;
+    });
+  }
+
+  function markQuizChoices(form, correctAnswer, selectedAnswer) {
+    if (!form) return;
+    var expected = normalizeQuizAnswer(correctAnswer);
+    var picked = normalizeQuizAnswer(selectedAnswer);
+    form.querySelectorAll('.challenge-choice').forEach(function (label) {
+      label.classList.remove('challenge-choice--correct', 'challenge-choice--wrong');
+      var input = label.querySelector('input[type="radio"]');
+      if (!input) return;
+      var value = normalizeQuizAnswer(input.value);
+      if (value && value === expected) label.classList.add('challenge-choice--correct');
+      else if (picked && value === picked && value !== expected) label.classList.add('challenge-choice--wrong');
+    });
+  }
+
+  function showQuizResult(form, action, opts) {
+    opts = opts || {};
+    var correct = !!opts.correct;
+    var already = !!opts.already;
+    var selected = opts.selectedAnswer || '';
+    form.setAttribute('data-challenge-quiz-graded', '1');
+    form.setAttribute('data-challenge-points-logged', correct ? '1' : '0');
+    form.classList.add('challenge-question-form--received', 'challenge-question-form--graded');
+    form.classList.toggle('challenge-question-form--correct', correct);
+    form.classList.toggle('challenge-question-form--incorrect', !correct);
+    lockFormFields(form);
+    markQuizChoices(form, action.correctAnswer, selected);
+
+    var resultField = form.querySelector('input[name="quizResult"]');
+    if (resultField) resultField.value = correct ? 'correct' : 'incorrect';
+
+    var host = form.closest('.challenge-day__action, .funnel-panel, .challenge-question-panel') || form.parentNode;
+    var box = host ? host.querySelector('.challenge-quiz-result') : null;
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'challenge-quiz-result';
+      box.setAttribute('role', 'status');
+      form.insertAdjacentElement('afterend', box);
+    }
+    box.hidden = false;
+    box.classList.toggle('challenge-quiz-result--correct', correct);
+    box.classList.toggle('challenge-quiz-result--incorrect', !correct);
+    var label = already
+      ? correct
+        ? 'Correct · ' + action.points + ' points already logged'
+        : 'Not this time · no points'
+      : correct
+        ? 'Correct · ' + action.points + ' points awarded'
+        : 'Not this time · no points';
+    box.innerHTML =
+      '<p class="challenge-quiz-result__label">' +
+      label +
+      '</p><p class="challenge-quiz-result__answer">The right answer is: ' +
+      action.correctAnswer +
+      '</p>';
+
+    setStatus(
+      form,
+      correct
+        ? action.points + ' points ' + (already ? 'already logged' : 'awarded') + ' for “' + action.label + '”.'
+        : 'No points for this question. The right answer is shown above.',
+      !correct,
+      correct
+    );
   }
 
   function savePending(action) {
@@ -153,17 +246,23 @@
     setStatus(form, msg, false, true);
   }
 
-  function writePointAction(user, action) {
+  function writePointAction(user, action, extras) {
+    extras = extras || {};
+    var isCorrect = extras.correct !== false;
     var actionPayload = {
       actionId: action.actionId,
-      points: action.points,
+      points: isCorrect ? action.points : 0,
       weekNumber: action.weekNumber,
       label: action.label,
       destinationUrl: action.href || '',
       challengeId: CHALLENGE_ID,
-      status: 'auto_claimed',
+      status: isCorrect ? 'auto_claimed' : 'incorrect',
+      correct: isCorrect,
+      selectedAnswer: extras.selectedAnswer || '',
       verificationPartner: action.partner || '',
-      verificationNote: 'Logged automatically from the Challenge Hub.',
+      verificationNote: isCorrect
+        ? 'Logged automatically from the Challenge Hub.'
+        : 'Quiz submitted incorrect — no points awarded.',
       clickedAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
@@ -195,11 +294,13 @@
           email: user.email || '',
           challengeId: CHALLENGE_ID,
           actionId: action.actionId,
-          points: action.points,
+          points: isCorrect ? action.points : 0,
           weekNumber: action.weekNumber,
           label: action.label,
           destinationUrl: action.href || '',
-          status: 'auto_claimed',
+          status: isCorrect ? 'auto_claimed' : 'incorrect',
+          correct: isCorrect,
+          selectedAnswer: extras.selectedAnswer || '',
           verificationPartner: action.partner || '',
           clickedAt: firebase.firestore.FieldValue.serverTimestamp(),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -310,6 +411,9 @@
 
     e.preventDefault();
 
+    if (form.getAttribute('data-challenge-quiz-graded') === '1') {
+      return;
+    }
     if (form.getAttribute('data-challenge-points-logged') === '1') {
       setStatus(form, 'Already received — your points are logged.', false, true);
       return;
@@ -328,32 +432,37 @@
       return;
     }
 
+    var selectedAnswer = selectedQuizAnswer(form);
+    var graded = isGradedQuiz(action);
+    var correct = !graded || normalizeQuizAnswer(selectedAnswer) === normalizeQuizAnswer(action.correctAnswer);
+
     setFormBusy(form, true);
-    setStatus(form, 'Saving your ' + action.points + ' points…');
-    writePointAction(user, action)
+    if (graded) {
+      setStatus(form, correct ? 'Checking your answer…' : 'Saving your answer…');
+    } else {
+      setStatus(form, 'Saving your ' + action.points + ' points…');
+    }
+
+    writePointAction(user, action, { correct: correct, selectedAnswer: selectedAnswer })
       .then(function () {
         return sendFormEmail(form).catch(function (err) {
           console.warn('form email skipped', err);
           return { emailFailed: true };
         });
       })
-      .then(function (emailResult) {
-        showFormReceived(form, action, false);
-        if (emailResult && emailResult.emailFailed) {
-          setStatus(
-            form,
-            action.points + ' points received for “' + action.label + '”. You’re all set.',
-            false,
-            true
-          );
+      .then(function () {
+        if (graded) {
+          showQuizResult(form, action, { correct: correct, selectedAnswer: selectedAnswer, already: false });
+          return;
         }
+        showFormReceived(form, action, false);
       })
       .catch(function (err) {
         console.error(err);
         setFormBusy(form, false);
         setStatus(
           form,
-          'Could not save points. Stay signed in and try again, or email info@thehorseconcierge.com.',
+          'Could not save your answer. Stay signed in and try again, or email info@thehorseconcierge.com.',
           true
         );
       });
@@ -370,7 +479,18 @@
     document.querySelectorAll('form[data-challenge-point-action]').forEach(function (form) {
       var action = readActionFromEl(form);
       if (!action) return;
-      if (actions[action.actionId]) showFormReceived(form, action, true);
+      var recorded = actions[action.actionId];
+      if (!recorded) return;
+      if (isGradedQuiz(action)) {
+        var correct = recorded.correct !== false && recorded.status !== 'incorrect';
+        showQuizResult(form, action, {
+          correct: correct,
+          selectedAnswer: recorded.selectedAnswer || '',
+          already: true,
+        });
+        return;
+      }
+      showFormReceived(form, action, true);
     });
   }
 

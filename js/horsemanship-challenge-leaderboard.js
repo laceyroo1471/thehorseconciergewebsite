@@ -137,13 +137,18 @@
         displayRows = rows.slice(0, 5);
         var weekly = (latestRegistration && latestRegistration.weeklyPoints) || {};
         myPoints = Number(weekly[weekNum] || weekly[Number(weekNum)] || 0);
-        if (noteEl) {
-          if (week && week.locked && week.winner) {
-            noteEl.textContent =
-              'Winner locked: ' +
-              week.winner.displayName +
-              ' · This week’s prize standings are final.';
-          } else if (week && week.lockAt) {
+        if (noteEl && week) {
+          if (week.locked && week.winner) {
+            noteEl.textContent = week.secondWinner && week.secondWinner.displayName
+              ? 'Winners locked: ' +
+                week.winner.displayName +
+                ' (1st) and ' +
+                week.secondWinner.displayName +
+                ' (2nd) · This week’s prize standings are final.'
+              : 'Winner locked: ' +
+                week.winner.displayName +
+                ' · This week’s prize standings are final.';
+          } else if (week.lockAt) {
             noteEl.textContent =
               'Top 5 for this week’s prize. Scoring closes Sunday, ' +
               prettyDate(week.end) +
@@ -173,12 +178,13 @@
       var weekNum = String(el.getAttribute('data-week-winner') || '');
       var week = latestBoard && latestBoard.weeks && latestBoard.weeks[weekNum];
       if (!week) {
-        el.hidden = true;
         return;
       }
       if (week.locked && week.winner && week.winner.displayName) {
         el.hidden = false;
-        el.textContent = 'Winner: ' + week.winner.displayName;
+        el.textContent = week.secondWinner && week.secondWinner.displayName
+          ? '1st: ' + week.winner.displayName + ' · 2nd: ' + week.secondWinner.displayName
+          : 'Winner: ' + week.winner.displayName;
         el.classList.add('prize-week-card__winner--final');
         return;
       }
