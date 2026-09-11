@@ -4664,6 +4664,60 @@
   .challenge-partner-logo-well--eei .challenge-partner-logo-well__img {
     max-height: 72px;
   }
+  .challenge-day__resource--dio {
+    padding: 20px 22px;
+    border: 1px solid rgba(var(--gold-rgb), 0.18);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.22);
+  }
+  .challenge-day__dio-logo {
+    display: block;
+    width: auto;
+    height: 32px;
+    margin: 0 0 16px;
+  }
+  #week-prize .btn-primary,
+  .challenge-day__resource--dio .btn-primary,
+  .challenge-day__action .btn-primary,
+  .challenge-day__product .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.35;
+    max-width: 100%;
+    height: auto;
+    min-height: 44px;
+    padding: 14px 22px;
+  }
+  .challenge-day__product {
+    display: grid;
+    grid-template-columns: minmax(140px, 200px) minmax(0, 1fr);
+    gap: 24px 28px;
+    align-items: start;
+    max-width: 720px;
+  }
+  .challenge-day__product-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background: #f4efe6;
+    border: 1px solid rgba(var(--gold-rgb), 0.22);
+  }
+  @media (max-width: 640px) {
+    .challenge-day__product {
+      grid-template-columns: 1fr;
+    }
+    .challenge-day__product-img {
+      max-width: 220px;
+    }
+  }
   /* YEF logo already includes gray field — skip white well */
   .challenge-partner-logo-well--yef {
     background: transparent;
@@ -4892,6 +4946,61 @@
   }
   .challenge-prize-place__label--center {
     text-align: center;
+  }
+  .challenge-prize-sponsor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #week-prize .challenge-partner-logo-well--presenting {
+    margin: 0 auto 16px;
+  }
+  .challenge-prize-amounts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    margin: 8px 0 0;
+  }
+  .challenge-prize-amount {
+    margin: 0;
+    padding: 18px 16px 20px;
+    border: 1px solid rgba(var(--gold-rgb), 0.28);
+    border-radius: 8px;
+    background: rgba(var(--gold-rgb), 0.08);
+    text-align: center;
+  }
+  .challenge-prize-amount--first {
+    border-color: rgba(var(--gold-rgb), 0.55);
+    background: rgba(var(--gold-rgb), 0.14);
+  }
+  .challenge-prize-amount__place {
+    margin: 0 0 8px;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .challenge-prize-amount__value {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    font-weight: 500;
+    line-height: 0.95;
+    color: var(--cream);
+  }
+  .challenge-prize-amount__label {
+    margin: 8px 0 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  @media (max-width: 520px) {
+    .challenge-prize-amounts {
+      grid-template-columns: 1fr;
+    }
   }
   .challenge-prize-items {
     display: grid;

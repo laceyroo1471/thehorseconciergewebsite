@@ -544,6 +544,14 @@ var WEEKS = [
 
   week(7, '2026-10-12', '2026-10-18', 'Recovery', 'Journeys', [
     action({
+      actionId: 'week7-horse-needs',
+      label: 'Determine which products could support your horse and barn',
+      points: 5,
+      status: 'live',
+      source: 'hub',
+      credit: 'anytime',
+    }),
+    action({
       actionId: 'week7-journey',
       label: 'Start a journey in the app',
       collections: ['journeys'],
