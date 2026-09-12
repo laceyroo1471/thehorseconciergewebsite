@@ -212,8 +212,10 @@ var WEEKS = [
     action({
       actionId: 'week2-conformation-photos',
       label: 'Add conformation photos in the app',
-      collections: ['conformationPhotos', 'horsePhotos'],
-      qualify: 'hasPhoto',
+      points: 15,
+      status: 'live',
+      collections: ['horsePhotoSets', 'conformationPhotos', 'horsePhotos'],
+      qualify: 'exists',
       photoKind: 'conformation',
       credit: 'anytime',
     }),

@@ -109,7 +109,7 @@ const WEEKS = [
     partner: 'CRS Horseshoes',
     partnerShort: 'CRS Horseshoes',
     logo: LOGOS.crs,
-    website: 'https://www.crshorseshoes.com/',
+    website: 'https://www.crshorseshoe.com/',
     about:
       'Partner copy for CRS Horseshoes will go here — hoof care and lameness focus for Week 3.',
   },
