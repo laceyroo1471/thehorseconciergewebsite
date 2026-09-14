@@ -4,7 +4,7 @@
  */
 (function () {
   var END_YMD = '2026-11-30';
-  var STORAGE_KEY = 'thcChallengePromoDismissed_v1';
+  var STORAGE_KEY = 'thcChallengePromoDismissed_v2';
   var SHOW_DELAY_MS = 1400;
 
   var dialog = document.getElementById('thc-dialog-challenge');
