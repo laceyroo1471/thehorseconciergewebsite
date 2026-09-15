@@ -4930,6 +4930,21 @@
     letter-spacing: 0.04em;
     color: var(--text-dim);
   }
+  .challenge-career-intro {
+    text-align: center;
+  }
+  .challenge-career-intro .heading-xl {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .challenge-career-intro .gold-divider {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .challenge-career-intro .body-text {
+    max-width: 640px;
+    margin: 0 auto 36px;
+  }
   .challenge-question-panel {
     margin-top: 40px;
   }
@@ -5351,6 +5366,33 @@
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
   }
+  .w4-buyback {
+    margin: 0 0 28px;
+  }
+  .w4-buyback-box {
+    margin: 16px 0 0;
+    padding: 18px 20px;
+    border: 1px solid rgba(var(--gold-rgb), 0.22);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.18);
+  }
+  .w4-buyback-box .w4-card__row {
+    margin-bottom: 10px;
+  }
+  .w4-buyback-row--missing .w4-note {
+    margin-top: 0;
+    margin-bottom: 12px;
+  }
+  .w4-buyback-row--missing a {
+    color: var(--gold);
+  }
+  .w4-buyback-hours {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    line-height: 1.25;
+    color: var(--cream);
+    margin: 16px 0 8px;
+  }
   .challenge-day__placeholder {
     padding: 24px;
     border: 1px dashed rgba(var(--gold-rgb), 0.3);
@@ -5423,6 +5465,16 @@
   }
   .challenge-question-form {
     max-width: 480px;
+  }
+  .challenge-question-form fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .challenge-question-form legend.form-label {
+    padding: 0;
+    margin-bottom: 8px;
   }
   .challenge-question-form textarea.form-input {
     min-height: 110px;

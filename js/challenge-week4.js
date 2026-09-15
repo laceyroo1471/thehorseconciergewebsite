@@ -66,6 +66,8 @@
     { id: 'square-net-chewy', label: 'Individual hay net example', waste: null, price: 26.36, product: 'Tough1 Slow Feed Square Bale Horse Feeder', retailer: 'Chewy', url: 'https://www.chewy.com/tough1-slow-feed-square-bale-horse/dp/3801519', match: 'No universal research waste rate' },
   ];
 
+  var EXAMPLE_TAKEHOME = 25;
+
   var SATURDAY_ROWS = [
     { id: 'stall-fork', item: 'Stall fork', tsc: "Producer's Pride Stall Shavings Fork", tscPrice: 46.99, alt: 'Replacement stall fork', retailer: 'Temu', altPrice: 12, note: 'User-observed Temu price. Compare durability, shipping and replacement frequency.', source: 'https://www.tractorsupply.com/tsc/catalog/rakes-forks' },
     { id: 'muck-tub', item: 'Muck bucket/tub', tsc: 'Little Giant DuraFlex Muck Tub, 70 qt.', tscPrice: 34.99, alt: 'Muck bucket/tub', retailer: 'Big Lots', altPrice: 8, note: 'User-observed Big Lots price; inventory and price vary by store.', source: 'https://www.tractorsupply.com/tsc/product/miller-mfg-little-giant-duraflex-muck-tub-70-qt-2577804' },
@@ -292,6 +294,7 @@
       renderFriday();
       renderCalendar();
       renderSundayProgress();
+      renderSundayBuyback();
     });
   }
 
@@ -687,34 +690,31 @@
     return num(raw);
   }
 
-  function recalcTuesday() {
+  function computeTuesdayEstimate(src) {
+    src = src || {};
     var tsc = tscSubtotal();
     var hasTsc = tsc > 0;
-    var eligible = hasTsc
-      ? Math.min(Math.max(num(val('w4-smart-eligible')) || 0, 0), tsc)
-      : 0;
+    var eligible = hasTsc ? Math.min(Math.max(num(src.smartEligible) || 0, 0), tsc) : 0;
     var smart = hasTsc ? eligible * 0.05 : 0;
-    var delivery = Math.max(num(val('w4-delivery-fees')) || 0, 0);
-    var tier = REWARD_TIERS[val('w4-reward-status')] || REWARD_TIERS.neighbor;
-    var starting = Math.max(num(val('w4-starting-points')) || 0, 0);
+    var delivery = Math.max(num(src.delivery) || 0, 0);
+    var tier = REWARD_TIERS[src.rewardStatus] || REWARD_TIERS.neighbor;
+    var starting = Math.max(num(src.startingPoints) || 0, 0);
     var qualifying = Math.max(eligible - smart, 0);
     var earned = Math.floor(qualifying) * tier.rate;
     var pool = starting + earned;
     var issued = Math.floor(pool / tier.threshold);
     var certMonth = issued * tier.cert;
     var ending = pool - issued * tier.threshold;
-
-    var discountPct = num(val('w4-retailer-discount-pct'));
-    var discountEligible = num(val('w4-retailer-discount-eligible'));
+    var discountPct = num(src.discountPct);
+    var discountEligible = num(src.discountEligible);
     var otherSave = 0;
     if (!isNaN(discountPct) && discountPct > 0 && !isNaN(discountEligible) && discountEligible > 0) {
       otherSave = discountEligible * (discountPct / 100);
     }
-
-    var miles = num(val('w4-miles'));
-    var mpg = num(val('w4-mpg'));
-    var fuelPrice = num(val('w4-fuel-price'));
-    var replaced = num(val('w4-trips-replaced'));
+    var miles = num(src.miles);
+    var mpg = num(src.mpg);
+    var fuelPrice = num(src.fuelPrice);
+    var replaced = num(src.tripsReplaced);
     var runs = currentRuns();
     if (!isNaN(runs) && !isNaN(replaced)) replaced = Math.min(Math.max(replaced, 0), runs);
     var tripCost = miles > 0 && mpg > 0 && fuelPrice > 0 ? (miles / mpg) * fuelPrice : NaN;
@@ -725,7 +725,6 @@
       fuelBlank = true;
       fuelMonth = 0;
     } else fuelMonth = tripCost * replaced;
-
     var monthly = smart + certMonth + otherSave + (fuelBlank ? 0 : fuelMonth) - delivery;
     var year = simulateYear({
       smart: smart,
@@ -736,23 +735,64 @@
       qualifying: qualifying,
       tier: tier,
     });
+    return {
+      tsc: tsc,
+      hasTsc: hasTsc,
+      smart: smart,
+      certMonth: certMonth,
+      ending: ending,
+      otherSave: otherSave,
+      tripCost: tripCost,
+      fuelMonth: fuelMonth,
+      fuelBlank: fuelBlank,
+      delivery: delivery,
+      monthly: monthly,
+      annual: year.annual,
+    };
+  }
 
-    show('w4-tsc-results', tsc > 0);
-    setText('w4-out-smart', tsc > 0 ? money(smart) : '—');
-    setText('w4-out-cert', tsc > 0 ? money(certMonth) : '—');
-    setText('w4-out-points-left', tsc > 0 ? String(Math.round(ending)) : '—');
-    setText('w4-out-other', money(otherSave));
-    setText('w4-out-trip', isFinite(tripCost) ? money(tripCost) : '—');
-    setText('w4-out-fuel', fuelBlank ? '—' : money(fuelMonth));
-    setText('w4-out-delivery', money(delivery));
-    setText('w4-out-monthly', money(monthly));
-    setText('w4-out-annual', money(year.annual));
+  function liveTuesdayInputs() {
+    return {
+      smartEligible: val('w4-smart-eligible'),
+      rewardStatus: val('w4-reward-status'),
+      startingPoints: val('w4-starting-points'),
+      delivery: val('w4-delivery-fees'),
+      miles: val('w4-miles'),
+      mpg: val('w4-mpg'),
+      fuelPrice: val('w4-fuel-price'),
+      tripsReplaced: val('w4-trips-replaced'),
+      discountPct: val('w4-retailer-discount-pct'),
+      discountEligible: val('w4-retailer-discount-eligible'),
+      planBulk: !!(document.getElementById('w4-plan-bulk') || {}).checked,
+      planLoyalty: !!(document.getElementById('w4-plan-loyalty') || {}).checked,
+      planRecurring: !!(document.getElementById('w4-plan-recurring') || {}).checked,
+      planSale: !!(document.getElementById('w4-plan-sale') || {}).checked,
+    };
+  }
+
+  function savedTuesdayEstimate() {
+    if (!progress.tuesdayInputs) return null;
+    return computeTuesdayEstimate(progress.tuesdayInputs);
+  }
+
+  function recalcTuesday() {
+    var est = computeTuesdayEstimate(liveTuesdayInputs());
+    show('w4-tsc-results', est.tsc > 0);
+    setText('w4-out-smart', est.hasTsc ? money(est.smart) : '—');
+    setText('w4-out-cert', est.hasTsc ? money(est.certMonth) : '—');
+    setText('w4-out-points-left', est.hasTsc ? String(Math.round(est.ending)) : '—');
+    setText('w4-out-other', money(est.otherSave));
+    setText('w4-out-trip', isFinite(est.tripCost) ? money(est.tripCost) : '—');
+    setText('w4-out-fuel', est.fuelBlank ? '—' : money(est.fuelMonth));
+    setText('w4-out-delivery', money(est.delivery));
+    setText('w4-out-monthly', money(est.monthly));
+    setText('w4-out-annual', money(est.annual));
     setText(
       'w4-annual-callout',
       'At ' +
-        money(monthly) +
+        money(est.monthly) +
         ' per month, that is approximately ' +
-        money(year.annual) +
+        money(est.annual) +
         ' per year. That could cover a tack purchase, a veterinary bill, farrier visits, or money kept in the farm account.'
     );
   }
@@ -950,10 +990,11 @@
     }).then(function () {
       setText('w4-hay-save-status', 'Saved for Thursday’s exercise.');
       renderThursday();
+      renderSundayBuyback();
     });
   }
 
-  function scenarioRow(feeder, consumed, currentCost, costPerLb, baleWeight) {
+  function scenarioRow(feeder, consumed, currentCost, costPerLb, baleWeight, extrasOverride) {
     if (feeder.waste == null) {
       return {
         feeder: feeder,
@@ -971,7 +1012,7 @@
     var hayLb = consumed / (1 - feeder.waste);
     var hayCost = hayLb * costPerLb;
     var savings = currentCost - hayCost;
-    var extras = num(val('w4-feeder-extras')) || 0;
+    var extras = extrasOverride != null ? num(extrasOverride) || 0 : num(val('w4-feeder-extras')) || 0;
     var totalCost = feeder.price + extras;
     var payback = savings > 0 ? (totalCost / savings) * 12 : null;
     var year1 = savings - totalCost;
@@ -1010,8 +1051,12 @@
     }
     if (missing) missing.hidden = true;
     var extras = num(val('w4-feeder-extras')) || 0;
-    var keepRound = val('w4-compare-round');
-    var keepSquare = val('w4-compare-square');
+    if (!(extras > 0) && progress.thursdayPlan && progress.thursdayPlan.extras != null) {
+      extras = num(progress.thursdayPlan.extras) || 0;
+      if (!val('w4-feeder-extras')) setVal('w4-feeder-extras', extras);
+    }
+    var keepRound = val('w4-compare-round') || (progress.thursdayPlan && progress.thursdayPlan.roundFeederId) || '';
+    var keepSquare = val('w4-compare-square') || (progress.thursdayPlan && progress.thursdayPlan.squareFeederId) || '';
     feederCompare = {};
     var html = '';
     if (baseline.format !== 'square') {
@@ -1184,6 +1229,81 @@
       '</ul>';
   }
 
+  function persistThursdaySelection() {
+    var plan = {
+      roundFeederId: val('w4-compare-round') || '',
+      squareFeederId: val('w4-compare-square') || '',
+      extras: num(val('w4-feeder-extras')) || 0,
+    };
+    if (!plan.roundFeederId && !plan.squareFeederId) {
+      progress.thursdayPlan = null;
+      persistProgress({ thursdayPlan: null }).then(renderSundayBuyback);
+      return;
+    }
+    persistProgress({ thursdayPlan: plan }).then(renderSundayBuyback);
+  }
+
+  function persistSaturdaySelection() {
+    var id = val('w4-sat-example');
+    if (!id) {
+      progress.saturdayPlan = null;
+      persistProgress({ saturdayPlan: null }).then(renderSundayBuyback);
+      return;
+    }
+    persistProgress({ saturdayPlan: { exampleId: id } }).then(renderSundayBuyback);
+  }
+
+  function savedThursdayEstimate() {
+    var plan = progress.thursdayPlan;
+    var baseline = progress.hayBaseline;
+    if (!plan || !baseline) return null;
+    var extras = num(plan.extras) || 0;
+    var year1 = 0;
+    var annual = 0;
+    var used = 0;
+    function add(id, feeders, consumed, currentCost, baleWeight) {
+      if (!id) return;
+      var feeder = feeders.filter(function (f) {
+        return f.id === id;
+      })[0];
+      if (!feeder) return;
+      var row = scenarioRow(feeder, consumed, currentCost, baseline.costPerLb, baleWeight, extras);
+      if (row.noRate || row.year1 == null || row.savings == null) return;
+      year1 += row.year1;
+      annual += row.savings;
+      used += 1;
+    }
+    if (baseline.format !== 'square') {
+      add(
+        plan.roundFeederId,
+        ROUND_FEEDERS,
+        baseline.roundConsumedAnnual,
+        baseline.roundLb30 * 12 * baseline.costPerLb,
+        baseline.roundBaleWeight
+      );
+    }
+    if (baseline.format !== 'round') {
+      add(
+        plan.squareFeederId,
+        SQUARE_FEEDERS,
+        baseline.squareConsumedAnnual,
+        baseline.squareLb30 * 12 * baseline.costPerLb,
+        baseline.squareBaleWeight
+      );
+    }
+    if (!used) return null;
+    return { year1: year1, annual: annual };
+  }
+
+  function savedSaturdayEstimate() {
+    var id = progress.saturdayPlan && progress.saturdayPlan.exampleId;
+    var row = SATURDAY_ROWS.filter(function (r) {
+      return r.id === id;
+    })[0];
+    if (!row) return null;
+    return { oneTime: row.tscPrice - row.altPrice, item: row.item };
+  }
+
   function renderSaturdayGrid() {
     var select = document.getElementById('w4-sat-example');
     if (!select) return;
@@ -1194,6 +1314,9 @@
         SATURDAY_ROWS.map(function (row) {
           return '<option value="' + escapeHtml(row.id) + '">' + escapeHtml(row.item) + '</option>';
         }).join('');
+    }
+    if (!val('w4-sat-example') && progress.saturdayPlan && progress.saturdayPlan.exampleId) {
+      select.value = progress.saturdayPlan.exampleId;
     }
     paintSaturdayExample();
   }
@@ -1405,6 +1528,140 @@
       '</ul>';
   }
 
+  function buybackMissing(label, href, dayName) {
+    return (
+      '<div class="w4-buyback-row w4-buyback-row--missing">' +
+      '<p class="w4-card__row"><span>' +
+      escapeHtml(label) +
+      '</span><strong>No plan selected</strong></p>' +
+      '<p class="w4-note"><a href="' +
+      href +
+      '">Go to ' +
+      escapeHtml(dayName) +
+      '</a></p>' +
+      '</div>'
+    );
+  }
+
+  function buybackAmount(label, amount) {
+    return (
+      '<p class="w4-card__row"><span>' +
+      escapeHtml(label) +
+      '</span><strong>' +
+      money(amount) +
+      '</strong></p>'
+    );
+  }
+
+  function renderSundayBuyback() {
+    var host = document.getElementById('w4-sunday-buyback');
+    if (!host) return;
+    var tue = savedTuesdayEstimate();
+    var thu = savedThursdayEstimate();
+    var sat = savedSaturdayEstimate();
+    var parts = [];
+    if (tue) {
+      parts.push(
+        buybackAmount('Feed runs, fuel, and retailer strategy: projected annually', tue.annual)
+      );
+    } else {
+      parts.push(buybackMissing('Feed runs, fuel, and retailer strategy', '#day-tuesday', 'Tuesday'));
+    }
+    if (thu) {
+      parts.push(
+        buybackAmount('Hay-feeding change: projected in Year 1 after feeder cost', thu.year1)
+      );
+      parts.push(
+        buybackAmount('Hay-feeding change: projected annually after the initial feeder purchase', thu.annual)
+      );
+    } else {
+      parts.push(buybackMissing('Hay-feeding change', '#day-thursday', 'Thursday'));
+    }
+    if (sat) {
+      parts.push(buybackAmount('Product replacement: one-time potential savings', sat.oneTime));
+    } else {
+      parts.push(buybackMissing('Product replacement', '#day-saturday', 'Saturday'));
+    }
+
+    var firstYearImpact = 0;
+    var futureRecurring = 0;
+    var included = 0;
+    if (tue) {
+      firstYearImpact += tue.annual;
+      futureRecurring += tue.annual;
+      included += 1;
+    }
+    if (thu) {
+      firstYearImpact += thu.year1;
+      futureRecurring += thu.annual;
+      included += 1;
+    }
+    if (sat) {
+      firstYearImpact += sat.oneTime;
+      included += 1;
+    }
+
+    var summary = '';
+    var hoursHtml = '';
+    if (included) {
+      if (firstYearImpact > 0) {
+        summary =
+          '<p class="w4-callout">Your selected Week 4 changes could save approximately ' +
+          money(firstYearImpact) +
+          ' during the first year.</p>';
+        hoursHtml = buybackHours(firstYearImpact, 'those savings');
+      } else if (firstYearImpact < 0) {
+        summary =
+          '<p class="w4-callout">Your selected plan represents an estimated first-year investment of ' +
+          money(Math.abs(firstYearImpact)) +
+          ', with approximately ' +
+          money(futureRecurring) +
+          ' in recurring annual savings after the initial purchase.</p>';
+        if (futureRecurring > 0) {
+          hoursHtml = buybackHours(futureRecurring, 'those recurring annual savings after the initial purchase');
+        } else {
+          hoursHtml =
+            '<p class="body-text" style="font-size:0.95rem;">The selected plan has an upfront investment before it begins generating savings.</p>';
+        }
+      } else if (futureRecurring > 0) {
+        summary =
+          '<p class="w4-callout">Your selected Week 4 changes break even in the first year, with approximately ' +
+          money(futureRecurring) +
+          ' in recurring annual savings after the initial purchase.</p>';
+        hoursHtml = buybackHours(futureRecurring, 'those recurring annual savings');
+      }
+    }
+
+    var signIn =
+      !currentUser
+        ? '<p class="w4-note">Sign in to load the Week 4 plans you saved.</p>'
+        : '';
+    host.innerHTML =
+      '<div class="w4-buyback">' +
+      signIn +
+      '<div class="w4-buyback-box">' +
+      parts.join('') +
+      '</div>' +
+      summary +
+      hoursHtml +
+      '<p class="w4-note">Your total only includes the options you saved as realistic possibilities.</p>' +
+      '</div>';
+  }
+
+  function buybackHours(amount, label) {
+    if (!(amount > 0)) return '';
+    var hours = (amount / EXAMPLE_TAKEHOME).toFixed(1);
+    return (
+      '<p class="w4-buyback-hours">At an example take-home rate of $25 per hour, ' +
+      escapeHtml(label) +
+      ' represent approximately ' +
+      hours +
+      ' hours of work.</p>' +
+      '<p class="body-text" style="font-size:0.95rem;">If those hours belonged to you again, how would you spend them with your horse?</p>' +
+      '<p class="w4-note">Want to make the comparison personal? Divide your potential annual savings by your own approximate take-home hourly rate privately. Nothing needs to be entered or submitted.</p>'
+    );
+  }
+
   function renderWednesdayPrefill() {
     var label = document.getElementById('w4-hay-source');
     if (snapshot.hayComplete) {
@@ -1457,9 +1714,12 @@
     restoreTuesdayInputs(progress.tuesdayInputs);
     renderTuesdayFromSnapshot();
     renderWednesdayPrefill();
+    renderThursday();
+    renderSaturdayGrid();
     renderFriday();
     renderSundayReveal();
     renderSundayProgress();
+    renderSundayBuyback();
   }
 
   function wireCalcs() {
@@ -1497,18 +1757,27 @@
       if (el) el.addEventListener('change', recalcWednesday);
     });
     var extras = document.getElementById('w4-feeder-extras');
-    if (extras) extras.addEventListener('input', renderThursday);
+    if (extras) extras.addEventListener('input', function () {
+      renderThursday();
+      persistThursdaySelection();
+    });
     var satSel = document.getElementById('w4-sat-example');
     if (satSel && !satSel.getAttribute('data-wired')) {
       satSel.setAttribute('data-wired', '1');
-      satSel.addEventListener('change', paintSaturdayExample);
+      satSel.addEventListener('change', function () {
+        paintSaturdayExample();
+        persistSaturdaySelection();
+      });
     }
     var feederHost = document.getElementById('w4-feeder-grid');
     if (feederHost && !feederHost.getAttribute('data-wired')) {
       feederHost.setAttribute('data-wired', '1');
       feederHost.addEventListener('change', function (evt) {
         var kind = evt.target && evt.target.getAttribute('data-feeder-kind');
-        if (kind) paintCompare(kind);
+        if (kind) {
+          paintCompare(kind);
+          persistThursdaySelection();
+        }
       });
     }
     var monBtn = document.getElementById('w4-save-runs');
@@ -1519,24 +1788,10 @@
     if (tueSave) {
       tueSave.addEventListener('click', function () {
         persistProgress({
-          tuesdayInputs: {
-            smartEligible: val('w4-smart-eligible'),
-            rewardStatus: val('w4-reward-status'),
-            startingPoints: val('w4-starting-points'),
-            delivery: val('w4-delivery-fees'),
-            miles: val('w4-miles'),
-            mpg: val('w4-mpg'),
-            fuelPrice: val('w4-fuel-price'),
-            tripsReplaced: val('w4-trips-replaced'),
-            discountPct: val('w4-retailer-discount-pct'),
-            discountEligible: val('w4-retailer-discount-eligible'),
-            planBulk: !!(document.getElementById('w4-plan-bulk') || {}).checked,
-            planLoyalty: !!(document.getElementById('w4-plan-loyalty') || {}).checked,
-            planRecurring: !!(document.getElementById('w4-plan-recurring') || {}).checked,
-            planSale: !!(document.getElementById('w4-plan-sale') || {}).checked,
-          },
+          tuesdayInputs: liveTuesdayInputs(),
         }).then(function () {
           setText('w4-tuesday-save-status', 'Saved. Come back anytime — your estimate will still be here.');
+          renderSundayBuyback();
         });
       });
     }
@@ -1553,6 +1808,7 @@
     renderFriday();
     renderSundayReveal();
     renderSundayProgress();
+    renderSundayBuyback();
     wireCalcs();
     if (typeof firebase === 'undefined') return;
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -1567,6 +1823,7 @@
         renderFriday();
         renderSundayReveal();
         renderSundayProgress();
+        renderSundayBuyback();
         return;
       }
       db.collection('challengeRegistrations')

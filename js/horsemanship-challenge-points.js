@@ -404,6 +404,63 @@
     claimAndOpen(user, action, el);
   }
 
+  function readAsOfYmd() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var hash = new URLSearchParams(String(window.location.hash || '').replace(/^#/, ''));
+      return params.get('asOf') || hash.get('asOf') || params.get('previewDate') || hash.get('previewDate');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function clockNow() {
+    var asOf = readAsOfYmd();
+    if (asOf && /^\d{4}-\d{2}-\d{2}$/.test(asOf)) {
+      return new Date(asOf + 'T12:00:00-04:00');
+    }
+    return new Date();
+  }
+
+  function isFormClosed(form) {
+    if (!form) return false;
+    var raw = (form.getAttribute('data-challenge-close-at') || '').trim();
+    if (!raw) return false;
+    var close = new Date(raw);
+    if (isNaN(close.getTime())) return false;
+    return clockNow().getTime() > close.getTime();
+  }
+
+  function applyFormDeadlines() {
+    document.querySelectorAll('form[data-challenge-close-at]').forEach(function (form) {
+      if (!isFormClosed(form)) return;
+      form.setAttribute('data-challenge-form-closed', '1');
+      form.hidden = true;
+      var host = form.closest('.funnel-panel, .challenge-question-panel, .challenge-day__action') || form.parentNode;
+      var openNote = host && host.querySelector('[data-challenge-open-note]');
+      if (openNote) openNote.hidden = true;
+      var note = host && host.querySelector('[data-challenge-closed-note]');
+      if (note) note.hidden = false;
+    });
+  }
+
+  function hasRequiredAvailability(form) {
+    var boxes = form.querySelectorAll('input[name="availability"]');
+    if (!boxes.length) return true;
+    return Array.prototype.some.call(boxes, function (el) {
+      return el.checked;
+    });
+  }
+
+  function stampAvailability(form) {
+    var boxes = form.querySelectorAll('input[name="availability"]:checked');
+    var hidden = form.querySelector('input[name="availability_days"]');
+    if (!hidden) return;
+    hidden.value = Array.prototype.map.call(boxes, function (el) {
+      return el.value;
+    }).join(', ');
+  }
+
   function handleTrackedSubmit(e) {
     var form = e.currentTarget;
     var action = readActionFromEl(form);
@@ -418,6 +475,16 @@
       setStatus(form, 'Already received — your points are logged.', false, true);
       return;
     }
+    if (isFormClosed(form)) {
+      applyFormDeadlines();
+      setStatus(form, 'This form closed Wednesday at 11:59 p.m. Eastern.', true);
+      return;
+    }
+    if (!hasRequiredAvailability(form)) {
+      setStatus(form, 'Check at least one day you and your horse are available.', true);
+      return;
+    }
+    stampAvailability(form);
 
     var user = auth.currentUser;
     if (!user) {
@@ -526,6 +593,7 @@
   }
 
   wireLinksAndForms();
+  applyFormDeadlines();
 
   auth.onAuthStateChanged(function (user) {
     if (!user) {
