@@ -18,6 +18,9 @@
  *   Simulate a date: ?asOf=2026-09-01 or #preview=...&asOf=2026-09-01
  *   Force every day open: ?unlockAll=1
  *
+ * Localhost: all days unlock and the week opens before its public start, but
+ * sign-in is still required so Feed Room / calendar data can load.
+ *
  * Dev overrides (avoid shipping true to production):
  *   FORCE_PAGE_ACCESS = true  — always open the page
  *   FORCE_UNLOCK_ALL = true   — unlock all days once page is open
@@ -113,10 +116,25 @@
     }
   }
 
+  function isLocalDev() {
+    var host = String(location.hostname || '');
+    return host === 'localhost' || host === '127.0.0.1';
+  }
+
+  var localDev = isLocalDev();
+  if (localDev) {
+    try {
+      var previewInUrl = readUrlFlag('preview') === PREVIEW_KEY;
+      if (!previewInUrl) sessionStorage.removeItem(PREVIEW_STORAGE_KEY);
+    } catch (e) {}
+  }
   var previewAccess = hasPreviewAccess();
   var forcePageAccess = FORCE_PAGE_ACCESS || previewAccess;
   var explicitUnlockAll =
-    FORCE_UNLOCK_ALL || readUrlFlag('unlockAll') === '1' || readUrlFlag('unlockAll') === 'true';
+    FORCE_UNLOCK_ALL ||
+    localDev ||
+    readUrlFlag('unlockAll') === '1' ||
+    readUrlFlag('unlockAll') === 'true';
 
   var config = document.getElementById('challenge-week-config');
   var weekStartYmd = config && config.getAttribute('data-week-start');
@@ -272,7 +290,7 @@
   }
 
   function renderWeek() {
-    if (beforeWeek && !forcePageAccess) {
+    if (beforeWeek && !forcePageAccess && !localDev) {
       if (lockedEl) lockedEl.hidden = false;
       if (openEl) openEl.hidden = true;
       return;
@@ -297,6 +315,10 @@
           'Preview mode: page access is forced open for partner review. Public access unlocks ' +
           unlockDateLabel +
           '.';
+      } else if (localDev && beforeWeek) {
+        banner.hidden = false;
+        banner.textContent =
+          'Local preview — all days are unlocked. Sign in so Digital Feed Room and calendar data can load.';
       } else if (explicitUnlockAll && !afterWeek) {
         banner.hidden = false;
         banner.textContent =

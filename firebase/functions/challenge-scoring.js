@@ -260,6 +260,115 @@ function isHistoryNote(data) {
   return hasObservation(data);
 }
 
+function nyYmd(ms) {
+  var dtf = new Intl.DateTimeFormat('en-CA', {
+    timeZone: NY_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return dtf.format(new Date(ms || Date.now()));
+}
+
+function calendarDateYmd(data) {
+  if (!data) return '';
+  var dateVal = data.date;
+  if (typeof dateVal === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateVal.trim())) {
+    return dateVal.trim().slice(0, 10);
+  }
+  var ms = toMillis(dateVal) || toMillis(data.start);
+  return ms ? nyYmd(ms) : '';
+}
+
+function isHayCostComplete(data, collectionName) {
+  if (!data || isArchived(data)) return false;
+  if (collectionName === 'feedRoomCostReviews') return true;
+  var price = Number(data.packagePrice != null ? data.packagePrice : data.price);
+  var weight = Number(data.packageNetWeight != null ? data.packageNetWeight : data.packageSize);
+  return price > 0 && weight > 0;
+}
+
+function isFutureCalendar(data) {
+  if (!data || isArchived(data)) return false;
+  if (data.isTreatmentTask === true) return false;
+  var ymd = calendarDateYmd(data);
+  if (!ymd) return false;
+  return ymd >= nyYmd(Date.now());
+}
+
+function publicDisplayName(name) {
+  var parts = String(name || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (!parts.length) return 'Participant';
+  var first = parts[0];
+  if (parts.length === 1) return first;
+  var last = parts[parts.length - 1];
+  var initial = last.charAt(0).toUpperCase();
+  if (!/[A-Za-z]/.test(initial)) return first;
+  return first + ' ' + initial + '.';
+}
+
+function validWeek4Swap(swap) {
+  if (!swap || typeof swap !== 'object') return false;
+  if (!String(swap.barn_item || '').trim()) return false;
+  if (!String(swap.replacement || '').trim()) return false;
+  if (!String(swap.retailer_source || '').trim()) return false;
+  return Number(swap.unit_price) > 0;
+}
+
+async function rebuildWeek4Reveal() {
+  var snap = await db().collection('challengeWeek4Swaps').get();
+  var entries = [];
+  snap.forEach(function (doc) {
+    var d = doc.data() || {};
+    if (!validWeek4Swap(d)) return;
+    entries.push({
+      userId: doc.id,
+      displayName: d.displayName || 'Participant',
+      barn_item: String(d.barn_item || '').trim(),
+      replacement: String(d.replacement || '').trim(),
+      retailer_source: String(d.retailer_source || '').trim(),
+      unit_price: Number(d.unit_price),
+      updatedAt: toMillis(d.updatedAt),
+    });
+  });
+  entries.sort(function (a, b) {
+    return (b.updatedAt || 0) - (a.updatedAt || 0);
+  });
+  await db()
+    .collection('challengeWeek4Reveal')
+    .doc('live')
+    .set({
+      challengeId: CHALLENGE_ID,
+      entries: entries,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+}
+
+async function syncWeek4Swap(uid, afterData) {
+  var swap = afterData && afterData.week4Swap;
+  if (!validWeek4Swap(swap)) return;
+  await db()
+    .collection('challengeWeek4Swaps')
+    .doc(uid)
+    .set(
+      {
+        userId: uid,
+        challengeId: CHALLENGE_ID,
+        displayName: publicDisplayName(afterData.name || afterData.displayName),
+        barn_item: String(swap.barn_item || '').trim(),
+        replacement: String(swap.replacement || '').trim(),
+        retailer_source: String(swap.retailer_source || '').trim(),
+        unit_price: Number(swap.unit_price),
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  await rebuildWeek4Reveal();
+}
+
 function qualifies(action, data, collectionName) {
   if (!data || isArchived(data)) return false;
   if (action.photoKind && !kindMatches(data, action.photoKind, collectionName)) return false;
@@ -280,6 +389,10 @@ function qualifies(action, data, collectionName) {
       return isFarrierCareTeam(data);
     case 'historyNote':
       return isHistoryNote(data);
+    case 'hayCostComplete':
+      return isHayCostComplete(data, collectionName);
+    case 'future':
+      return isFutureCalendar(data);
     case 'exists':
     default:
       return true;
@@ -663,6 +776,12 @@ async function handleRegistrationWrite(uid, beforeData, afterData) {
 
   if (!afterData.scoringBackfillAt && !backfillInProgress(afterData)) {
     await backfillUser(uid);
+  }
+
+  var beforeSwap = beforeData && beforeData.week4Swap;
+  var afterSwap = afterData.week4Swap;
+  if (validWeek4Swap(afterSwap) && JSON.stringify(beforeSwap || {}) !== JSON.stringify(afterSwap || {})) {
+    await syncWeek4Swap(uid, afterData);
   }
 }
 

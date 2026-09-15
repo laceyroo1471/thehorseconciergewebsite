@@ -6,6 +6,7 @@
  * Week 1 (weigh-wednesday-w1): lb/oz feed fills. Closed Sep 6, 2026.
  * Week 2 (weigh-wednesday-w2): organ % of body weight. Closed Sep 13, 2026 8:00 PM ET.
  * Week 3 (weigh-wednesday-w3): peak ground force (lb) on a 1,000-lb horse. Closes Sep 20, 2026 8:00 PM ET.
+ * Week 4 (weigh-wednesday-w4): hidden barn/household costs. Closes Sep 27, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -48,6 +49,17 @@ var CONTESTS = {
     placePrefix: 'week3-weigh-place-',
     title: "What's It Weigh Wednesday",
     itemIds: ['walkFore', 'walkHind', 'trotFore', 'trotHind', 'canterTrailFore'],
+  },
+  'weigh-wednesday-w4': {
+    contestId: 'weigh-wednesday-w4',
+    weekNumber: 4,
+    closeMs: Date.parse('2026-09-27T20:00:00-04:00'),
+    unit: 'pounds',
+    field: 'weighWednesdayW4',
+    placePrefix: 'week4-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    tieBreak: 'worstThenEarlier',
+    itemIds: ['outdoorHayLoss', 'annualHorseManure', 'monthlyShoppingMiles', 'oneRatFeedLoss'],
   },
 };
 
@@ -141,6 +153,17 @@ function averagePercentDiff(guesses, actuals) {
   return averagePercentDiffFor(CONTESTS[CONTEST_ID], guesses, actuals);
 }
 
+function worstPercentDiffFor(spec, guesses, actuals) {
+  var worst = 0;
+  for (var i = 0; i < spec.itemIds.length; i++) {
+    var id = spec.itemIds[i];
+    var d = percentDiff(toValue(guesses[id], spec.unit), toValue(actuals[id], spec.unit));
+    if (!isFinite(d)) return Number.POSITIVE_INFINITY;
+    if (d > worst) worst = d;
+  }
+  return worst;
+}
+
 function placeAction(spec, place) {
   var actionId = spec.placePrefix + place;
   return (
@@ -170,12 +193,16 @@ function collectEntries(spec, docs, actuals) {
       userId: docs[i].id,
       displayName: data.name || '',
       avgPct: avgPct,
+      worstPct: worstPercentDiffFor(spec, block.guesses, actuals),
       submittedAt: toMillis(block.submittedAt),
       guesses: block.guesses,
     });
   }
   rows.sort(function (a, b) {
     if (a.avgPct !== b.avgPct) return a.avgPct - b.avgPct;
+    if (spec.tieBreak === 'worstThenEarlier' && a.worstPct !== b.worstPct) {
+      return a.worstPct - b.worstPct;
+    }
     if (a.submittedAt !== b.submittedAt) return a.submittedAt - b.submittedAt;
     return String(a.displayName || '').localeCompare(String(b.displayName || ''));
   });
