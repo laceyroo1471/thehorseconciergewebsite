@@ -10,11 +10,11 @@
  *   data-week-number="1"           Display number for banners
  *   data-unlock-label="September 1, 2026"  Human date for lock screen / preview
  *
- * Partner / internal preview (skips the calendar lock only — sign-in is still required):
+ * Partner / internal preview (skips the members gate and the calendar lock):
  *   Add ?preview=thc-hc-preview-2026 to the week URL.
  *   Access is remembered in this browser tab/session via sessionStorage.
  *   During a live week, days still drip by the real date.
- *   Before the week starts, preview opens the full schedule for signed-in review.
+ *   Before the week starts, preview opens the full schedule for partner review.
  *   Simulate a date: ?asOf=2026-09-01 or #preview=...&asOf=2026-09-01
  *   Force every day open: ?unlockAll=1
  *
@@ -158,11 +158,11 @@
 
   /**
    * Members gate. Runs on the real clock so an ?asOf= value cannot open the page.
-   * Preview still requires a signed-in Challenge account. After the season ends,
-   * week pages open to the public as evergreen content.
+   * Preview key and the post-Challenge public window both skip it so education
+   * partners can review without a participant account.
    */
   function requireMembership(onAllowed) {
-    if (challengeIsOver()) {
+    if (forcePageAccess || challengeIsOver()) {
       allow(null, onAllowed);
       return;
     }
