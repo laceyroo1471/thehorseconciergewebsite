@@ -574,12 +574,21 @@ async function award(uid, action, opts) {
   var existing = await ref.get();
   if (existing.exists) return { awarded: false, reason: 'duplicate' };
 
-  if (maxCount > 1) {
+  var exclusiveWith = action.exclusiveWith || [];
+  if (maxCount > 1 || exclusiveWith.length) {
     var rows = await loadApprovedActions(uid);
-    var already = rows.filter(function (row) {
-      return row.actionId === action.actionId;
-    }).length;
-    if (already >= maxCount) return { awarded: false, reason: 'max_count' };
+    if (maxCount > 1) {
+      var already = rows.filter(function (row) {
+        return row.actionId === action.actionId;
+      }).length;
+      if (already >= maxCount) return { awarded: false, reason: 'max_count' };
+    }
+    if (exclusiveWith.length) {
+      var blocked = rows.some(function (row) {
+        return exclusiveWith.indexOf(row.actionId) !== -1;
+      });
+      if (blocked) return { awarded: false, reason: 'exclusive' };
+    }
   }
 
   var earnedAt =

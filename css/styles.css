@@ -5340,6 +5340,43 @@
     color: var(--gold);
     margin: 0 0 8px;
   }
+  .challenge-day__lanes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .challenge-day__lane {
+    padding: 20px 20px 16px;
+    border: 1px solid rgba(var(--gold-rgb), 0.22);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.16);
+  }
+  .challenge-day__lane .challenge-question-form {
+    max-width: none;
+  }
+  .challenge-day__lane-or {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  @media (min-width: 880px) {
+    .challenge-day__lanes {
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      gap: 20px;
+    }
+    .challenge-day__lane-or {
+      align-self: stretch;
+      padding-top: 48px;
+    }
+  }
   .w4-today-points {
     font-family: var(--font-display);
     font-size: 1.55rem;
