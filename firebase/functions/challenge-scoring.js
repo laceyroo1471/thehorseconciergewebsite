@@ -260,6 +260,36 @@ function isHistoryNote(data) {
   return hasObservation(data);
 }
 
+function pulseText(data) {
+  if (!data) return '';
+  return [
+    data.title,
+    data.observations,
+    data.observation,
+    data.fitNotes,
+    data.notes,
+    data.note,
+    data.comment,
+    data.text,
+    data.body,
+    data.content,
+    data.message,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+}
+
+function mentionsDigitalPulse(data) {
+  return /digital\s*pulse|\bpulse\b/.test(pulseText(data));
+}
+
+function isDigitalPulseNote(data) {
+  if (!data || isArchived(data)) return false;
+  if (isHistoryNote(data)) return true;
+  return mentionsDigitalPulse(data);
+}
+
 function nyYmd(ms) {
   var dtf = new Intl.DateTimeFormat('en-CA', {
     timeZone: NY_TZ,
@@ -389,6 +419,8 @@ function qualifies(action, data, collectionName) {
       return isFarrierCareTeam(data);
     case 'historyNote':
       return isHistoryNote(data);
+    case 'digitalPulseNote':
+      return isDigitalPulseNote(data);
     case 'hayCostComplete':
       return isHayCostComplete(data, collectionName);
     case 'future':

@@ -330,7 +330,7 @@ var WEEKS = [
       points: 10,
       status: 'live',
       collections: ['careRecords'],
-      qualify: 'historyNote',
+      qualify: 'digitalPulseNote',
       credit: 'week_window',
     }),
     action({
