@@ -624,8 +624,24 @@ var WEEKS = [
 
   week(7, '2026-10-12', '2026-10-18', 'Recovery', 'Journeys', [
     action({
+      actionId: 'week7-dio-product-pick',
+      label: 'Submit a Draw It Out product pick with horse work and care challenge',
+      points: 15,
+      status: 'live',
+      source: 'hub',
+      credit: 'anytime',
+    }),
+    action({
+      actionId: 'week7-dio-recovery-question',
+      label: 'Submit a recovery question to the Draw It Out team (open all week)',
+      points: 10,
+      status: 'live',
+      source: 'hub',
+      credit: 'anytime',
+    }),
+    action({
       actionId: 'week7-horse-needs',
-      label: 'Determine which products could support your horse and barn',
+      label: 'Submit the product or routine explored in What Does My Horse Need?',
       points: 5,
       status: 'live',
       source: 'hub',

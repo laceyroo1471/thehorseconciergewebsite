@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260911j">
+<link rel="stylesheet" href="css/styles.css?v=20260921e">
 <meta property="og:title" content="Week 7 · Recovery with Draw It Out">
 <meta property="og:description" content="October 12–18, 2026 — Recovery with Draw It Out. What happens after the work stops, and how to help a horse return toward baseline.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horsemanship-challenge-week-07-ride">
@@ -88,6 +88,7 @@
       <p id="challenge-week-points" class="challenge-hub-points" hidden></p>
       <div class="hero-actions challenge-hero-actions">
         <a class="btn-primary" href="#schedule">View This Week’s Schedule</a>
+        <a class="btn-ghost" href="#dio-recovery-question">Ask a recovery question</a>
         <a class="btn-ghost" href="horsemanship-challenge-hub.html">Back to Challenge Hub</a>
       </div>
     </div>
@@ -99,7 +100,7 @@
     <div class="gold-divider reveal"></div>
     <p class="body-text reveal" style="max-width:720px; margin-top:20px;">Draw It Out® makes purpose-built horse care for repeatable barn routines — naturally derived support without the burn, sting, or heavy medicinal smell of old-school liniments. From the barn aisle to the show pen, the idea is simple: take care of the horse in front of you.</p>
     <p class="body-text reveal" style="max-width:720px; margin-top:16px;">Their education starts with prehabilitation: proactive care for mobility, hydration, recovery, and workload readiness before soreness gets louder. A prepared body rebounds cleaner, stays looser, and tolerates workload changes better.</p>
-    <p class="body-text reveal" style="max-width:720px; margin-top:16px;">This week uses that lens. Each day pairs a recovery lesson with Draw It Out’s own guides, plus the science sources behind the topic — heart rate, muscle fatigue, sweat, adaptation, and travel.</p>
+    <p class="body-text reveal" style="max-width:720px; margin-top:16px;">This week is built the way a good barn day is built: first the horsemanship, then the tools that help you carry it out. The videos and university readings teach how a horse comes back after work. Draw It Out’s guides and products sit right beside that — the barn-aisle follow-through, not a claim that the research wrote the formula.</p>
     <div class="challenge-partner-links reveal reveal-delay-1">
       <a href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">Website</a>
       <a href="https://drawliniment.com/pages/what-does-my-horse-need" target="_blank" rel="noopener noreferrer">What does my horse need</a>
@@ -114,7 +115,7 @@
       <li>
         <span class="challenge-points-list__pts">15 pts</span>
         <span>
-          Explore Draw It Out products and tell us which one you are curious about — or which is your favorite — and why
+          Explore Draw It Out products and tell us which one you are curious about — or which is your favorite — plus what you do with your horse and the care challenge that prompted your pick
           <span class="challenge-points-list__detail">Monday</span>
         </span>
       </li>
@@ -129,13 +130,13 @@
         <span class="challenge-points-list__pts">10 pts</span>
         <span>
           Submit a recovery question to the Draw It Out team
-          <span class="challenge-points-list__detail">Thursday</span>
+          <span class="challenge-points-list__detail">Anytime this week · questions submitted early can be answered in their mid-week video</span>
         </span>
       </li>
       <li>
         <span class="challenge-points-list__pts">5 pts</span>
         <span>
-          Determine which products could support your horse and barn
+          Use What Does My Horse Need?, then submit the product or routine you explored and why it fits your horse
           <span class="challenge-points-list__detail">Friday · Draw It Out’s tool</span>
         </span>
       </li>
@@ -147,6 +148,40 @@
         </span>
       </li>
     </ul>
+
+    <div class="funnel-panel reveal reveal-delay-1 challenge-question-panel" id="dio-recovery-question" style="margin-top:28px; max-width:560px; scroll-margin-top:96px;">
+      <div class="funnel-panel-title">Ask Draw It Out · 10 pts</div>
+      <p class="funnel-panel-note">Open all week — stay signed in so these 10 points log automatically. Draw It Out will record a response later this week, so the earlier you ask, the more likely your question makes the video. Ask about recovery, workload, heat, or haul days. Your name and reply email go to <strong style="color:var(--cream);">hello@drawliniment.com</strong>.</p>
+      <form
+        class="challenge-question-form"
+        action="https://formsubmit.co/info@thehorseconcierge.com"
+        method="POST"
+        data-challenge-point-action="week7-dio-recovery-question"
+        data-challenge-point-points="10"
+        data-challenge-point-week="7"
+        data-challenge-point-label="Recovery question for Draw It Out"
+        data-challenge-point-partner="Draw It Out"
+        data-challenge-autofill-user
+      >
+        <input type="hidden" name="_subject" value="Horsemanship Challenge – Recovery Week">
+        <input type="hidden" name="_next" value="https://www.thehorseconcierge.com/horsemanship-challenge-week-07-ride#dio-recovery-question">
+        <input type="hidden" name="_cc" value="hello@drawliniment.com">
+        <input type="hidden" name="_replyto" id="dio-question-replyto" value="">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="challengeWeek" value="Week 7 — Recovery (Draw It Out)">
+        <input type="hidden" name="partner" value="Draw It Out">
+        <input type="hidden" name="submissionType" value="Recovery question">
+        <input type="hidden" name="pointsAction" value="Recovery question · 10 pts">
+        <input type="hidden" name="name" id="dio-question-name">
+        <input type="hidden" name="email" id="dio-question-email">
+        <div class="form-group">
+          <label class="form-label" for="dio-question-text">Your recovery question</label>
+          <textarea class="form-input" id="dio-question-text" name="recoveryQuestion" rows="5" required placeholder="Cooling, liniment, haul days, heat, warm-up, or a horse that takes longer to come back"></textarea>
+        </div>
+        <button type="submit" class="btn-primary">Ask the Draw It Out team · 10 pts</button>
+      </form>
+      <p class="challenge-point-track-status" hidden style="margin-top:14px;"></p>
+    </div>
 
     <div class="challenge-board reveal" data-challenge-board="week" data-week="7" id="week-standings">
       <p class="section-label">This week’s standings</p>
@@ -177,7 +212,7 @@
           </div>
         </div>
       </div>
-      <p class="funnel-panel-note" style="margin-top:16px;">Good for Draw It Out products. Two additional names are drawn at random this week for $75 and $50 store credit.</p>
+      <p class="funnel-panel-note" style="margin-top:16px;">Credits are good for Draw It Out products. Two additional names are drawn at random this week for $75 and $50 store credit.</p>
       <div class="hero-actions" style="margin-top:20px;">
         <a class="btn-primary" href="https://drawliniment.com/pages/what-does-my-horse-need" target="_blank" rel="noopener noreferrer">See what $250 can put in your barn</a>
         <a class="btn-ghost" href="horsemanship-challenge-prizes.html">View the Prize Hub</a>
@@ -189,7 +224,10 @@
     <div class="section-label reveal">Daily schedule</div>
     <h2 class="heading-xl reveal">October 12–18<br><em>2026</em></h2>
     <p class="body-text reveal" style="max-width:720px; margin-top:16px;">Recovery is not the idle hour after a ride. Heart rate, breathing, temperature, and energy demands rise during work, then return toward baseline. That return is the lesson this week — and it continues long after the horse stops breathing hard.</p>
-    <p class="body-text reveal" style="max-width:720px; margin-top:16px;">Start each day with Draw It Out, then watch the lesson and use the source material if you want to go deeper. Sunday is a rest day for horse and rider.</p>
+    <div class="challenge-week-split reveal">
+      <p class="challenge-week-split__title">How this week fits together</p>
+      <p>Each day opens with a recovery lesson, then a Draw It Out guide or product if you want to take it into the barn.</p>
+    </div>
     <p class="body-text reveal" style="max-width:720px; margin-top:16px;">Days stay locked until they open. After Sunday, the full week remains available so you can catch up.</p>
     <p id="challenge-unlock-banner" class="challenge-unlock-banner" hidden></p>
 
@@ -205,44 +243,56 @@
           <p class="challenge-day__locked-note" hidden>Content unlocks Monday, October 12.</p>
         </header>
         <div class="challenge-day__body">
+          <div class="challenge-day__block challenge-day__block--education">
+            <p class="challenge-day__lane-label">Today’s lesson</p>
+            <div class="challenge-embed challenge-embed--video">
+              <video
+                controls
+                playsinline
+                preload="metadata"
+                title="Equine Conditioning"
+              >
+                <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FEquine_Conditioning.mp4?alt=media&amp;token=234b014b-22a7-4dc7-a06c-8fc99a93555a" type="video/mp4">
+              </video>
+            </div>
+            <div class="challenge-day__resource">
+              <h4 class="challenge-day__resource-title">Source material</h4>
+              <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Ohio State University’s conditioning overview — how workload and recovery fit together.</p>
+              <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FOSU%20Conditioning%20of%20horses.pdf?alt=media&amp;token=26e9ebac-360c-4f79-9104-95f929d2385c" target="_blank" rel="noopener noreferrer">Download OSU Conditioning of Horses</a>
+            </div>
+          </div>
           <div class="challenge-day__resource challenge-day__resource--dio">
+            <p class="challenge-day__lane-label">Draw It Out guide</p>
             <img class="challenge-day__dio-logo" src="Images/challenge-partners/draw-it-out.png?v=20260828f" alt="Draw It Out" width="160" height="28">
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Prehabilitation is proactive care — mobility, hydration, recovery, and workload readiness before soreness gets louder. Start here, then watch today’s lesson.</p>
-            <a class="btn-primary" href="https://drawliniment.com/pages/prehabilitation" target="_blank" rel="noopener noreferrer">Get the Prehabilitation Guide to get you ready for your next ride</a>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Draw It Out’s prehabilitation guide — mobility, hydration, recovery, and workload readiness. The practical follow-through after today’s lesson.</p>
+            <a class="btn-primary" href="https://drawliniment.com/pages/prehabilitation" target="_blank" rel="noopener noreferrer">Read the Prehabilitation Guide</a>
           </div>
-          <div class="challenge-embed challenge-embed--video">
-            <video
-              controls
-              playsinline
-              preload="metadata"
-              title="Equine Conditioning"
-            >
-              <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FEquine_Conditioning.mp4?alt=media&amp;token=234b014b-22a7-4dc7-a06c-8fc99a93555a" type="video/mp4">
-            </video>
-          </div>
-          <div class="challenge-day__resource">
-            <h4 class="challenge-day__resource-title">Source material</h4>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Ohio State University’s conditioning overview — how workload and recovery fit together.</p>
-            <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FOSU%20Conditioning%20of%20horses.pdf?alt=media&amp;token=26e9ebac-360c-4f79-9104-95f929d2385c" target="_blank" rel="noopener noreferrer">Download OSU Conditioning of Horses</a>
-          </div>
-          <div class="challenge-day__action" id="dio-product-pick">
-            <p class="challenge-day__action-label">Proposed activity · 15 points</p>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Find the Draw It Out product you are curious about — or the one already in your barn — then tell us why it earned a place in your routine.</p>
+          <div class="challenge-day__action challenge-day__block--product" id="dio-product-pick">
+            <p class="challenge-day__lane-label">Draw It Out products · 15 pts</p>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Find the Draw It Out product you are curious about — or your favorite already in the barn. Tell us why you picked it, what you do with your horse, and the care challenge that prompted that choice. Your name and reply email go to Draw It Out at hello@drawliniment.com so they can send a useful answer.</p>
             <p style="margin:0 0 28px;">
-              <a class="btn-primary" href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">Find the bottle that belongs in your barn</a>
+              <a class="btn-ghost" href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">Browse Draw It Out products</a>
             </p>
             <form
               class="challenge-question-form"
               action="https://formsubmit.co/info@thehorseconcierge.com"
               method="POST"
+              data-challenge-point-action="week7-dio-product-pick"
+              data-challenge-point-points="15"
+              data-challenge-point-week="7"
+              data-challenge-point-label="Draw It Out product pick"
+              data-challenge-point-partner="Draw It Out"
               data-challenge-autofill-user
             >
-              <input type="hidden" name="_subject" value="Horsemanship Challenge Week 7 — Draw It Out product pick (draft)">
+              <input type="hidden" name="_subject" value="Horsemanship Challenge – Recovery Week">
               <input type="hidden" name="_next" value="https://www.thehorseconcierge.com/horsemanship-challenge-week-07-ride#dio-product-pick">
+              <input type="hidden" name="_cc" value="hello@drawliniment.com">
+              <input type="hidden" name="_replyto" id="dio-product-replyto" value="">
               <input type="hidden" name="_captcha" value="false">
               <input type="hidden" name="challengeWeek" value="Week 7 — Recovery (Draw It Out)">
               <input type="hidden" name="partner" value="Draw It Out">
-              <input type="hidden" name="pointsAction" value="Product pick · proposed 15 pts">
+              <input type="hidden" name="submissionType" value="Product interest">
+              <input type="hidden" name="pointsAction" value="Product pick · 15 pts">
               <input type="hidden" name="name" id="dio-product-name">
               <input type="hidden" name="email" id="dio-product-email">
               <div class="form-group">
@@ -251,10 +301,19 @@
               </div>
               <div class="form-group">
                 <label class="form-label" for="dio-product-why">Why this one</label>
-                <textarea class="form-input" id="dio-product-why" name="productWhy" rows="4" required placeholder="What made you pick it — curiosity, a horse in work, haul days, heat, or a bottle you already keep in the barn"></textarea>
+                <textarea class="form-input" id="dio-product-why" name="productWhy" rows="3" required placeholder="Curiosity, a bottle already in the barn, or something you want to try"></textarea>
               </div>
-              <button type="submit" class="btn-primary">Submit Product</button>
+              <div class="form-group">
+                <label class="form-label" for="dio-product-work">What do you do with your horse?</label>
+                <textarea class="form-input" id="dio-product-work" name="horseWork" rows="3" required placeholder="Trail, lessons, ranch work, showing, retired companion, or something else"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="dio-product-challenge">What care challenge prompted this choice?</label>
+                <textarea class="form-input" id="dio-product-challenge" name="careChallenge" rows="3" required placeholder="Heat, haul days, stiffness after work, a horse that takes longer to come back, or another barn-aisle puzzle"></textarea>
+              </div>
+              <button type="submit" class="btn-primary">Submit Product · 15 pts</button>
             </form>
+            <p class="challenge-point-track-status" hidden style="margin-top:14px;"></p>
           </div>
         </div>
       </article>
@@ -271,29 +330,33 @@
           <p class="challenge-day__locked-note" hidden>Content unlocks Tuesday, October 13.</p>
         </header>
         <div class="challenge-day__body">
+          <div class="challenge-day__block challenge-day__block--education">
+            <p class="challenge-day__lane-label">Today’s lesson</p>
+            <div class="challenge-embed challenge-embed--video">
+              <video
+                controls
+                playsinline
+                preload="metadata"
+                title="Equine Recovery Baseline"
+              >
+                <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FEquine_Recovery_Baseline.mp4?alt=media&amp;token=e42b266b-e617-4429-b38f-0b43a75c8420" type="video/mp4">
+              </video>
+            </div>
+            <div class="challenge-day__resource">
+              <h4 class="challenge-day__resource-title">Source material</h4>
+              <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">University of Connecticut’s two-part conditioning series — how fitness is built, and what “back to baseline” looks like.</p>
+              <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FUconn%20Conditioning%20Part%201.pdf?alt=media&amp;token=c9317d3a-2fab-4cca-8571-09c6e7a7673a" target="_blank" rel="noopener noreferrer">Download UConn Conditioning Part 1</a>
+              <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FUconn%20Conditioning%20Part%202.pdf?alt=media&amp;token=b0859968-b1c8-44a2-aa7a-7cb10851072e" target="_blank" rel="noopener noreferrer" style="margin-left:12px;">Download Part 2</a>
+            </div>
+          </div>
           <div class="challenge-day__resource challenge-day__resource--dio">
+            <p class="challenge-day__lane-label">Draw It Out guide</p>
             <img class="challenge-day__dio-logo" src="Images/challenge-partners/draw-it-out.png?v=20260828f" alt="Draw It Out" width="160" height="28">
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">What to check after a ride — cooling, legs, and when liniment belongs in the routine.</p>
-            <a class="btn-primary" href="https://drawliniment.com/blogs/draw-it-out-horse-health-care-news/post-ride-recovery-for-horses" target="_blank" rel="noopener noreferrer">Build your post-ride recovery checklist</a>
-          </div>
-          <div class="challenge-embed challenge-embed--video">
-            <video
-              controls
-              playsinline
-              preload="metadata"
-              title="Equine Recovery Baseline"
-            >
-              <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FEquine_Recovery_Baseline.mp4?alt=media&amp;token=e42b266b-e617-4429-b38f-0b43a75c8420" type="video/mp4">
-            </video>
-          </div>
-          <div class="challenge-day__resource">
-            <h4 class="challenge-day__resource-title">Source material</h4>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">University of Connecticut’s two-part conditioning series — how fitness is built, and what “back to baseline” looks like.</p>
-            <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FUconn%20Conditioning%20Part%201.pdf?alt=media&amp;token=c9317d3a-2fab-4cca-8571-09c6e7a7673a" target="_blank" rel="noopener noreferrer">Download UConn Conditioning Part 1</a>
-            <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FUconn%20Conditioning%20Part%202.pdf?alt=media&amp;token=b0859968-b1c8-44a2-aa7a-7cb10851072e" target="_blank" rel="noopener noreferrer" style="margin-left:12px;">Download Part 2</a>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">A post-ride checklist from Draw It Out — cooling, legs, and what to look at after work.</p>
+            <a class="btn-primary" href="https://drawliniment.com/blogs/draw-it-out-horse-health-care-news/post-ride-recovery-for-horses" target="_blank" rel="noopener noreferrer">Read the post-ride recovery checklist</a>
           </div>
           <div class="challenge-day__action">
-            <p class="challenge-day__action-label">Proposed activity · 10 points</p>
+            <p class="challenge-day__lane-label">Barn activity · 10 points</p>
             <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Add a note on your horse’s recovery baseline in the app. Resting pulse, respiration, or how quickly they come back after a workout you know well — whatever you can record today.</p>
             <button type="button" class="btn-primary" data-thc-action="app">Log your horse’s recovery baseline in the app</button>
           </div>
@@ -307,30 +370,34 @@
             <span class="challenge-day__weekday">Wednesday</span>
             <span class="challenge-day__date">October 14</span>
           </div>
-          <h3 class="challenge-day__title">Why Muscles Become Tired</h3>
-          <p class="challenge-day__teaser">Fatigue is a temporary decline in the muscle’s ability to produce the required force — different from next-day stiffness, and different from a warning sign.</p>
+          <h3 class="challenge-day__title">Recovery Starts Before the Work</h3>
+          <p class="challenge-day__teaser">Warm-up is not a tradition to rush through. It is the first recovery decision of the day — how you prepare the body before the work starts.</p>
           <p class="challenge-day__locked-note" hidden>Content unlocks Wednesday, October 14.</p>
         </header>
         <div class="challenge-day__body">
+          <div class="challenge-day__block challenge-day__block--education">
+            <p class="challenge-day__lane-label">Today’s lesson</p>
+            <div class="challenge-embed challenge-embed--video">
+              <video
+                controls
+                playsinline
+                preload="metadata"
+                title="Warm-Up: Science vs Tradition"
+              >
+                <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FWarm-Up__Science_vs_Tradition.mp4?alt=media&amp;token=ebeea8d5-e685-47fe-b38c-e8c95f04521f" type="video/mp4">
+              </video>
+            </div>
+            <div class="challenge-day__resource">
+              <h4 class="challenge-day__resource-title">Source material</h4>
+              <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Recovery reading for today’s lesson — what happens before, during, and after the work.</p>
+              <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FRecovery.pdf?alt=media&amp;token=244868d1-497e-44a6-986d-047f6972d876" target="_blank" rel="noopener noreferrer">Download Recovery source material</a>
+            </div>
+          </div>
           <div class="challenge-day__resource challenge-day__resource--dio">
+            <p class="challenge-day__lane-label">Draw It Out guide</p>
             <img class="challenge-day__dio-logo" src="Images/challenge-partners/draw-it-out.png?v=20260828f" alt="Draw It Out" width="160" height="28">
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Next-day stiffness after hill work is common. The question is what it is telling you, and when it is more than sore muscles.</p>
-            <a class="btn-primary" href="https://drawliniment.com/blogs/draw-it-out-horse-health-care-news/horse-stiff-day-after-hill-work" target="_blank" rel="noopener noreferrer">Learn why your horse is stiff the day after hill work</a>
-          </div>
-          <div class="challenge-embed challenge-embed--video">
-            <video
-              controls
-              playsinline
-              preload="metadata"
-              title="Managing Horse Fatigue Before It Turns Fatal"
-            >
-              <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FManaging_Horse_Fatigue_Before_It_Turns_Fatal.mp4?alt=media&amp;token=8af82e3a-b596-4bd8-896e-610d128c33b3" type="video/mp4">
-            </video>
-          </div>
-          <div class="challenge-day__resource">
-            <h4 class="challenge-day__resource-title">Source material</h4>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">MSD Veterinary Manual on equine fatigue — the clinical picture behind today’s lesson.</p>
-            <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FMSD%20Vet%20Manual%20Fatigue.pdf?alt=media&amp;token=0414e62e-22f2-4ff7-b74e-c01829913aa3" target="_blank" rel="noopener noreferrer">Download MSD Vet Manual · Fatigue</a>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Draw It Out’s Show Day Prep Guide — a planning routine for a show, clinic, or day away.</p>
+            <a class="btn-primary" href="https://drawliniment.com/pages/show-day-prep-guide" target="_blank" rel="noopener noreferrer">Open the Show Day Prep Guide</a>
           </div>
         </div>
       </article>
@@ -347,44 +414,24 @@
           <p class="challenge-day__locked-note" hidden>Content unlocks Thursday, October 15.</p>
         </header>
         <div class="challenge-day__body">
+          <div class="challenge-day__block challenge-day__block--education">
+            <p class="challenge-day__lane-label">Today’s lesson</p>
+            <div class="challenge-embed challenge-embed--video">
+              <video
+                controls
+                playsinline
+                preload="metadata"
+                title="How Latherin Keeps Horses Cool"
+              >
+                <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FHow_Latherin_Keeps_Horses_Cool.mp4?alt=media&amp;token=c7dc137d-a522-4f01-b656-3f8f4a850d02" type="video/mp4">
+              </video>
+            </div>
+          </div>
           <div class="challenge-day__resource challenge-day__resource--dio">
+            <p class="challenge-day__lane-label">Draw It Out guide</p>
             <img class="challenge-day__dio-logo" src="Images/challenge-partners/draw-it-out.png?v=20260828f" alt="Draw It Out" width="160" height="28">
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Heat changes the recovery routine. Cooling, liniment, and when to hold back.</p>
-            <a class="btn-primary" href="https://drawliniment.com/blogs/draw-it-out-horse-health-care-news/horse-liniment-hot-weather" target="_blank" rel="noopener noreferrer">Keep your horse cooler when the heat is on</a>
-          </div>
-          <div class="challenge-embed challenge-embed--video">
-            <video
-              controls
-              playsinline
-              preload="metadata"
-              title="How Latherin Keeps Horses Cool"
-            >
-              <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FHow_Latherin_Keeps_Horses_Cool.mp4?alt=media&amp;token=c7dc137d-a522-4f01-b656-3f8f4a850d02" type="video/mp4">
-            </video>
-          </div>
-          <div class="challenge-day__action" id="dio-recovery-question">
-            <p class="challenge-day__action-label">Proposed activity · 10 points</p>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Ask the Draw It Out team a recovery question — cooling, liniment, haul days, heat, or a horse that takes longer to come back.</p>
-            <form
-              class="challenge-question-form"
-              action="https://formsubmit.co/info@thehorseconcierge.com"
-              method="POST"
-              data-challenge-autofill-user
-            >
-              <input type="hidden" name="_subject" value="Horsemanship Challenge Week 7 — Recovery question for Draw It Out (draft)">
-              <input type="hidden" name="_next" value="https://www.thehorseconcierge.com/horsemanship-challenge-week-07-ride#dio-recovery-question">
-              <input type="hidden" name="_captcha" value="false">
-              <input type="hidden" name="challengeWeek" value="Week 7 — Recovery (Draw It Out)">
-              <input type="hidden" name="partner" value="Draw It Out">
-              <input type="hidden" name="pointsAction" value="Recovery question · proposed 10 pts">
-              <input type="hidden" name="name" id="dio-question-name">
-              <input type="hidden" name="email" id="dio-question-email">
-              <div class="form-group">
-                <label class="form-label" for="dio-question-text">Your recovery question</label>
-                <textarea class="form-input" id="dio-question-text" name="recoveryQuestion" rows="5" required placeholder="What do you want the Draw It Out team to weigh in on?"></textarea>
-              </div>
-              <button type="submit" class="btn-primary">Ask the Draw It Out team</button>
-            </form>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Draw It Out’s heat-day notes on cooling and when to hold back. Shade, water, and airflow come first.</p>
+            <a class="btn-primary" href="https://drawliniment.com/blogs/draw-it-out-horse-health-care-news/horse-liniment-hot-weather" target="_blank" rel="noopener noreferrer">Read the hot-weather recovery notes</a>
           </div>
         </div>
       </article>
@@ -401,21 +448,54 @@
           <p class="challenge-day__locked-note" hidden>Content unlocks Friday, October 16.</p>
         </header>
         <div class="challenge-day__body">
-          <div class="challenge-day__action challenge-day__resource--dio" id="dio-horse-needs">
+          <div class="challenge-day__block challenge-day__block--education">
+            <p class="challenge-day__lane-label">Today’s lesson</p>
+            <p class="body-text" style="font-size:0.9rem; margin:0;">Muscles, cardiovascular fitness, and supporting structures adapt when workload rises progressively and recovery is included. Sudden spikes can outpace that adaptation. When recovery is part of the plan, the horse can take a little more next time.</p>
+          </div>
+          <div class="challenge-day__action challenge-day__resource--dio challenge-day__block--product" id="dio-horse-needs">
+            <p class="challenge-day__lane-label">Draw It Out products · 5 pts</p>
             <img class="challenge-day__dio-logo" src="Images/challenge-partners/draw-it-out.png?v=20260828f" alt="Draw It Out" width="160" height="28">
-            <p class="challenge-day__action-label">5 points</p>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Recovery only sticks when the right bottles are already in the aisle. Use Draw It Out’s tool to determine which products could support your horse and your barn — the horse in front of you, and the barn you actually run.</p>
-            <a
-              class="btn-primary"
-              href="https://drawliniment.com/pages/what-does-my-horse-need"
-              target="_blank"
-              rel="noopener noreferrer"
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Build a practical care routine around your horse’s workload, then explore the products that fit. Use Draw It Out’s What Does My Horse Need? tool, then tell us which product or routine you explored and why it fits your horse. Your name and reply email go to hello@drawliniment.com.</p>
+            <p style="margin:0 0 28px;">
+              <a
+                class="btn-ghost"
+                href="https://drawliniment.com/pages/what-does-my-horse-need"
+                target="_blank"
+                rel="noopener noreferrer"
+              >Open What Does My Horse Need?</a>
+            </p>
+            <form
+              class="challenge-question-form"
+              action="https://formsubmit.co/info@thehorseconcierge.com"
+              method="POST"
               data-challenge-point-action="week7-horse-needs"
               data-challenge-point-points="5"
               data-challenge-point-week="7"
-              data-challenge-point-label="Determine which products could support your horse and barn"
+              data-challenge-point-label="What Does My Horse Need? product or routine"
               data-challenge-point-partner="Draw It Out"
-            >Determine what products your horse and barn need</a>
+              data-challenge-autofill-user
+            >
+              <input type="hidden" name="_subject" value="Horsemanship Challenge – Recovery Week">
+              <input type="hidden" name="_next" value="https://www.thehorseconcierge.com/horsemanship-challenge-week-07-ride#dio-horse-needs">
+              <input type="hidden" name="_cc" value="hello@drawliniment.com">
+              <input type="hidden" name="_replyto" id="dio-needs-replyto" value="">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="challengeWeek" value="Week 7 — Recovery (Draw It Out)">
+              <input type="hidden" name="partner" value="Draw It Out">
+              <input type="hidden" name="submissionType" value="What Does My Horse Need? follow-up">
+              <input type="hidden" name="pointsAction" value="What Does My Horse Need? · 5 pts">
+              <input type="hidden" name="name" id="dio-needs-name">
+              <input type="hidden" name="email" id="dio-needs-email">
+              <div class="form-group">
+                <label class="form-label" for="dio-needs-product">Product or routine you explored</label>
+                <input class="form-input" type="text" id="dio-needs-product" name="exploredProduct" required placeholder="The product or routine the tool pointed you toward">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="dio-needs-why">Why it fits your horse</label>
+                <textarea class="form-input" id="dio-needs-why" name="whyItFits" rows="4" required placeholder="How this matches your horse’s workload, recovery, or barn routine"></textarea>
+              </div>
+              <button type="submit" class="btn-primary">Submit what you explored · 5 pts</button>
+            </form>
             <p class="challenge-point-track-status" hidden style="margin-top:14px;"></p>
           </div>
         </div>
@@ -433,25 +513,29 @@
           <p class="challenge-day__locked-note" hidden>Content unlocks Saturday, October 17.</p>
         </header>
         <div class="challenge-day__body">
+          <div class="challenge-day__block challenge-day__block--education">
+            <p class="challenge-day__lane-label">Today’s lesson</p>
+            <div class="challenge-embed challenge-embed--video">
+              <video
+                controls
+                playsinline
+                preload="metadata"
+                title="Rethinking Equine Transport"
+              >
+                <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FRethinking_Equine_Transport.mp4?alt=media&amp;token=526b4ec4-7d6a-417e-9eb4-fe8620ff6b59" type="video/mp4">
+              </video>
+            </div>
+            <div class="challenge-day__resource">
+              <h4 class="challenge-day__resource-title">Source material</h4>
+              <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">A closer look at transport as physiological work, not just miles on the odometer.</p>
+              <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FTransport.pdf?alt=media&amp;token=aa983ffd-7ffb-44db-9c29-a1f42c1f0ac9" target="_blank" rel="noopener noreferrer">Download Transport PDF</a>
+            </div>
+          </div>
           <div class="challenge-day__resource challenge-day__resource--dio">
+            <p class="challenge-day__lane-label">Draw It Out guide</p>
             <img class="challenge-day__dio-logo" src="Images/challenge-partners/draw-it-out.png?v=20260828f" alt="Draw It Out" width="160" height="28">
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Haul-day recovery checks — trailer legs, cooling, and what to look at when the ramp comes down.</p>
-            <a class="btn-primary" href="https://drawliniment.com/blogs/draw-it-out-horse-health-care-news/haul-day-recovery-horses-trailer-legs-cooling-checks" target="_blank" rel="noopener noreferrer">Walk the haul-day checks before the ramp comes down</a>
-          </div>
-          <div class="challenge-embed challenge-embed--video">
-            <video
-              controls
-              playsinline
-              preload="metadata"
-              title="Rethinking Equine Transport"
-            >
-              <source src="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FRethinking_Equine_Transport.mp4?alt=media&amp;token=526b4ec4-7d6a-417e-9eb4-fe8620ff6b59" type="video/mp4">
-            </video>
-          </div>
-          <div class="challenge-day__resource">
-            <h4 class="challenge-day__resource-title">Source material</h4>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">A closer look at transport as physiological work, not just miles on the odometer.</p>
-            <a class="btn-ghost" href="https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDraw%20It%20Out%20Recovery%20Week%2FTransport.pdf?alt=media&amp;token=aa983ffd-7ffb-44db-9c29-a1f42c1f0ac9" target="_blank" rel="noopener noreferrer">Download Transport PDF</a>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Draw It Out’s haul-day checks — trailer legs, cooling, and what to look at when the ramp comes down.</p>
+            <a class="btn-primary" href="https://drawliniment.com/blogs/draw-it-out-horse-health-care-news/haul-day-recovery-horses-trailer-legs-cooling-checks" target="_blank" rel="noopener noreferrer">Read the haul-day recovery checks</a>
           </div>
         </div>
       </article>
@@ -467,14 +551,20 @@
           <p class="challenge-day__locked-note" hidden>Content unlocks Sunday, October 18.</p>
         </header>
         <div class="challenge-day__body">
-          <div class="challenge-day__resource challenge-day__resource--dio">
+          <div class="challenge-day__block challenge-day__block--education">
+            <p class="challenge-day__lane-label">Today’s lesson</p>
+            <p class="body-text" style="font-size:0.9rem; margin:0;">Rest is part of recovery for horse and rider — time off the clock, off the trailer, and back toward baseline. If you’ve ever reached for the barn liniment on yourself, Draw It Out has a product made for people.</p>
+          </div>
+          <div class="challenge-day__resource challenge-day__resource--dio challenge-day__block--product">
+            <p class="challenge-day__lane-label">For people</p>
             <img class="challenge-day__dio-logo" src="Images/challenge-partners/draw-it-out.png?v=20260828f" alt="Draw It Out" width="160" height="28">
             <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Horse liniment sits within arm’s reach in most barns, so riders naturally ask whether they can use it on themselves. The dependable answer starts with the product label.</p>
             <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Draw It Out® liniment is packaged for horse and livestock care. ReJüv™ is the Draw It Out® product made and labeled for people — menthol-free, capsaicin-free, low odor, and colorless.</p>
             <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Customer stories about using barn products are experiences, not human-use directions. When the product is for you, choose ReJüv™.</p>
             <a class="btn-primary" href="https://drawliniment.com/blogs/draw-it-out-horse-health-care-news/horse-liniment-on-humans" target="_blank" rel="noopener noreferrer">Choose the gel made for you, not your horse</a>
           </div>
-          <div class="challenge-day__resource">
+          <div class="challenge-day__resource challenge-day__block--product">
+            <p class="challenge-day__lane-label">For people</p>
             <h4 class="challenge-day__resource-title">ReJüv™ Gel · for people</h4>
             <div class="challenge-day__product">
               <img class="challenge-day__product-img" src="Images/challenge-week-07/rejuv-gel-16oz.png" alt="ReJüv Gel 16oz — Draw It Out human-labeled topical gel" width="400" height="400" loading="lazy">
@@ -493,12 +583,12 @@
           </div>
           <div class="challenge-day__resource">
             <h4 class="challenge-day__resource-title">Week 7 recap</h4>
-            <p class="body-text" style="font-size:0.9rem;">After today, this full schedule stays open for arrears completion. Proposed activities this week:</p>
+            <p class="body-text" style="font-size:0.9rem;">After today, this full schedule stays open for arrears completion. Activities this week:</p>
             <ul class="audience-list" style="margin-top:16px;">
-              <li>Explore Draw It Out and submit a product pick · proposed 15 pts</li>
+              <li>Explore Draw It Out and submit a product pick, plus horse work and care challenge · 15 pts</li>
               <li>Add a recovery baseline note in the app · proposed 10 pts</li>
-              <li>Submit a recovery question to the Draw It Out team · proposed 10 pts</li>
-              <li>Determine which products could support your horse and barn · 5 pts</li>
+              <li>Submit a recovery question to the Draw It Out team anytime this week · 10 pts</li>
+              <li>Use What Does My Horse Need?, then submit the product or routine you explored · 5 pts</li>
               <li>GPS hand walk or ride anytime this week · proposed 5 pts × 2</li>
             </ul>
           </div>
@@ -515,7 +605,7 @@
     <div class="cta-section-inner">
       <div class="section-label reveal" style="justify-content:center;">Stay ready</div>
       <h2 class="heading-xl reveal">Take care of the horse<br><em>in front of you.</em></h2>
-      <p class="body-text reveal" style="margin: 0 auto; text-align:center; max-width:560px;">Watch each day’s lesson, read Draw It Out’s guide, then finish the proposed activities in the Hub and the app.</p>
+      <p class="body-text reveal" style="margin: 0 auto; text-align:center; max-width:560px;">Watch each day’s lesson, then use Draw It Out’s guides and products if you want to take the care into the barn.</p>
       <div class="hero-actions reveal reveal-delay-1" style="justify-content:center; margin-top:32px;">
         <a class="btn-primary" href="#points">View Proposed Points</a>
         <a class="btn-ghost" href="https://drawliniment.com/" target="_blank" rel="noopener noreferrer">Visit Draw It Out</a>
@@ -569,7 +659,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="js/horsemanship-challenge-week.js?v=20260901c"></script>
-<script src="js/horsemanship-challenge-points.js?v=20260907c"></script>
+<script src="js/horsemanship-challenge-points.js?v=20260921a"></script>
 <script src="js/horsemanship-challenge-leaderboard.js?v=20260910a"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };

@@ -4766,6 +4766,11 @@
     display: block;
     width: auto;
     height: 32px;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: left center;
+    align-self: flex-start;
+    flex: 0 0 auto;
     margin: 0 0 16px;
   }
   #week-prize .btn-primary,
@@ -5339,6 +5344,57 @@
     text-transform: uppercase;
     color: var(--gold);
     margin: 0 0 8px;
+  }
+  .challenge-week-split {
+    max-width: 720px;
+    margin-top: 20px;
+    padding: 18px 20px 16px;
+    border: 1px solid rgba(var(--gold-rgb), 0.28);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.18);
+  }
+  .challenge-week-split__title {
+    margin: 0 0 8px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .challenge-week-split p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.55;
+    color: var(--text-mid);
+  }
+  .challenge-day__lane-label {
+    margin: 0 0 10px;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .challenge-day__block--education,
+  .challenge-day__block--guide,
+  .challenge-day__block--product {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .challenge-day__block--education {
+    padding: 4px 0 4px 16px;
+    border-left: 2px solid rgba(255, 255, 255, 0.22);
+  }
+  .challenge-day__block--education .challenge-day__lane-label {
+    color: var(--text-mid);
+  }
+  .challenge-day__block--product {
+    padding: 20px 22px;
+    border: 1px solid rgba(var(--gold-rgb), 0.28);
+    border-radius: 8px;
+    background: rgba(var(--gold-rgb), 0.06);
   }
   .challenge-day__lanes {
     display: grid;

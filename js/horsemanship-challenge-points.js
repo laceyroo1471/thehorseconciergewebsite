@@ -220,8 +220,10 @@
     var id = identityFrom(user, registration);
     var nameEl = form.querySelector('input[name="name"]');
     var emailEl = form.querySelector('input[name="email"]');
+    var replyEl = form.querySelector('input[name="_replyto"]');
     if (nameEl && !String(nameEl.value || '').trim() && id.name) nameEl.value = id.name;
     if (emailEl && id.email) emailEl.value = id.email;
+    if (replyEl && id.email) replyEl.value = id.email;
     return id;
   }
 
