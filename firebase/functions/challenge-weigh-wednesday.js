@@ -277,6 +277,7 @@ async function scoreContest(contestId, opts) {
         return row.awarded;
       }).length,
       results: results,
+      revealedActuals: contest.actuals,
       updatedAt: FieldValue.serverTimestamp(),
     },
     { merge: true }
@@ -288,6 +289,7 @@ async function scoreContest(contestId, opts) {
     update[spec.field + '.place'] = row.place;
     update[spec.field + '.avgPct'] = row.avgPct;
     update[spec.field + '.points'] = row.points;
+    update[spec.field + '.official'] = contest.actuals;
     try {
       await db().collection('challengeRegistrations').doc(row.userId).update(update);
     } catch (err) {

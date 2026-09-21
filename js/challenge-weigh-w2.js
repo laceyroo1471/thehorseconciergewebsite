@@ -51,6 +51,16 @@
   var hasSubmitted = false;
   var myPlace = 0;
   var myAvgPct = null;
+  var myGuesses = null;
+  var officialActuals = null;
+  var FALLBACK_OFFICIAL = {
+    heartAdult: { pct: 1 },
+    heartArabian: { pct: 0.73 },
+    heartDraft: { pct: 0.6 },
+    heartRacing: { pct: 0.86 },
+    kidneysAdult: { pct: 0.32 },
+    liverAdult: { pct: 1.5 },
+  };
 
   function inWindow() {
     if (preview) return true;
@@ -106,6 +116,77 @@
   function personalResultNote() {
     if (!myPlace || myAvgPct == null || isNaN(Number(myAvgPct))) return '';
     return 'You placed ' + ordinal(myPlace) + ' · ' + formatAvgPct(myAvgPct) + ' average off.';
+  }
+  function answersRevealed() {
+    return windowClosed() && !!officialActuals;
+  }
+  function formatOfficialPct(row) {
+    var n = row && typeof row === 'object' ? Number(row.pct) : Number(row);
+    if (isNaN(n)) return '—';
+    return n + '%';
+  }
+  function guessPct(item) {
+    if (!myGuesses || !myGuesses[item.id]) return null;
+    var row = myGuesses[item.id];
+    var n = row && typeof row === 'object' ? Number(row.pct) : Number(row);
+    return isNaN(n) ? null : n;
+  }
+  function setOfficial(actuals) {
+    if (!actuals || typeof actuals !== 'object') return;
+    officialActuals = actuals;
+    renderAnswers();
+    updateCards();
+  }
+  function answersPanelHtml() {
+    return (
+      '<div class="weigh-answers" data-weigh-answers hidden>' +
+      '<p class="weigh-answers__title">Official answers</p>' +
+      '<ul class="weigh-answers__list" data-weigh-answers-list></ul>' +
+      '</div>'
+    );
+  }
+  function renderAnswers() {
+    if (!form) return;
+    var panel = form.querySelector('[data-weigh-answers]');
+    var list = form.querySelector('[data-weigh-answers-list]');
+    var hint = form.querySelector('.weigh-form__hint');
+    if (!panel || !list) return;
+    if (!answersRevealed()) {
+      panel.hidden = true;
+      return;
+    }
+    panel.hidden = false;
+    list.innerHTML = ITEMS.map(function (item) {
+      var yours = guessPct(item);
+      return (
+        '<li class="weigh-answers__row">' +
+        '<span class="weigh-answers__label">' +
+        escapeHtml(item.group) +
+        ' — ' +
+        escapeHtml(item.detail) +
+        '</span>' +
+        '<span class="weigh-answers__values"><span class="weigh-answers__official">' +
+        escapeHtml(formatOfficialPct(officialActuals[item.id])) +
+        '</span>' +
+        (yours != null ? ' · your guess ' + yours + '%' : '') +
+        '</span></li>'
+      );
+    }).join('');
+    if (hint) hint.textContent = 'Official answers posted when this week scored Sunday at 8:00 PM ET.';
+  }
+  function loadContestReveal() {
+    if (windowClosed() && !preview) setOfficial(FALLBACK_OFFICIAL);
+    if (!windowClosed() || !db) return;
+    db.collection('challengeContests')
+      .doc(CONTEST_ID)
+      .get()
+      .then(function (snap) {
+        if (!snap.exists) return;
+        var data = snap.data() || {};
+        if (!data.scoredAt && !data.scoredAtMs) return;
+        setOfficial(data.revealedActuals || data.actuals);
+      })
+      .catch(function () {});
   }
 
   function guessesFromRegistration(data) {
@@ -187,7 +268,8 @@
       '<div class="weigh-form__list">' +
       itemRowsHtml() +
       '</div>' +
-      '<p class="weigh-form__hint">Enter a percent for each — for example 1 or 0.75. All six required. Official values come from published equine anatomy references and are scored Sunday evening.</p>' +
+      answersPanelHtml() +
+      '<p class="weigh-form__hint">Enter a percent for each — for example 1 or 0.75. All six required. Official answers post here Sunday at 8:00 PM ET when scores go up.</p>' +
       '<p id="weigh-w2-status" class="weigh-form__status" hidden></p>' +
       '<div class="thc-dialog__actions">' +
       '<button type="submit" class="btn-primary" data-weigh-w2-submit>Lock in my 6 guesses</button>' +
@@ -251,18 +333,27 @@
       if (hasSubmitted) {
         if (note) {
           note.textContent = scoredNote
-            ? scoredNote
+            ? scoredNote + (answersRevealed() ? ' Official answers are in.' : '')
             : windowClosed()
-              ? 'Your guesses are in. Results post after Sunday 8:00 PM ET.'
-              : 'Your six guesses are locked in. Results score automatically Sunday evening.';
+              ? answersRevealed()
+                ? 'Your guesses are in. Official answers are posted below.'
+                : 'Your guesses are in. Official answers post Sunday at 8:00 PM ET.'
+              : 'Your six guesses are locked in. Official answers post Sunday at 8:00 PM ET.';
         }
         if (openBtn) {
           openBtn.hidden = false;
-          openBtn.textContent = 'View your guesses';
+          openBtn.textContent = answersRevealed() ? 'View guesses & answers' : 'View your guesses';
         }
       } else if (windowClosed()) {
-        if (note) note.textContent = 'Submissions are closed. Results score automatically.';
-        if (openBtn) openBtn.hidden = true;
+        if (note) {
+          note.textContent = answersRevealed()
+            ? 'Submissions are closed. Official answers are posted.'
+            : 'Submissions are closed. Official answers post Sunday at 8:00 PM ET.';
+        }
+        if (openBtn) {
+          openBtn.hidden = !answersRevealed();
+          openBtn.textContent = 'See the official answers';
+        }
         setFormLocked(true);
       } else {
         if (note) {
@@ -408,8 +499,10 @@
     var guesses = guessesFromRegistration(data);
     var block = data && data[FIELD];
     hasSubmitted = isCompleteGuesses(guesses);
+    myGuesses = guesses;
     myPlace = block && block.place ? Number(block.place) : 0;
     myAvgPct = block && block.avgPct != null ? Number(block.avgPct) : null;
+    if (block && block.official) setOfficial(block.official);
     if (hasSubmitted) {
       clearPending();
       fillForm(guesses);
@@ -417,10 +510,13 @@
       var scoredNote = personalResultNote();
       setStatus(
         scoredNote ||
-          'Recorded — your six guesses are locked in. Results score automatically Sunday evening.',
+          (answersRevealed()
+            ? 'Recorded — official answers are posted below.'
+            : 'Recorded — your six guesses are locked in. Official answers post Sunday at 8:00 PM ET.'),
         false,
         true
       );
+      renderAnswers();
     } else if (block && block.dismissedAt) {
       markDismissedLocal();
     }
@@ -456,7 +552,9 @@
   function wire() {
     if (!document.querySelector('[data-weigh-w2-card]')) return;
     ensureDialog();
+    if (windowClosed() && !preview) setOfficial(FALLBACK_OFFICIAL);
     updateCards();
+    renderAnswers();
 
     dialog.querySelectorAll('[data-weigh-w2-dismiss]').forEach(function (el) {
       el.addEventListener('click', function () {
@@ -479,11 +577,14 @@
         currentUser = user;
         if (!user || !db) {
           hasSubmitted = false;
+          myGuesses = null;
           myPlace = 0;
           myAvgPct = null;
           updateCards();
+          renderAnswers();
           return;
         }
+        loadContestReveal();
         var restored = false;
         db.collection('challengeRegistrations')
           .doc(user.uid)

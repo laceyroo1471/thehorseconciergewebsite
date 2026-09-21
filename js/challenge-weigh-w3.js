@@ -62,6 +62,15 @@
   var hasSubmitted = false;
   var myPlace = 0;
   var myAvgPct = null;
+  var myGuesses = null;
+  var officialActuals = null;
+  var FALLBACK_OFFICIAL = {
+    walkFore: { lb: 660 },
+    walkHind: { lb: 510 },
+    trotFore: { lb: 1180 },
+    trotHind: { lb: 1040 },
+    canterTrailFore: { lb: 1470 },
+  };
 
   function inWindow() {
     if (preview) return true;
@@ -117,6 +126,81 @@
   function personalResultNote() {
     if (!myPlace || myAvgPct == null || isNaN(Number(myAvgPct))) return '';
     return 'You placed ' + ordinal(myPlace) + ' · ' + formatAvgOff(myAvgPct) + '.';
+  }
+  function answersRevealed() {
+    return windowClosed() && !!officialActuals;
+  }
+  function formatOfficialLb(row) {
+    var n = row && typeof row === 'object' ? Number(row.lb) : Number(row);
+    if (isNaN(n)) return '—';
+    return n.toLocaleString('en-US') + ' lb';
+  }
+  function guessLb(item) {
+    if (!myGuesses || !myGuesses[item.id]) return null;
+    var row = myGuesses[item.id];
+    var n = row && typeof row === 'object' ? Number(row.lb) : Number(row);
+    return isNaN(n) ? null : n;
+  }
+  function setOfficial(actuals) {
+    if (!actuals || typeof actuals !== 'object') return;
+    officialActuals = actuals;
+    renderAnswers();
+    updateCards();
+  }
+  function answersPanelHtml() {
+    return (
+      '<div class="weigh-answers" data-weigh-answers hidden>' +
+      '<p class="weigh-answers__title">Official answers</p>' +
+      '<ul class="weigh-answers__list" data-weigh-answers-list></ul>' +
+      '</div>'
+    );
+  }
+  function renderAnswers() {
+    if (!form) return;
+    var panel = form.querySelector('[data-weigh-answers]');
+    var list = form.querySelector('[data-weigh-answers-list]');
+    var hint = form.querySelector('.weigh-form__hint');
+    if (!panel || !list) return;
+    if (!answersRevealed()) {
+      panel.hidden = true;
+      if (hint) {
+        hint.textContent =
+          'Enter pounds for all five. Official answers post here Sunday at 8:00 PM ET when scores go up.';
+      }
+      return;
+    }
+    panel.hidden = false;
+    list.innerHTML = ITEMS.map(function (item) {
+      var yours = guessLb(item);
+      return (
+        '<li class="weigh-answers__row">' +
+        '<span class="weigh-answers__label">' +
+        escapeHtml(item.group) +
+        ' — ' +
+        escapeHtml(item.detail) +
+        '</span>' +
+        '<span class="weigh-answers__values"><span class="weigh-answers__official">' +
+        escapeHtml(formatOfficialLb(officialActuals[item.id])) +
+        '</span>' +
+        (yours != null ? ' · your guess ' + yours.toLocaleString('en-US') + ' lb' : '') +
+        '</span></li>'
+      );
+    }).join('');
+    if (hint) hint.textContent = 'Official answers posted when this week scored Sunday at 8:00 PM ET.';
+  }
+  function loadContestReveal() {
+    if (windowClosed() && !preview) setOfficial(FALLBACK_OFFICIAL);
+    if (!windowClosed() || !db) return;
+    db.collection('challengeContests')
+      .doc(CONTEST_ID)
+      .get()
+      .then(function (snap) {
+        if (!snap.exists) return;
+        var data = snap.data() || {};
+        if (!data.scoredAt && !data.scoredAtMs) return;
+        setOfficial(data.revealedActuals || data.actuals);
+      })
+      .catch(function () {});
   }
 
   function guessesFromRegistration(data) {
@@ -193,12 +277,13 @@
       '<div class="thc-dialog__body weigh-dialog__body">' +
       '<p class="thc-dialog__eyebrow">Mid-week bonus · up to 9 points</p>' +
       '<h2 class="thc-dialog__title">What’s It Weigh Wednesday</h2>' +
-      '<p class="thc-dialog__text">Guess the <strong>pounds of peak ground force</strong> on a <strong>1,000-lb horse</strong> at each gait and limb. Closest overall wins. Open Wednesday 6:00 AM through Sunday 8:00 PM ET. Official values stay sealed until then.</p>' +
+      '<p class="thc-dialog__text">Guess the <strong>pounds of peak ground force</strong> on a <strong>1,000-lb horse</strong> at each gait and limb. Closest overall wins. Open Wednesday 6:00 AM through Sunday 8:00 PM ET. Official answers post here when it scores Sunday at 8:00 PM ET.</p>' +
       '<form id="weigh-w3-form" class="weigh-form" novalidate>' +
       '<div class="weigh-form__list">' +
       itemRowsHtml() +
       '</div>' +
-      '<p class="weigh-form__hint">Enter pounds for all five. Once you lock them in, they cannot be changed. Results score automatically Sunday at 8:00 PM ET.</p>' +
+      answersPanelHtml() +
+      '<p class="weigh-form__hint">Enter pounds for all five. Official answers post here Sunday at 8:00 PM ET when scores go up.</p>' +
       '<p id="weigh-w3-status" class="weigh-form__status" hidden></p>' +
       '<div class="thc-dialog__actions">' +
       '<button type="submit" class="btn-primary" data-weigh-w3-submit>Lock in my 5 guesses</button>' +
@@ -262,18 +347,27 @@
       if (hasSubmitted) {
         if (note) {
           note.textContent = scoredNote
-            ? scoredNote
+            ? scoredNote + (answersRevealed() ? ' Official answers are in.' : '')
             : windowClosed()
-              ? 'Your guesses are in. Results post after Sunday 8:00 PM ET.'
-              : 'Your five guesses are locked in. Official values stay sealed until Sunday 8:00 PM ET.';
+              ? answersRevealed()
+                ? 'Your guesses are in. Official answers are posted below.'
+                : 'Your guesses are in. Official answers post Sunday at 8:00 PM ET.'
+              : 'Your five guesses are locked in. Official answers post Sunday at 8:00 PM ET.';
         }
         if (openBtn) {
           openBtn.hidden = false;
-          openBtn.textContent = 'View your guesses';
+          openBtn.textContent = answersRevealed() ? 'View guesses & answers' : 'View your guesses';
         }
       } else if (windowClosed()) {
-        if (note) note.textContent = 'Submissions are closed. Results score automatically.';
-        if (openBtn) openBtn.hidden = true;
+        if (note) {
+          note.textContent = answersRevealed()
+            ? 'Submissions are closed. Official answers are posted.'
+            : 'Submissions are closed. Official answers post Sunday at 8:00 PM ET.';
+        }
+        if (openBtn) {
+          openBtn.hidden = !answersRevealed();
+          openBtn.textContent = 'See the official answers';
+        }
         setFormLocked(true);
       } else {
         if (note) {
@@ -404,7 +498,7 @@
         clearPending();
         setFormLocked(true);
         setStatus(
-          'Recorded — all five guesses are locked in. Official values stay sealed until Sunday 8:00 PM ET.',
+          'Recorded — all five guesses are locked in. Official answers post Sunday at 8:00 PM ET.',
           false,
           true
         );
@@ -423,8 +517,10 @@
     var guesses = guessesFromRegistration(data);
     var block = data && data[FIELD];
     hasSubmitted = isCompleteGuesses(guesses);
+    myGuesses = guesses;
     myPlace = block && block.place ? Number(block.place) : 0;
     myAvgPct = block && block.avgPct != null ? Number(block.avgPct) : null;
+    if (block && block.official) setOfficial(block.official);
     if (hasSubmitted) {
       clearPending();
       fillForm(guesses);
@@ -432,10 +528,13 @@
       var scoredNote = personalResultNote();
       setStatus(
         scoredNote ||
-          'Recorded — your five guesses are locked in. Official values stay sealed until Sunday 8:00 PM ET.',
+          (answersRevealed()
+            ? 'Recorded — official answers are posted below.'
+            : 'Recorded — your five guesses are locked in. Official answers post Sunday at 8:00 PM ET.'),
         false,
         true
       );
+      renderAnswers();
     } else if (block && block.dismissedAt) {
       markDismissedLocal();
     }
@@ -471,7 +570,9 @@
   function wire() {
     if (!document.querySelector('[data-weigh-w3-card]')) return;
     ensureDialog();
+    if (windowClosed() && !preview) setOfficial(FALLBACK_OFFICIAL);
     updateCards();
+    renderAnswers();
 
     dialog.querySelectorAll('[data-weigh-w3-dismiss]').forEach(function (el) {
       el.addEventListener('click', function () {
@@ -494,11 +595,14 @@
         currentUser = user;
         if (!user || !db) {
           hasSubmitted = false;
+          myGuesses = null;
           myPlace = 0;
           myAvgPct = null;
           updateCards();
+          renderAnswers();
           return;
         }
+        loadContestReveal();
         var restored = false;
         db.collection('challengeRegistrations')
           .doc(user.uid)
