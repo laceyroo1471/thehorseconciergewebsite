@@ -91,23 +91,56 @@
     });
   }
 
-  function yourRow(rows, myPoints, kind) {
+  function lateForWeek(weekNum) {
+    var receipt = latestRegistration && latestRegistration.pointReceipt;
+    if (!receipt) return 0;
+    var key = String(weekNum);
+    if (receipt.afterCutoffByWeek && receipt.afterCutoffByWeek[key] != null) {
+      return Number(receipt.afterCutoffByWeek[key]) || 0;
+    }
+    var rows = receipt.weeks && receipt.weeks[key] && receipt.weeks[key].afterCutoff;
+    if (!rows || !rows.length) return 0;
+    return rows.reduce(function (sum, row) {
+      return sum + (Number(row.points) || 0);
+    }, 0);
+  }
+
+  function afterCutoffTotal() {
+    var receipt = latestRegistration && latestRegistration.pointReceipt;
+    if (receipt && receipt.afterCutoff != null) return Number(receipt.afterCutoff) || 0;
+    var total = Number(latestRegistration && latestRegistration.pointsTotal) || 0;
+    var weekly = (latestRegistration && latestRegistration.weeklyPoints) || {};
+    var weeklySum = 0;
+    Object.keys(weekly).forEach(function (key) {
+      weeklySum += Number(weekly[key]) || 0;
+    });
+    return Math.max(0, total - weeklySum);
+  }
+
+  function yourRow(rows, myPoints, kind, weekNum) {
     if (!latestUser) return '';
     var found = (rows || []).filter(isYou)[0];
+    var late = kind === 'week' ? lateForWeek(weekNum) : afterCutoffTotal();
+    var lateNote =
+      late > 0
+        ? kind === 'week'
+          ? ' +' + late + ' more count toward the grand prize only (posted after Sunday).'
+          : ' ' + late + ' of those posted after a Sunday cutoff (grand prize only).'
+        : '';
     if (found) {
       return kind === 'week'
-        ? 'You have ' + found.points + ' pts this week · #' + found.rank + '.'
-        : 'You’re #' + found.rank + ' with ' + found.points + ' pts.';
+        ? 'You have ' + found.points + ' pts this week · #' + found.rank + '.' + lateNote
+        : 'You’re #' + found.rank + ' with ' + found.points + ' pts.' + lateNote;
     }
     if (kind === 'week') {
       return myPoints > 0
-        ? 'You have ' + myPoints + ' pts this week — keep going for a top-5 spot.'
-        : 'You have 0 pts this week so far.';
+        ? 'You have ' + myPoints + ' pts this week — keep going for a top-5 spot.' + lateNote
+        : 'You have 0 pts this week so far.' + lateNote;
     }
     if (myPoints > 0) {
-      return 'You’re on the board with ' + myPoints + ' pts — keep going for a top-20 spot.';
+      return 'You’re on the board with ' + myPoints + ' pts — keep going for a top-20 spot.' + lateNote;
     }
-    return '';
+    return lateNote.trim();
   }
 
   function drawBoards() {
@@ -165,7 +198,7 @@
       renderList(listEl, displayRows);
       if (emptyEl) emptyEl.hidden = rows.length > 0;
       if (youEl) {
-        var line = yourRow(rows, myPoints, kind);
+        var line = yourRow(rows, myPoints, kind, kind === 'week' ? weekNum : '');
         youEl.hidden = !line;
         youEl.textContent = line;
       }
@@ -219,11 +252,15 @@
     }
     el.hidden = false;
     var n = Number(myPoints) || 0;
+    var late = lateForWeek(weekNum || pageWeek);
+    var meta = late
+      ? '+' + late + ' grand prize only — posted after Sunday'
+      : 'Your Week ' + String(weekNum || pageWeek || '') + ' prize score';
     el.innerHTML =
-      (n === 1 ? '1 point this week' : n + ' points this week') +
-      '<span class="challenge-hub-points__meta">Your Week ' +
-      escapeHtml(String(weekNum || pageWeek || '')) +
-      ' score</span>';
+      (n === 1 ? '1 point toward this week’s prize' : n + ' points toward this week’s prize') +
+      '<span class="challenge-hub-points__meta">' +
+      escapeHtml(meta) +
+      '</span>';
   }
 
   function applyBoardSnap(snap) {

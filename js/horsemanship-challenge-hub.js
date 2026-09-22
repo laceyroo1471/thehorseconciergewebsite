@@ -283,8 +283,185 @@
     return found || 0;
   }
 
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function formatPts(n) {
+    n = Number(n) || 0;
+    return n === 1 ? '1 pt' : n + ' pts';
+  }
+
+  function prettyEarned(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-US', {
+      timeZone: 'America/New_York',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
+  function weekThemeFromCard(weekNum) {
+    var found = '';
+    document.querySelectorAll('#challenge-week-grid .challenge-week-card').forEach(function (card) {
+      if (weekNumberFromCard(card) !== weekNum) return;
+      var theme = card.querySelector('.challenge-week-card__theme');
+      found = theme ? String(theme.textContent || '').trim() : '';
+    });
+    return found;
+  }
+
+  function summarizeReceipt(registration) {
+    var receipt = (registration && registration.pointReceipt) || null;
+    var weeklyMap = (receipt && receipt.weeklyPrize) || (registration && registration.weeklyPoints) || {};
+    var weeklySum = 0;
+    Object.keys(weeklyMap).forEach(function (key) {
+      weeklySum += Number(weeklyMap[key]) || 0;
+    });
+    var total = Number((receipt && receipt.total != null ? receipt.total : registration && registration.pointsTotal) || 0);
+    var afterCutoff = receipt && receipt.afterCutoff != null
+      ? Number(receipt.afterCutoff) || 0
+      : Math.max(0, total - weeklySum);
+    return {
+      total: total,
+      weeklyPrize: weeklyMap,
+      weeklySum: weeklySum,
+      afterCutoff: afterCutoff,
+      afterCutoffByWeek: (receipt && receipt.afterCutoffByWeek) || {},
+      bonusPoints: receipt ? Number(receipt.bonusPoints) || 0 : 0,
+      weeks: (receipt && receipt.weeks) || {},
+      bonus: (receipt && receipt.bonus) || [],
+      hasDetail: !!(receipt && receipt.weeks),
+    };
+  }
+
+  function lateForWeek(info, weekNum) {
+    var key = String(weekNum);
+    if (info.afterCutoffByWeek && info.afterCutoffByWeek[key] != null) {
+      return Number(info.afterCutoffByWeek[key]) || 0;
+    }
+    var rows = info.weeks && info.weeks[key] && info.weeks[key].afterCutoff;
+    if (!rows || !rows.length) return 0;
+    return rows.reduce(function (sum, row) {
+      return sum + (Number(row.points) || 0);
+    }, 0);
+  }
+
+  function renderReceiptActions(items) {
+    if (!items || !items.length) return '';
+    return (
+      '<ul class="challenge-point-receipt__actions">' +
+      items
+        .map(function (item) {
+          var when = prettyEarned(item.earnedAt);
+          return (
+            '<li><span>' +
+            escapeHtml(item.label || item.actionId || 'Points') +
+            (when ? ' <em>· ' + escapeHtml(when) + '</em>' : '') +
+            '</span><strong>' +
+            formatPts(item.points) +
+            '</strong></li>'
+          );
+        })
+        .join('') +
+      '</ul>'
+    );
+  }
+
+  function paintPointReceipt(registration) {
+    var el = document.getElementById('challenge-point-receipt');
+    if (!el) return;
+    if (previewAccess) {
+      el.hidden = true;
+      return;
+    }
+    var info = summarizeReceipt(registration);
+    if (!info.total) {
+      el.hidden = true;
+      return;
+    }
+
+    var weekKeys = {};
+    Object.keys(info.weeklyPrize || {}).forEach(function (key) {
+      weekKeys[key] = true;
+    });
+    Object.keys(info.afterCutoffByWeek || {}).forEach(function (key) {
+      weekKeys[key] = true;
+    });
+    Object.keys(info.weeks || {}).forEach(function (key) {
+      weekKeys[key] = true;
+    });
+    var weekNums = Object.keys(weekKeys).sort(function (a, b) {
+      return (parseInt(a, 10) || 0) - (parseInt(b, 10) || 0);
+    });
+
+    var weeksHtml = weekNums
+      .map(function (week) {
+        var prize = Number(info.weeklyPrize[week]) || 0;
+        var detail = info.weeks[week] || {};
+        var late = lateForWeek(info, week);
+        if (!prize && !late) return '';
+        var theme = weekThemeFromCard(parseInt(week, 10) || 0);
+        return (
+          '<article class="challenge-point-receipt__week">' +
+          '<h4>Week ' +
+          escapeHtml(week) +
+          (theme ? ' · ' + escapeHtml(theme) : '') +
+          '</h4>' +
+          '<p class="challenge-point-receipt__bucket">' +
+          formatPts(prize) +
+          ' toward that week’s prize</p>' +
+          renderReceiptActions(detail.weekly) +
+          (late
+            ? '<p class="challenge-point-receipt__bucket challenge-point-receipt__bucket--late">+' +
+              formatPts(late) +
+              ' grand prize only — posted after Sunday</p>' +
+              renderReceiptActions(detail.afterCutoff)
+            : '') +
+          '</article>'
+        );
+      })
+      .join('');
+
+    if (info.bonusPoints || (info.bonus && info.bonus.length)) {
+      weeksHtml +=
+        '<article class="challenge-point-receipt__week">' +
+        '<h4>Bonus</h4>' +
+        '<p class="challenge-point-receipt__bucket challenge-point-receipt__bucket--late">' +
+        formatPts(info.bonusPoints) +
+        ' grand prize only — referrals and other bonuses</p>' +
+        renderReceiptActions(info.bonus) +
+        '</article>';
+    }
+
+    var split =
+      info.weeklySum +
+      ' toward weekly prizes' +
+      (info.afterCutoff ? ' · ' + info.afterCutoff + ' after Sunday' : '') +
+      (info.bonusPoints ? ' · ' + info.bonusPoints + ' bonus' : '');
+
+    el.hidden = false;
+    el.innerHTML =
+      '<div class="section-label">Your points</div>' +
+      '<h3 class="heading-lg">What counts where</h3>' +
+      '<p class="body-text">Weekly prize points close Sunday at 11:59 p.m. Eastern. Work posted after that still earns points toward the grand prize — it just cannot change that week’s prize standings.</p>' +
+      '<p class="challenge-point-receipt__totals"><strong>' +
+      escapeHtml(String(info.total)) +
+      '</strong> toward the grand prize · ' +
+      escapeHtml(split) +
+      '</p>' +
+      weeksHtml;
+  }
+
   function paintWeekCardPoints(registration) {
-    var weekly = (registration && registration.weeklyPoints) || {};
+    var info = summarizeReceipt(registration);
+    var weekly = info.weeklyPrize;
     document.querySelectorAll('#challenge-week-grid .challenge-week-card').forEach(function (card) {
       var weekNum = weekNumberFromCard(card);
       var el = card.querySelector('.challenge-week-card__pts');
@@ -299,8 +476,14 @@
         return;
       }
       var pts = Number(weekly[String(weekNum)] || weekly[weekNum] || 0);
+      var late = lateForWeek(info, weekNum);
       el.hidden = false;
-      el.textContent = pts === 1 ? '1 pt' : pts + ' pts';
+      el.innerHTML =
+        formatPts(pts) +
+        ' this week' +
+        (late
+          ? '<span class="challenge-week-card__pts-late">+' + late + ' after Sunday</span>'
+          : '');
     });
   }
 
@@ -316,26 +499,34 @@
       if (previewAccess) {
         pointsEl.hidden = true;
       } else {
-        var total = Number(registration && registration.pointsTotal) || 0;
+        var info = summarizeReceipt(registration);
         var weekNum = currentWeekNumber();
-        var weeklyMap = (registration && registration.weeklyPoints) || {};
-        var weekly = weekNum ? Number(weeklyMap[String(weekNum)] || weeklyMap[weekNum] || 0) : 0;
+        var weekly = weekNum ? Number(info.weeklyPrize[String(weekNum)] || info.weeklyPrize[weekNum] || 0) : 0;
         pointsEl.hidden = false;
         var weekLabel = weekly === 1 ? '1 point this week' : weekly + ' points this week';
-        var totalLabel = total === 1 ? '1 point total' : total + ' points total';
+        var totalLabel = info.total === 1 ? '1 point total' : info.total + ' points total';
         var meta = weekNum
-          ? 'Week ' + weekNum + ' · Your Challenge score'
+          ? 'Week ' + weekNum + ' prize'
           : 'Your Challenge score';
+        if (info.afterCutoff) {
+          meta +=
+            ' · ' +
+            info.afterCutoff +
+            ' after Sunday count toward grand prize only';
+        }
         pointsEl.innerHTML =
           (weekNum ? weekLabel + ' · ' + totalLabel : totalLabel) +
           '<span class="challenge-hub-points__meta">' +
-          meta +
+          escapeHtml(meta) +
           '</span>';
       }
     }
     wireFb();
     unlockWeekCards();
-    if (!previewAccess) paintWeekCardPoints(registration);
+    if (!previewAccess) {
+      paintWeekCardPoints(registration);
+      paintPointReceipt(registration);
+    }
   }
 
   function loadRegistration(uid) {

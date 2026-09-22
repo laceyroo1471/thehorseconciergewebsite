@@ -135,6 +135,53 @@ function countsTowardWeeklyPrize(row, weekMeta) {
   return ms >= bounds.startMs && ms <= bounds.endMs;
 }
 
+function actionLine(row) {
+  var ms = actionEarnedMs(row);
+  var line = {
+    actionId: String(row.actionId || ''),
+    label: String(row.label || row.actionId || 'Points'),
+    points: Number(row.pointsAwarded) || 0,
+  };
+  if (ms) line.earnedAt = new Date(ms).toISOString();
+  return line;
+}
+
+/** Participant-facing split: weekly prize vs after-Sunday / bonus (grand prize only). */
+function buildPointReceipt(rows) {
+  var weeks = weekMetaByNumber();
+  var receipt = {
+    total: 0,
+    weeklyPrize: {},
+    afterCutoff: 0,
+    afterCutoffByWeek: {},
+    bonusPoints: 0,
+    weeks: {},
+    bonus: [],
+  };
+  (rows || []).forEach(function (row) {
+    var pts = Number(row.pointsAwarded) || 0;
+    if (pts <= 0) return;
+    receipt.total += pts;
+    var line = actionLine(row);
+    if (isGrandPrizeOnlyAction(row) || row.weekNumber == null || row.weekNumber === '') {
+      receipt.bonus.push(line);
+      receipt.bonusPoints += pts;
+      return;
+    }
+    var week = String(row.weekNumber);
+    if (!receipt.weeks[week]) receipt.weeks[week] = { weekly: [], afterCutoff: [] };
+    if (countsTowardWeeklyPrize(row, weeks[week])) {
+      receipt.weeks[week].weekly.push(line);
+      receipt.weeklyPrize[week] = (receipt.weeklyPrize[week] || 0) + pts;
+      return;
+    }
+    receipt.weeks[week].afterCutoff.push(line);
+    receipt.afterCutoff += pts;
+    receipt.afterCutoffByWeek[week] = (receipt.afterCutoffByWeek[week] || 0) + pts;
+  });
+  return receipt;
+}
+
 function userIdFrom(data) {
   if (!data) return '';
   return String(data.userId || data.uid || data.ownerId || '').trim();
@@ -525,6 +572,8 @@ async function recountScores(uid, opts) {
     weeklyActionCounts[week][id] = (weeklyActionCounts[week][id] || 0) + 1;
   });
 
+  var pointReceipt = buildPointReceipt(rows);
+
   var scoreId = uid + '_' + CHALLENGE_ID;
   await db()
     .collection('challengeScores')
@@ -548,6 +597,7 @@ async function recountScores(uid, opts) {
       {
         pointsTotal: total,
         weeklyPoints: weeklyPoints,
+        pointReceipt: pointReceipt,
         scoresUpdatedAt: FieldValue.serverTimestamp(),
       },
       { merge: true }
@@ -862,6 +912,7 @@ module.exports = {
   sweepUnscoredRegistrations: sweepUnscoredRegistrations,
   recountScores: recountScores,
   recountAllScores: recountAllScores,
+  buildPointReceipt: buildPointReceipt,
   userIdFrom: userIdFrom,
   backfillInProgress: backfillInProgress,
   award: award,

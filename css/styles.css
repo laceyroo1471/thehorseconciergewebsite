@@ -3947,6 +3947,91 @@
     text-transform: uppercase;
     color: var(--text-mid);
   }
+  .challenge-point-receipt {
+    max-width: 720px;
+    margin: 36px auto 0;
+    padding: 28px 24px 22px;
+    border: 1px solid rgba(var(--gold-rgb), 0.28);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.18);
+    text-align: left;
+  }
+  .challenge-point-receipt[hidden] {
+    display: none !important;
+  }
+  .challenge-point-receipt .section-label {
+    justify-content: flex-start;
+  }
+  .challenge-point-receipt .heading-lg {
+    margin: 8px 0 0;
+    font-size: clamp(1.45rem, 2.4vw, 1.85rem);
+  }
+  .challenge-point-receipt .body-text {
+    margin: 12px 0 0;
+    max-width: none;
+    text-align: left;
+    font-size: 0.92rem;
+  }
+  .challenge-point-receipt__totals {
+    margin: 18px 0 0;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    color: var(--gold);
+  }
+  .challenge-point-receipt__totals strong {
+    font-weight: 500;
+  }
+  .challenge-point-receipt__week {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(var(--gold-rgb), 0.18);
+  }
+  .challenge-point-receipt__week h4 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--text);
+  }
+  .challenge-point-receipt__bucket {
+    margin: 8px 0 0;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: var(--text-mid);
+  }
+  .challenge-point-receipt__bucket--late {
+    color: var(--gold);
+  }
+  .challenge-point-receipt__actions {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+  }
+  .challenge-point-receipt__actions li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.9rem;
+  }
+  .challenge-point-receipt__actions li:last-child {
+    border-bottom: 0;
+  }
+  .challenge-point-receipt__actions em {
+    font-style: normal;
+    font-size: 0.78em;
+    letter-spacing: 0.04em;
+    color: var(--text-mid);
+  }
+  .challenge-point-receipt__actions strong {
+    flex: 0 0 auto;
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: var(--gold);
+  }
   .challenge-board {
     margin-top: 36px;
     padding: 28px 24px 22px;
@@ -4557,6 +4642,15 @@
     font-weight: 500;
     letter-spacing: 0.04em;
     color: #8a6a28;
+  }
+  .challenge-week-card__pts-late {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #6d5420;
   }
   .challenge-week-card__pts[hidden] {
     display: none;
