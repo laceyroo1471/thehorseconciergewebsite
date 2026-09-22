@@ -358,8 +358,23 @@
     var hasFile = !!form.querySelector('input[type="file"]');
     var request;
     if (hasFile) {
-      var fd = new FormData(form);
-      fd.delete('_next');
+      var fd = new FormData();
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (!el.name || el.disabled || el.type === 'submit' || el.type === 'button') return;
+        if (el.name === '_next') return;
+        if (el.type === 'file') {
+          var label = el.getAttribute('data-file-label') || '';
+          Array.prototype.forEach.call(el.files || [], function (file) {
+            var filename = label
+              ? label.replace(/[\\/]/g, '-') + ' — ' + file.name
+              : file.name;
+            fd.append('attachment', file, filename);
+          });
+          return;
+        }
+        if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) return;
+        fd.append(el.name, el.value);
+      });
       request = fetch(ajaxUrl, {
         method: 'POST',
         headers: { Accept: 'application/json' },
@@ -454,6 +469,23 @@
     });
   }
 
+  function fileUploadError(form) {
+    var inputs = form.querySelectorAll('input[type="file"]');
+    if (!inputs.length) return '';
+    var total = 0;
+    var tooBig = false;
+    Array.prototype.forEach.call(inputs, function (el) {
+      Array.prototype.forEach.call(el.files || [], function (file) {
+        total += file.size || 0;
+      });
+    });
+    if (total > 9 * 1024 * 1024) tooBig = true;
+    if (tooBig) {
+      return 'Those photos are too large to email together. Use smaller images, under 10 MB combined.';
+    }
+    return '';
+  }
+
   function stampAvailability(form) {
     var boxes = form.querySelectorAll('input[name="availability"]:checked');
     var hidden = form.querySelector('input[name="availability_days"]');
@@ -479,14 +511,30 @@
     }
     if (isFormClosed(form)) {
       applyFormDeadlines();
-      setStatus(form, 'This form closed Wednesday at 11:59 p.m. Eastern.', true);
+      setStatus(
+        form,
+        form.getAttribute('data-challenge-closed-message') ||
+          'This form closed Wednesday at 11:59 p.m. Eastern.',
+        true
+      );
       return;
     }
     if (!hasRequiredAvailability(form)) {
-      setStatus(form, 'Check at least one day you and your horse are available.', true);
+      setStatus(
+        form,
+        form.getAttribute('data-challenge-availability-message') ||
+          'Check at least one day you and your horse are available.',
+        true
+      );
       return;
     }
     stampAvailability(form);
+
+    var photoError = fileUploadError(form);
+    if (photoError) {
+      setStatus(form, photoError, true);
+      return;
+    }
 
     var user = auth.currentUser;
     if (!user) {

@@ -7,6 +7,7 @@
  * Week 2 (weigh-wednesday-w2): organ % of body weight. Closed Sep 13, 2026 8:00 PM ET.
  * Week 3 (weigh-wednesday-w3): peak ground force (lb) on a 1,000-lb horse. Closes Sep 20, 2026 8:00 PM ET.
  * Week 4 (weigh-wednesday-w4): hidden barn/household costs. Closes Sep 27, 2026 8:00 PM ET.
+ * Week 5 (weigh-wednesday-w5): saddle-fit pressure and movement. Closes Oct 4, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -60,6 +61,23 @@ var CONTESTS = {
     title: "What's It Weigh Wednesday",
     tieBreak: 'worstThenEarlier',
     itemIds: ['outdoorHayLoss', 'annualHorseManure', 'monthlyShoppingMiles', 'oneRatFeedLoss'],
+  },
+  'weigh-wednesday-w5': {
+    contestId: 'weigh-wednesday-w5',
+    weekNumber: 5,
+    closeMs: Date.parse('2026-10-04T20:00:00-04:00'),
+    unit: 'percent',
+    field: 'weighWednesdayW5',
+    placePrefix: 'week5-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    tieBreak: 'worstThenEarlier',
+    itemIds: [
+      'treeTooWide',
+      'treeTooNarrow',
+      'lowerPressureSaddle',
+      'forelimbProtraction',
+      'hindlimbProtraction',
+    ],
   },
 };
 
@@ -135,8 +153,18 @@ function isCompleteActualsFor(spec, actuals) {
   return isCompleteGuessesFor(spec, actuals);
 }
 
-function percentDiff(guessVal, actualVal) {
-  if (!actualVal || isNaN(actualVal) || isNaN(guessVal)) return Number.POSITIVE_INFINITY;
+function percentDiff(guessVal, actualVal, actualRow) {
+  if (isNaN(guessVal)) return Number.POSITIVE_INFINITY;
+  if (actualRow && typeof actualRow === 'object' && actualRow.min != null && actualRow.max != null) {
+    var min = Number(actualRow.min);
+    var max = Number(actualRow.max);
+    if (!isNaN(min) && !isNaN(max) && min > 0 && max >= min) {
+      if (guessVal >= min && guessVal <= max) return 0;
+      var edge = guessVal < min ? min : max;
+      return (Math.abs(guessVal - edge) / edge) * 100;
+    }
+  }
+  if (!actualVal || isNaN(actualVal)) return Number.POSITIVE_INFINITY;
   return (Math.abs(guessVal - actualVal) / actualVal) * 100;
 }
 
@@ -144,7 +172,7 @@ function averagePercentDiffFor(spec, guesses, actuals) {
   var sum = 0;
   for (var i = 0; i < spec.itemIds.length; i++) {
     var id = spec.itemIds[i];
-    sum += percentDiff(toValue(guesses[id], spec.unit), toValue(actuals[id], spec.unit));
+    sum += percentDiff(toValue(guesses[id], spec.unit), toValue(actuals[id], spec.unit), actuals[id]);
   }
   return sum / spec.itemIds.length;
 }
@@ -157,7 +185,7 @@ function worstPercentDiffFor(spec, guesses, actuals) {
   var worst = 0;
   for (var i = 0; i < spec.itemIds.length; i++) {
     var id = spec.itemIds[i];
-    var d = percentDiff(toValue(guesses[id], spec.unit), toValue(actuals[id], spec.unit));
+    var d = percentDiff(toValue(guesses[id], spec.unit), toValue(actuals[id], spec.unit), actuals[id]);
     if (!isFinite(d)) return Number.POSITIVE_INFINITY;
     if (d > worst) worst = d;
   }
@@ -278,6 +306,7 @@ async function scoreContest(contestId, opts) {
       }).length,
       results: results,
       revealedActuals: contest.actuals,
+      sources: contest.sources || null,
       updatedAt: FieldValue.serverTimestamp(),
     },
     { merge: true }
@@ -290,6 +319,7 @@ async function scoreContest(contestId, opts) {
     update[spec.field + '.avgPct'] = row.avgPct;
     update[spec.field + '.points'] = row.points;
     update[spec.field + '.official'] = contest.actuals;
+    if (contest.sources) update[spec.field + '.sources'] = contest.sources;
     try {
       await db().collection('challengeRegistrations').doc(row.userId).update(update);
     } catch (err) {

@@ -4155,6 +4155,9 @@
     justify-content: center;
     margin-top: 32px;
   }
+  .challenge-week--early a[href="#schedule"] {
+    display: none !important;
+  }
   .challenge-timeline {
     margin-top: 0;
   }
@@ -6465,6 +6468,24 @@
     font-weight: 300;
     line-height: 1.5;
     color: var(--text-dim);
+  }
+  .weigh-sources {
+    margin: 12px 0 0;
+    font-size: 0.72rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+  .weigh-sources a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .weigh-sources__item + .weigh-sources__item::before {
+    content: ' ';
+  }
+  .weigh-sources em {
+    font-style: italic;
   }
   .weigh-answers {
     margin: 16px 0 0;

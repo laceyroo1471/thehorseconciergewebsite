@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260915u">
+<link rel="stylesheet" href="css/styles.css?v=20260922d">
 <meta property="og:title" content="Week 5 · Saddle Fit with Your Expert Fitter">
 <meta property="og:description" content="September 28–October 4, 2026 — Learn saddle fit with Your Expert Fitter. Daily videos, Famous Saddles, app actions, and up to 50 points.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horsemanship-challenge-week-05-saddle-yef">
@@ -67,7 +67,7 @@
   </div>
 
   <div id="challenge-week-open" hidden>
-  <div class="page-hero page-hero--challenge">
+  <div class="page-hero page-hero--challenge" data-challenge-early>
     <div class="page-hero-bg"></div>
     <div class="page-hero-content">
       
@@ -90,6 +90,90 @@
       </div>
     </div>
   </div>
+
+  <section class="section section-sm" id="case-study-submit" data-challenge-early>
+    <div class="funnel-panel challenge-question-panel" style="max-width:640px; margin:0 auto;">
+      <div class="funnel-panel-title">Submit a horse for the case study · 5 bonus pts</div>
+      <p class="funnel-panel-note" data-challenge-open-note>Open now. Closes Monday, September 28 at 8:00 p.m. Eastern. One virtual fitting: Thursday, October 1 in the afternoon. This is 5 bonus points and does not count toward the 50-point week. Sent from your signed-in Challenge account to Tasida and The Horse Concierge. The rest of Saddle Fit week opens Monday, September 28.</p>
+      <p class="funnel-panel-note" data-challenge-closed-note hidden>Applications closed Monday, September 28 at 8:00 p.m. Eastern. Tasida is reviewing submissions and will confirm the Thursday afternoon fitting with the selected horse. Sunday is the watch-back.</p>
+      <form
+        class="challenge-question-form"
+        action="https://formsubmit.co/info@thehorseconcierge.com"
+        method="POST"
+        enctype="multipart/form-data"
+        data-challenge-point-action="week5-case-study"
+        data-challenge-point-points="5"
+        data-challenge-point-week="5"
+        data-challenge-point-label="Case study horse submit"
+        data-challenge-point-partner="Your Expert Fitter"
+        data-challenge-autofill-user
+        data-challenge-close-at="2026-09-28T20:00:00-04:00"
+        data-challenge-closed-message="This form closed Monday, September 28 at 8:00 p.m. Eastern."
+        data-challenge-availability-message="Check the box to confirm you are available Thursday, October 1 in the afternoon."
+      >
+        <input type="hidden" name="_subject" value="Horsemanship Challenge Week 5 — Case Study Horse (5 bonus pts)">
+        <input type="hidden" name="_next" value="https://www.thehorseconcierge.com/horsemanship-challenge-week-05-saddle-yef#case-study-submit">
+        <input type="hidden" name="_cc" value="yourexpertfitter@gmail.com">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="challengeWeek" value="Week 5 — Saddle Fit (Your Expert Fitter)">
+        <input type="hidden" name="partner" value="Your Expert Fitter">
+        <input type="hidden" name="pointsAction" value="Case study horse submit · 5 bonus pts">
+        <input type="hidden" name="name" id="yef-case-name">
+        <input type="hidden" name="email" id="yef-case-email">
+        <input type="hidden" name="availability_days" id="yef-case-availability-days" value="">
+        <div class="form-group">
+          <label class="form-label" for="yef-case-horse">Horse name</label>
+          <input class="form-input" type="text" id="yef-case-horse" name="horse" required placeholder="e.g. Scout">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="yef-case-breed">Breed</label>
+          <input class="form-input" type="text" id="yef-case-breed" name="breed" required placeholder="e.g. Warmblood">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="yef-case-age">Age</label>
+          <input class="form-input" type="text" id="yef-case-age" name="age" required placeholder="e.g. 12">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="yef-case-discipline">Discipline</label>
+          <input class="form-input" type="text" id="yef-case-discipline" name="discipline" required placeholder="e.g. Dressage, trail, western pleasure">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="yef-case-height">Height</label>
+          <input class="form-input" type="text" id="yef-case-height" name="height" required placeholder="e.g. 16.2 hh">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="yef-case-weight">Weight</label>
+          <input class="form-input" type="text" id="yef-case-weight" name="weight" required placeholder="e.g. 1,200 lb">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="yef-case-notes">Comments on current saddle fit / concerns</label>
+          <textarea class="form-input" id="yef-case-notes" name="notes" rows="4" required placeholder="What is the saddle doing now? Where do you see pressure, slipping, or discomfort?"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="yef-case-photo-plain">Side conformation, no saddle</label>
+          <p class="funnel-panel-note" style="margin-bottom:8px;">A clear side view of the horse standing square, without a saddle.</p>
+          <input class="form-file" type="file" id="yef-case-photo-plain" name="attachment" accept="image/*" data-file-label="Side without saddle" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="yef-case-photo-saddle">Side conformation, with saddle</label>
+          <p class="funnel-panel-note" style="margin-bottom:8px;">The same side view with the saddle on. Both photos together need to stay under 10 MB so they can be emailed.</p>
+          <input class="form-file" type="file" id="yef-case-photo-saddle" name="attachment" accept="image/*" data-file-label="Side with saddle" required>
+        </div>
+        <fieldset class="form-group">
+          <legend class="form-label">Virtual fitting time</legend>
+          <p class="funnel-panel-note" style="margin-bottom:12px;">There is one appointment: Thursday, October 1 in the afternoon.</p>
+          <div class="challenge-choice-list">
+            <label class="challenge-choice">
+              <input type="checkbox" name="availability" value="Thursday, October 1 afternoon" required>
+              <span>I am available Thursday, October 1 in the afternoon for a virtual saddle fitting.</span>
+            </label>
+          </div>
+        </fieldset>
+        <button type="submit" class="btn-primary">Submit horse · 5 bonus pts</button>
+      </form>
+      <p class="challenge-point-track-status" role="status" hidden></p>
+    </div>
+  </section>
 
   <section class="section section-sm" id="about-partner">
     <div class="section-label reveal">Education partner</div>
@@ -136,7 +220,7 @@
     <h2 class="heading-xl reveal">Interested in becoming<br>a saddle fitter?</h2>
     <div class="gold-divider reveal"></div>
     <p class="body-text reveal">Meet Tasida and learn how to become a saddle fitter.</p>
-    <div class="hero-actions reveal" style="justify-content:center; margin:0 0 40px;">
+    <div class="hero-actions reveal" style="justify-content:center;">
       <a
         class="btn-primary"
         href="https://www.yourexpertfitter.com/opportunities"
@@ -144,7 +228,59 @@
         rel="noopener noreferrer"
       >Watch how to become a fitter</a>
     </div>
-    <div class="funnel-panel reveal challenge-question-panel" style="max-width:640px; margin:0 auto;" id="saddle-question">
+  </section>
+
+  <section class="section" style="padding-top:0;" id="points">
+    <div class="weigh-card" data-weigh-w5-card hidden>
+      <div class="weigh-card__body">
+        <p class="weigh-card__eyebrow">Mid-week bonus</p>
+        <h3 class="weigh-card__title" data-weigh-w5-title>What’s It Weigh Wednesday</h3>
+        <p class="weigh-card__note" data-weigh-w5-note>Mid-week bonus · up to 9 points. Guess five saddle-fit findings. Closest overall wins.</p>
+      </div>
+      <button type="button" class="btn-primary" data-weigh-w5-open>Enter my guesses</button>
+    </div>
+
+    <div class="section-label reveal">Week 5 scoring</div>
+    <h2 class="heading-xl reveal">Up to <em>50 points</em><br>this week.</h2>
+    <ul class="challenge-points-list reveal reveal-delay-1">
+      <li>
+        <span class="challenge-points-list__pts">10 pts</span>
+        <span>Ask a saddle-fit question <span class="challenge-points-list__detail">Form on this page · opens with the week</span></span>
+      </li>
+      <li>
+        <span class="challenge-points-list__pts">10 pts</span>
+        <span>Visit Your Expert Fitter <span class="challenge-points-list__detail">Monday’s lesson</span></span>
+      </li>
+      <li>
+        <span class="challenge-points-list__pts">10 pts</span>
+        <span>Add a saddle photo in the Tack Room</span>
+      </li>
+      <li>
+        <span class="challenge-points-list__pts">10 pts</span>
+        <span>Add a fit observation on a horse <span class="challenge-points-list__detail">Tack Room</span></span>
+      </li>
+      <li>
+        <span class="challenge-points-list__pts">5 pts</span>
+        <span>Track a ride or hand-walk with GPS <span class="challenge-points-list__detail">Friday · observe the fit in action</span></span>
+      </li>
+      <li>
+        <span class="challenge-points-list__pts">5 pts</span>
+        <span>Visit Famous Saddles <span class="challenge-points-list__detail">From this page</span></span>
+      </li>
+    </ul>
+    <p class="funnel-panel-note reveal" style="margin-top:16px; max-width:640px;">The case study submission is 5 bonus points and does not count toward this 50. What’s It Weigh Wednesday adds up to 9 more bonus points. Daily videos and Sunday’s watch-back do not add points. Maximum displayed score is 64.</p>
+
+    <div class="challenge-board reveal" data-challenge-board="week" data-week="5" id="week-standings">
+      <p class="section-label">This week’s standings</p>
+      <h3 class="heading-lg">Top 5<br><em>this week.</em></h3>
+      <p class="challenge-board__note" data-board-note>Top 5 for this week’s prize. Winner announced next Wednesday.</p>
+      <ol class="challenge-board__list" data-board-list></ol>
+      <p class="challenge-board__you" data-board-you hidden></p>
+      <p class="challenge-board__empty" data-board-empty>Standings appear as soon as points are scored.</p>
+    </div>
+
+
+    <div class="funnel-panel reveal reveal-delay-1 challenge-question-panel" id="saddle-question" style="margin-top:40px; max-width:560px;">
       <div class="funnel-panel-title">Ask a saddle-fit question · 10 pts</div>
       <p class="funnel-panel-note" style="margin-bottom:16px;">Sent from your signed-in Challenge account to Tasida and The Horse Concierge.</p>
       <form
@@ -172,113 +308,6 @@
           <textarea class="form-input" id="yef-q-question" name="question" rows="3" required placeholder="Ask Tasida about fit, placement, or your horse’s saddle."></textarea>
         </div>
         <button type="submit" class="btn-primary">Submit my question · 10 pts</button>
-      </form>
-      <p class="challenge-point-track-status" role="status" hidden></p>
-    </div>
-  </section>
-
-  <section class="section" style="padding-top:0;" id="points">
-    <div class="section-label reveal">Week 5 scoring</div>
-    <h2 class="heading-xl reveal">Up to <em>50 points</em><br>this week.</h2>
-    <ul class="challenge-points-list reveal reveal-delay-1">
-      <li>
-        <span class="challenge-points-list__pts">10 pts</span>
-        <span>Submit a horse for the case study <span class="challenge-points-list__detail">Form closes Wednesday, 11:59 p.m. Eastern</span></span>
-      </li>
-      <li>
-        <span class="challenge-points-list__pts">10 pts</span>
-        <span>Ask a saddle-fit question <span class="challenge-points-list__detail">Form on this page</span></span>
-      </li>
-      <li>
-        <span class="challenge-points-list__pts">10 pts</span>
-        <span>Visit Your Expert Fitter <span class="challenge-points-list__detail">Monday’s lesson</span></span>
-      </li>
-      <li>
-        <span class="challenge-points-list__pts">5 pts</span>
-        <span>Add a saddle photo in the Tack Room</span>
-      </li>
-      <li>
-        <span class="challenge-points-list__pts">5 pts</span>
-        <span>Add a fit observation on a horse <span class="challenge-points-list__detail">Tack Room</span></span>
-      </li>
-      <li>
-        <span class="challenge-points-list__pts">5 pts</span>
-        <span>Track a ride or hand-walk with GPS <span class="challenge-points-list__detail">Friday · observe the fit in action</span></span>
-      </li>
-      <li>
-        <span class="challenge-points-list__pts">5 pts</span>
-        <span>Visit Famous Saddles <span class="challenge-points-list__detail">From this page</span></span>
-      </li>
-    </ul>
-    <p class="funnel-panel-note reveal" style="margin-top:16px; max-width:640px;">Daily videos and Sunday’s case study watch-back do not add points. Maximum this week is 50.</p>
-
-    <div class="challenge-board reveal" data-challenge-board="week" data-week="5" id="week-standings">
-      <p class="section-label">This week’s standings</p>
-      <h3 class="heading-lg">Top 5<br><em>this week.</em></h3>
-      <p class="challenge-board__note" data-board-note>Top 5 for this week’s prize. Winner announced next Wednesday.</p>
-      <ol class="challenge-board__list" data-board-list></ol>
-      <p class="challenge-board__you" data-board-you hidden></p>
-      <p class="challenge-board__empty" data-board-empty>Standings appear as soon as points are scored.</p>
-    </div>
-
-
-    <div class="funnel-panel reveal reveal-delay-1 challenge-question-panel" id="case-study-submit" style="margin-top:40px; max-width:560px;">
-      <div class="funnel-panel-title">Submit a horse for the case study · 10 pts</div>
-      <p class="funnel-panel-note" data-challenge-open-note>Closes Wednesday, September 30 at 11:59 p.m. Eastern so Tasida can reach out and schedule. She confirms the fitting time; Sunday is the watch-back. Sent from your signed-in Challenge account to Tasida and The Horse Concierge.</p>
-      <p class="funnel-panel-note" data-challenge-closed-note hidden>Applications closed Wednesday at 11:59 p.m. Eastern. Tasida is reviewing submissions and will confirm a fitting time with the selected horse. Sunday is the watch-back.</p>
-      <form
-        class="challenge-question-form"
-        action="https://formsubmit.co/info@thehorseconcierge.com"
-        method="POST"
-        data-challenge-point-action="week5-case-study"
-        data-challenge-point-points="10"
-        data-challenge-point-week="5"
-        data-challenge-point-label="Case study horse submit"
-        data-challenge-point-partner="Your Expert Fitter"
-        data-challenge-autofill-user
-        data-challenge-close-at="2026-09-30T23:59:59-04:00"
-      >
-        <input type="hidden" name="_subject" value="Horsemanship Challenge Week 5 — Case Study Horse (10 pts)">
-        <input type="hidden" name="_next" value="https://www.thehorseconcierge.com/horsemanship-challenge-week-05-saddle-yef#case-study-submit">
-        <input type="hidden" name="_cc" value="yourexpertfitter@gmail.com">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="challengeWeek" value="Week 5 — Saddle Fit (Your Expert Fitter)">
-        <input type="hidden" name="partner" value="Your Expert Fitter">
-        <input type="hidden" name="pointsAction" value="Case study horse submit · 10 pts">
-        <input type="hidden" name="name" id="yef-case-name">
-        <input type="hidden" name="email" id="yef-case-email">
-        <input type="hidden" name="availability_days" id="yef-case-availability-days" value="">
-        <div class="form-group">
-          <label class="form-label" for="yef-case-horse">Horse name &amp; breed / type</label>
-          <input class="form-input" type="text" id="yef-case-horse" name="horse" required placeholder="e.g. Scout — Warmblood gelding">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="yef-case-notes">Why this horse? (discipline, fit concerns)</label>
-          <textarea class="form-input" id="yef-case-notes" name="notes" rows="4" required placeholder="English or Western? Current saddle issues? Goals for the fitting?"></textarea>
-        </div>
-        <fieldset class="form-group">
-          <legend class="form-label">When are you and your horse available?</legend>
-          <p class="funnel-panel-note" style="margin-bottom:12px;">Tasida will confirm the time. Check every day that could work after Wednesday.</p>
-          <div class="challenge-choice-list">
-            <label class="challenge-choice">
-              <input type="checkbox" name="availability" value="Thursday, October 1">
-              <span>Thursday, October 1</span>
-            </label>
-            <label class="challenge-choice">
-              <input type="checkbox" name="availability" value="Friday, October 2">
-              <span>Friday, October 2</span>
-            </label>
-            <label class="challenge-choice">
-              <input type="checkbox" name="availability" value="Saturday morning, October 3">
-              <span>Saturday morning, October 3</span>
-            </label>
-          </div>
-        </fieldset>
-        <div class="form-group">
-          <label class="form-label" for="yef-case-windows">Specific times &amp; time zone</label>
-          <textarea class="form-input" id="yef-case-windows" name="availability_windows" rows="3" required placeholder="e.g. Thursday after 2 p.m. Eastern, Friday 9–11 a.m. What time zone are you in?"></textarea>
-        </div>
-        <button type="submit" class="btn-primary">Submit Horse · 10 pts</button>
       </form>
       <p class="challenge-point-track-status" role="status" hidden></p>
     </div>
@@ -342,18 +371,22 @@
             <span class="challenge-day__date">September 29</span>
           </div>
           <h3 class="challenge-day__title">Behind the Barn Door · Meet Your Expert Fitter</h3>
-          <p class="challenge-day__teaser">Get to know Tasida — then submit a horse for the case study by Wednesday night.</p>
+          <p class="challenge-day__teaser">Get to know Tasida.</p>
           <p class="challenge-day__locked-note" hidden>Content unlocks Tuesday, September 29.</p>
         </header>
         <div class="challenge-day__body">
-          <div class="challenge-day__placeholder">
-            <p class="challenge-day__placeholder-label">Behind the Barn Door</p>
-            <p class="body-text" style="font-size:0.9rem; margin:0;">Interview video embeds here when the recording is ready.</p>
+          <div class="challenge-embed challenge-embed--video">
+            <iframe
+              src="https://www.youtube.com/embed/n6ZIYbuBLDI"
+              title="Behind the Barn Door — Your Expert Fitter"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
           </div>
           <div class="challenge-day__action">
-            <p class="challenge-day__action-label">Earn 10 points</p>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Watch when the interview is posted. Submit a horse by Wednesday, 11:59 p.m. Eastern · 10 pts. Include when you and your horse are available — Tasida confirms the fitting time.</p>
-            <a class="btn-ghost" href="#case-study-submit">Open case study form</a>
+            <p class="challenge-day__action-label">Watch the interview</p>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">The case study form closed Monday at 8:00 p.m. Eastern. Tasida confirms the Thursday afternoon fitting with the selected horse.</p>
           </div>
         </div>
       </article>
@@ -366,7 +399,7 @@
             <span class="challenge-day__date">September 30</span>
           </div>
           <h3 class="challenge-day__title">English Saddle Positioning &amp; Assessment</h3>
-          <p class="challenge-day__teaser">Assess English saddle placement — then visit Famous Saddles and document your current saddle in the Tack Room.</p>
+          <p class="challenge-day__teaser">Assess English saddle placement — then visit Famous Saddles and document your current saddle in the Tack Room. What’s It Weigh Wednesday opens today.</p>
           <p class="challenge-day__locked-note" hidden>Content unlocks Wednesday, September 30.</p>
         </header>
         <div class="challenge-day__body">
@@ -381,7 +414,7 @@
           </div>
           <div class="challenge-day__action">
             <p class="challenge-day__action-label">Famous Saddles + Tack Room</p>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Visit Famous Saddles · 5 pts. Then add a saddle photo · 5 pts and a fit observation on a horse · 5 pts. English or Western — one saddle is enough.</p>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Visit Famous Saddles · 5 pts. Then add a saddle photo · 10 pts and a fit observation on a horse · 10 pts. English or Western — one saddle is enough.</p>
             <div class="hero-actions">
               <a
                 class="btn-primary"
@@ -421,8 +454,8 @@
             ></iframe>
           </div>
           <div class="challenge-day__action">
-            <p class="challenge-day__action-label">Tack Room · 10 points</p>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Add a saddle photo · 5 pts and a fit observation on a horse · 5 pts. English or Western — one saddle is enough. Same Tack Room actions as Wednesday.</p>
+            <p class="challenge-day__action-label">Tack Room · 20 points</p>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Add a saddle photo · 10 pts and a fit observation on a horse · 10 pts. English or Western — one saddle is enough. Same Tack Room actions as Wednesday.</p>
             <button type="button" class="btn-ghost" data-thc-action="app">Open the Tack Room</button>
           </div>
         </div>
@@ -473,13 +506,14 @@
             <h4 class="challenge-day__resource-title">Week 5 checklist</h4>
             <p class="body-text" style="font-size:0.9rem;">Finish anything still open. Watch the recorded fitting on Sunday.</p>
             <ul class="audience-list" style="margin-top:16px;">
-              <li>Case study horse · 10 pts · closed after Wednesday</li>
-              <li>Saddle-fit question · 10 pts</li>
+              <li>Ask a saddle-fit question · 10 pts</li>
               <li>Visit Your Expert Fitter · 10 pts</li>
-              <li>Saddle photo · 5 pts</li>
-              <li>Fit observation on a horse · 5 pts</li>
+              <li>Saddle photo · 10 pts</li>
+              <li>Fit observation on a horse · 10 pts</li>
               <li>Friday GPS ride or hand-walk · 5 pts</li>
               <li>Visit Famous Saddles · 5 pts</li>
+              <li>Case study horse · 5 bonus pts · closed Monday 8:00 p.m. ET</li>
+              <li>What’s It Weigh Wednesday · up to 9 bonus pts · closes Sunday 8:00 PM ET</li>
             </ul>
           </div>
           <div class="challenge-day__resource">
@@ -575,9 +609,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="js/main.js?v=20260728a"></script>
 <script src="js/thc-gating.js?v=20260717d"></script>
-<script src="js/horsemanship-challenge-week.js?v=20260916a"></script>
-<script src="js/horsemanship-challenge-points.js?v=20260915u"></script>
+<script src="js/horsemanship-challenge-week.js?v=20260922d"></script>
+<script src="js/horsemanship-challenge-points.js?v=20260922e"></script>
 <script src="js/horsemanship-challenge-leaderboard.js?v=20260922a"></script>
+<script src="js/challenge-weigh-w5.js?v=20260922c"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

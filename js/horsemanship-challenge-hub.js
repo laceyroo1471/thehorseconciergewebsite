@@ -125,7 +125,7 @@
     return String(label || '').replace(/^(Opens|Reveals)\s+/i, '');
   }
 
-  function setCardStatus(card, kind, isOpen, isLive, href, label) {
+  function setCardStatus(card, kind, isOpen, isLive, href, label, earlyOpen) {
     var statusEl = card.querySelector('.challenge-week-card__status');
     if (!statusEl) return;
     var cleanLabel = cleanScheduleLabel(label);
@@ -141,6 +141,12 @@
           ? 'Available — click to see this week’s pack · ' + cleanLabel
           : 'Available through Nov 30 · ' + cleanLabel;
       }
+      return;
+    }
+    if (earlyOpen) {
+      statusEl.textContent = href
+        ? 'Case study form open now — click to enter · week opens ' + cleanLabel
+        : 'Case study form open now · week opens ' + cleanLabel;
       return;
     }
     if (!isOpen) {
@@ -231,8 +237,16 @@
       var label = card.getAttribute('data-week-label') || '';
       if (!start || !end) return;
 
-      var isOpen = today.getTime() >= start.getTime() && (!CHALLENGE_END || today.getTime() <= CHALLENGE_END.getTime());
-      var isLive = isOpen && today.getTime() <= end.getTime();
+      var earlyStart = parseYmdLocal(card.getAttribute('data-early-open'));
+      var earlyOpen = !!(
+        earlyStart &&
+        today.getTime() >= earlyStart.getTime() &&
+        today.getTime() < start.getTime()
+      );
+      var isOpen =
+        earlyOpen ||
+        (today.getTime() >= start.getTime() && (!CHALLENGE_END || today.getTime() <= CHALLENGE_END.getTime()));
+      var isLive = isOpen && !earlyOpen && today.getTime() <= end.getTime();
 
       card.classList.toggle('challenge-week-card--locked', !isOpen);
       card.classList.toggle('challenge-week-card--open', isOpen);
@@ -244,7 +258,7 @@
       }
 
       if (kind === 'prize') applyPrizeReveal(card, isOpen);
-      setCardStatus(card, kind, isOpen, isLive, href, label);
+      setCardStatus(card, kind, isOpen, isLive, href, label, earlyOpen);
       promoteOrDemoteCard(card, isOpen, href);
     });
   }

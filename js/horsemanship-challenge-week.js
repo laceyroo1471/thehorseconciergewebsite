@@ -291,7 +291,10 @@
   }
 
   function renderWeek() {
-    if (beforeWeek && !forcePageAccess && !localDev) {
+    var earlyNodes = openEl ? openEl.querySelectorAll('[data-challenge-early]') : [];
+    var earlyOpen = beforeWeek && !forcePageAccess && !localDev && earlyNodes.length > 0;
+
+    if (beforeWeek && !forcePageAccess && !localDev && !earlyOpen) {
       if (lockedEl) lockedEl.hidden = false;
       if (openEl) openEl.hidden = true;
       return;
@@ -299,6 +302,19 @@
 
     if (lockedEl) lockedEl.hidden = true;
     if (openEl) openEl.hidden = false;
+
+    if (openEl) {
+      Array.prototype.forEach.call(openEl.children, function (child) {
+        var keep = child.hasAttribute('data-challenge-early') || child.querySelector('[data-challenge-early]');
+        if (earlyOpen && !keep) child.hidden = true;
+        else child.hidden = false;
+      });
+      openEl.classList.toggle('challenge-week--early', earlyOpen);
+      var scheduleLink = openEl.querySelector('a[href="#schedule"]');
+      if (scheduleLink) scheduleLink.hidden = earlyOpen;
+    }
+
+    if (earlyOpen) return;
 
     var unlockAll = explicitUnlockAll || afterWeek || (forcePageAccess && beforeWeek);
     var weekLabel = weekNumber ? 'Week ' + weekNumber : 'This week';
