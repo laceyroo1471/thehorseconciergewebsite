@@ -1,5 +1,5 @@
 /**
- * Week 5 What's It Weigh Wednesday — saddle-fit pressure and movement.
+ * Week 5 What's It Weigh Wednesday — saddle-fit percents plus two saddle weights.
  *
  * Opens Wed Sep 30 6:00 AM ET through Sun Oct 4 8:00 PM ET.
  * Edits allowed until the deadline. Official answers post when Sunday scoring runs.
@@ -36,14 +36,20 @@
         "How much lower was peak pressure around T10–T13 compared with the horses' usual professionally fitted saddles?",
     },
     {
-      id: 'forelimbProtraction',
-      group: 'Forelimb movement',
-      detail: 'With the lower-pressure saddle design, by what percentage did forelimb protraction increase?',
+      id: 'rhodiumDressage',
+      group: 'Famous Rhodium',
+      detail: 'What is the weight of this Famous Rhodium dressage saddle?',
+      unit: 'lb',
+      photo: 'Images/challenge/weigh-w5-rhodium-dressage.png',
+      photoAlt: 'Famous Rhodium dressage saddle on a saddle pad',
     },
     {
-      id: 'hindlimbProtraction',
-      group: 'Hindlimb movement',
-      detail: 'With the lower-pressure saddle design, by what percentage did hindlimb protraction increase?',
+      id: 'ludomarPortuguesa',
+      group: 'Ludomar Portuguesa',
+      detail: 'What is the weight of this Ludomar Portuguesa bullfighting saddle?',
+      unit: 'lb',
+      photo: 'Images/challenge/weigh-w5-ludomar-portuguesa.png',
+      photoAlt: 'Ludomar Portuguesa bullfighting saddle on a wooden stand',
     },
   ];
 
@@ -146,7 +152,20 @@
   function answersRevealed() {
     return windowClosed() && !!officialActuals;
   }
+  function isWeightItem(item) {
+    return item && item.unit === 'lb';
+  }
+  function formatLbAmount(n) {
+    var num = Number(n);
+    if (isNaN(num)) return '';
+    return (Math.round(num * 10) / 10).toFixed(1);
+  }
   function formatOfficialValue(item, row) {
+    if (isWeightItem(item)) {
+      var lb = row && typeof row === 'object' ? Number(row.lb) : Number(row);
+      if (isNaN(lb)) return '—';
+      return formatLbAmount(lb) + ' lb';
+    }
     if (row && typeof row === 'object' && row.display) return String(row.display);
     if (row && typeof row === 'object' && row.min != null && row.max != null) {
       return row.min + '–' + row.max + '%';
@@ -158,8 +177,19 @@
   function guessValue(item) {
     if (!myGuesses || !myGuesses[item.id]) return null;
     var row = myGuesses[item.id];
+    if (isWeightItem(item)) {
+      var lb = row && typeof row === 'object' ? Number(row.lb) : Number(row);
+      return isNaN(lb) ? null : lb;
+    }
     var n = row && typeof row === 'object' ? Number(row.pct) : Number(row);
     return isNaN(n) ? null : n;
+  }
+  function guessSuffix(item, yours) {
+    if (yours == null) return '';
+    return (
+      ' · your guess ' +
+      (isWeightItem(item) ? formatLbAmount(yours) + ' lb' : yours + '%')
+    );
   }
   function setOfficial(actuals, sources) {
     if (!actuals || typeof actuals !== 'object') return;
@@ -175,15 +205,15 @@
         var citation = escapeHtml(source.citation || '');
         var label = escapeHtml(source.label || '');
         var url = String(source.url || '');
-        if (!/^https:\/\//.test(url)) return '';
+        var linked = /^https:\/\//.test(url)
+          ? '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' + citation + '</a>'
+          : citation;
+        if (!linked && !label) return '';
         return (
           '<span class="weigh-sources__item">' +
-          (label ? label + ', ' : '') +
-          '<a href="' +
-          escapeHtml(url) +
-          '" target="_blank" rel="noopener noreferrer">' +
-          citation +
-          '</a></span>'
+          (label ? label + (linked ? ', ' : '') : '') +
+          linked +
+          '</span>'
         );
       })
       .filter(Boolean)
@@ -213,7 +243,7 @@
       }
       if (hint) {
         hint.textContent =
-          'Enter a percent for all five. Official answers post here Sunday at 8:00 PM ET when scores go up.';
+          'Enter a percent for the saddle-fit questions and a weight in pounds for each saddle. Official answers post here Sunday at 8:00 PM ET when scores go up.';
       }
       return;
     }
@@ -228,9 +258,7 @@
         '<span class="weigh-answers__values"><span class="weigh-answers__official">' +
         escapeHtml(formatOfficialValue(item, officialActuals[item.id])) +
         '</span>' +
-        (yours != null
-          ? ' · your guess ' + yours + '%'
-          : '') +
+        guessSuffix(item, yours) +
         '</span></li>'
       );
     }).join('');
@@ -264,8 +292,14 @@
     if (!guesses) return false;
     return ITEMS.every(function (item) {
       var row = guesses[item.id];
-      var pct = row && typeof row === 'object' ? Number(row.pct) : Number(row);
-      return !isNaN(pct) && pct >= 0;
+      var n = isWeightItem(item)
+        ? row && typeof row === 'object'
+          ? Number(row.lb)
+          : Number(row)
+        : row && typeof row === 'object'
+          ? Number(row.pct)
+          : Number(row);
+      return !isNaN(n) && n >= 0;
     });
   }
 
@@ -287,8 +321,28 @@
 
   function itemRowsHtml() {
     return ITEMS.map(function (item, idx) {
+      var weight = isWeightItem(item);
+      var photo = item.photo
+        ? '<img class="weigh-item__photo" src="' +
+          escapeHtml(item.photo) +
+          '" alt="' +
+          escapeHtml(item.photoAlt || item.group) +
+          '">'
+        : '';
+      var field = weight
+        ? '<label class="weigh-item__field"><span>lb</span>' +
+          '<input class="form-input" type="number" name="' +
+          item.id +
+          '-lb" min="0" max="200" step="0.1" inputmode="decimal" required></label>'
+        : '<label class="weigh-item__field"><span>%</span>' +
+          '<input class="form-input" type="number" name="' +
+          item.id +
+          '-pct" min="0" max="1000" step="0.01" inputmode="decimal" required></label>';
       return (
-        '<div class="weigh-item weigh-item--pct">' +
+        '<div class="weigh-item ' +
+        (weight ? 'weigh-item--lb' : 'weigh-item--pct') +
+        (photo ? ' weigh-item--photo' : '') +
+        '">' +
         '<div class="weigh-item__num">' +
         (idx + 1) +
         '</div>' +
@@ -299,14 +353,10 @@
         '<p class="weigh-item__product">' +
         escapeHtml(item.detail) +
         '</p>' +
+        photo +
         '</div>' +
         '<div class="weigh-item__fields">' +
-        '<label class="weigh-item__field">' +
-        '<span>%</span>' +
-        '<input class="form-input" type="number" name="' +
-        item.id +
-        '-pct" min="0" max="1000" step="0.01" inputmode="decimal" required>' +
-        '</label>' +
+        field +
         '</div>' +
         '</div>'
       );
@@ -329,13 +379,13 @@
       '<div class="thc-dialog__body weigh-dialog__body">' +
       '<p class="thc-dialog__eyebrow">Mid-week bonus · up to 9 points</p>' +
       '<h2 class="thc-dialog__title">What’s It Weigh Wednesday</h2>' +
-      '<p class="thc-dialog__text">Guess five saddle-fit findings. Enter each answer as a percent. Closest overall wins. Open Wednesday 6:00 AM through Sunday 8:00 PM ET. You may edit until the deadline. Official answers post here when it scores Sunday at 8:00 PM ET.</p>' +
+      '<p class="thc-dialog__text">Guess three saddle-fit findings as a percent, and the weight in pounds of the two saddles in the photos. Closest overall wins. Open Wednesday 6:00 AM through Sunday 8:00 PM ET. You may edit until the deadline. Official answers post here when it scores Sunday at 8:00 PM ET.</p>' +
       '<form id="weigh-w5-form" class="weigh-form" novalidate>' +
       '<div class="weigh-form__list">' +
       itemRowsHtml() +
       '</div>' +
       answersPanelHtml() +
-      '<p class="weigh-form__hint">Enter a percent for all five. Official answers post here Sunday at 8:00 PM ET when scores go up.</p>' +
+      '<p class="weigh-form__hint">Enter a percent for the saddle-fit questions and a weight in pounds for each saddle. Official answers post here Sunday at 8:00 PM ET when scores go up.</p>' +
       '<p id="weigh-w5-status" class="weigh-form__status" hidden></p>' +
       '<div class="thc-dialog__actions">' +
       '<button type="submit" class="btn-primary" data-weigh-w5-submit>Save my 5 guesses</button>' +
@@ -362,9 +412,15 @@
     if (!form || !guesses) return;
     ITEMS.forEach(function (item) {
       var row = guesses[item.id];
-      var pct = row && typeof row === 'object' ? row.pct : row;
-      var el = form.querySelector('[name="' + item.id + '-pct"]');
-      if (el && pct != null) el.value = pct;
+      var value = isWeightItem(item)
+        ? row && typeof row === 'object'
+          ? row.lb
+          : row
+        : row && typeof row === 'object'
+          ? row.pct
+          : row;
+      var el = form.querySelector('[name="' + item.id + (isWeightItem(item) ? '-lb' : '-pct') + '"]');
+      if (el && value != null) el.value = value;
     });
   }
 
@@ -431,7 +487,7 @@
       } else {
         if (note) {
           note.textContent =
-            'Mid-week bonus · up to 9 points. Guess five saddle-fit findings. Closest overall wins.';
+            'Mid-week bonus · up to 9 points. Three saddle-fit percents, plus the weight of two saddles. Closest overall wins.';
         }
         if (openBtn) {
           openBtn.hidden = false;
@@ -473,10 +529,11 @@
     var guesses = {};
     for (var i = 0; i < ITEMS.length; i++) {
       var item = ITEMS[i];
-      var el = form.querySelector('[name="' + item.id + '-pct"]');
-      var pct = el ? Number(el.value) : NaN;
-      if (isNaN(pct) || pct < 0) return null;
-      guesses[item.id] = { pct: pct };
+      var weight = isWeightItem(item);
+      var el = form.querySelector('[name="' + item.id + (weight ? '-lb' : '-pct') + '"]');
+      var n = el ? Number(el.value) : NaN;
+      if (isNaN(n) || n < 0) return null;
+      guesses[item.id] = weight ? { lb: n } : { pct: n };
     }
     return guesses;
   }
@@ -484,10 +541,11 @@
   function readPartialFromForm() {
     var partial = {};
     ITEMS.forEach(function (item) {
-      var el = form.querySelector('[name="' + item.id + '-pct"]');
+      var weight = isWeightItem(item);
+      var el = form.querySelector('[name="' + item.id + (weight ? '-lb' : '-pct') + '"]');
       var raw = el ? String(el.value).trim() : '';
       if (raw === '') return;
-      partial[item.id] = { pct: raw };
+      partial[item.id] = weight ? { lb: raw } : { pct: raw };
     });
     return partial;
   }
@@ -532,7 +590,7 @@
     }
     var guesses = readGuessesFromForm();
     if (!guesses) {
-      setStatus('Enter a percent for all five questions.', true);
+      setStatus('Enter every question. Use a percent for the saddle-fit findings and pounds for each saddle.', true);
       return;
     }
     setStatus('Saving your five guesses…');
@@ -606,8 +664,8 @@
   function shouldAutoPopup() {
     if (!inWindow()) return false;
     if (hasSubmitted) return false;
-    if (!currentUser) return false;
     if (preview) return true;
+    if (!currentUser) return false;
     if (wasDismissed()) return false;
     return true;
   }

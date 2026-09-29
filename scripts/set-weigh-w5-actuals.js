@@ -9,8 +9,11 @@
  *
  * Questions 1–2: MacKechnie-Guire et al., Animals (2019)
  *   https://pmc.ncbi.nlm.nih.gov/articles/PMC6827167/
- * Questions 3–5: Murray et al., Journal of Equine Veterinary Science (2017)
+ * Question 3: Murray et al., Journal of Equine Veterinary Science (2017)
  *   https://www.sciencedirect.com/science/article/abs/pii/S0737080616306426
+ * Question 4: Famous Rhodium dressage saddle, weighed by Your Expert Fitter: 14.0 lb.
+ * Question 5: Ludomar Portuguesa bullfighting saddle, weighed by Your Expert Fitter: 18.6 lb.
+ * Both weights display with one decimal. The public form never shows these numbers.
  *
  *   node scripts/set-weigh-w5-actuals.js
  *   node scripts/set-weigh-w5-actuals.js --show
@@ -21,12 +24,16 @@ const adminBoot = require('./weigh-wednesday-admin');
 
 const CONTEST_ID = 'weigh-wednesday-w5';
 
+// Official pounds from Your Expert Fitter. One decimal so 14.0 and 18.6 format the same.
+const RHODIUM_DRESSAGE_LB = 14;
+const LUDOMAR_PORTUGUESA_LB = 18.6;
+
 const ACTUALS = {
   treeTooWide: { pct: 8.5 },
   treeTooNarrow: { pct: 14 },
   lowerPressureSaddle: { pct: 61.5, min: 55, max: 68, display: '55–68%' },
-  forelimbProtraction: { pct: 13 },
-  hindlimbProtraction: { pct: 22.7 },
+  rhodiumDressage: { lb: RHODIUM_DRESSAGE_LB },
+  ludomarPortuguesa: { lb: LUDOMAR_PORTUGUESA_LB },
 };
 
 const SOURCES = [
@@ -36,9 +43,13 @@ const SOURCES = [
     url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6827167/',
   },
   {
-    label: 'Questions 3–5',
+    label: 'Question 3',
     citation: 'Murray et al., Journal of Equine Veterinary Science (2017)',
     url: 'https://www.sciencedirect.com/science/article/abs/pii/S0737080616306426',
+  },
+  {
+    label: 'Questions 4–5',
+    citation: 'Your Expert Fitter, weighed saddles',
   },
 ];
 
@@ -46,8 +57,8 @@ const LABELS = {
   treeTooWide: 'Tree too wide — cranial peak pressure increase at trot',
   treeTooNarrow: 'Tree too narrow — caudal peak pressure increase at trot',
   lowerPressureSaddle: 'Lower-pressure saddle — peak pressure around T10–T13',
-  forelimbProtraction: 'Forelimb protraction increase',
-  hindlimbProtraction: 'Hindlimb protraction increase',
+  rhodiumDressage: 'Famous Rhodium dressage saddle weight',
+  ludomarPortuguesa: 'Ludomar Portuguesa bullfighting saddle weight',
 };
 
 function loadContestModule() {
@@ -60,6 +71,7 @@ function describe(actuals) {
     var text = '— not set —';
     if (row && row.display) text = row.display;
     else if (row && row.min != null && row.max != null) text = row.min + '–' + row.max + '%';
+    else if (row && row.lb != null) text = (Math.round(Number(row.lb) * 10) / 10).toFixed(1) + ' lb';
     else if (row && row.pct != null) text = row.pct + '%';
     console.log('  ' + LABELS[key]);
     console.log('    ' + text);
@@ -82,6 +94,15 @@ async function main() {
     console.log('\nScored: ' + (data.scoredAt ? 'yes' : 'not yet'));
     console.log('Sources publish with the answers: ' + ((data.sources && data.sources.length) || 0));
     return;
+  }
+
+  if (RHODIUM_DRESSAGE_LB == null || isNaN(Number(RHODIUM_DRESSAGE_LB))) {
+    console.error('\nNot saved: set RHODIUM_DRESSAGE_LB to the Famous Rhodium scale weight first.');
+    process.exit(1);
+  }
+  if (LUDOMAR_PORTUGUESA_LB == null || isNaN(Number(LUDOMAR_PORTUGUESA_LB))) {
+    console.error('\nNot saved: set LUDOMAR_PORTUGUESA_LB to the Ludomar Portuguesa scale weight first.');
+    process.exit(1);
   }
 
   console.log('\nSaving official Week 5 Weigh Wednesday values:\n');

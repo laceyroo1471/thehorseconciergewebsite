@@ -7,7 +7,8 @@
  * Week 2 (weigh-wednesday-w2): organ % of body weight. Closed Sep 13, 2026 8:00 PM ET.
  * Week 3 (weigh-wednesday-w3): peak ground force (lb) on a 1,000-lb horse. Closes Sep 20, 2026 8:00 PM ET.
  * Week 4 (weigh-wednesday-w4): hidden barn/household costs. Closes Sep 27, 2026 8:00 PM ET.
- * Week 5 (weigh-wednesday-w5): saddle-fit pressure and movement. Closes Oct 4, 2026 8:00 PM ET.
+ * Week 5 (weigh-wednesday-w5): saddle-fit percents plus two saddle weights.
+ * Closes Oct 4, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -67,6 +68,10 @@ var CONTESTS = {
     weekNumber: 5,
     closeMs: Date.parse('2026-10-04T20:00:00-04:00'),
     unit: 'percent',
+    itemUnits: {
+      rhodiumDressage: 'pounds',
+      ludomarPortuguesa: 'pounds',
+    },
     field: 'weighWednesdayW5',
     placePrefix: 'week5-weigh-place-',
     title: "What's It Weigh Wednesday",
@@ -75,8 +80,8 @@ var CONTESTS = {
       'treeTooWide',
       'treeTooNarrow',
       'lowerPressureSaddle',
-      'forelimbProtraction',
-      'hindlimbProtraction',
+      'rhodiumDressage',
+      'ludomarPortuguesa',
     ],
   },
 };
@@ -137,10 +142,16 @@ function toValue(row, unit) {
   return toOunces(row);
 }
 
+function unitFor(spec, itemId) {
+  if (spec.itemUnits && spec.itemUnits[itemId]) return spec.itemUnits[itemId];
+  return spec.unit;
+}
+
 function isCompleteGuessesFor(spec, guesses) {
   if (!guesses || typeof guesses !== 'object') return false;
   for (var i = 0; i < spec.itemIds.length; i++) {
-    if (isNaN(toValue(guesses[spec.itemIds[i]], spec.unit))) return false;
+    var id = spec.itemIds[i];
+    if (isNaN(toValue(guesses[id], unitFor(spec, id)))) return false;
   }
   return true;
 }
@@ -172,7 +183,8 @@ function averagePercentDiffFor(spec, guesses, actuals) {
   var sum = 0;
   for (var i = 0; i < spec.itemIds.length; i++) {
     var id = spec.itemIds[i];
-    sum += percentDiff(toValue(guesses[id], spec.unit), toValue(actuals[id], spec.unit), actuals[id]);
+    var unit = unitFor(spec, id);
+    sum += percentDiff(toValue(guesses[id], unit), toValue(actuals[id], unit), actuals[id]);
   }
   return sum / spec.itemIds.length;
 }
@@ -185,7 +197,8 @@ function worstPercentDiffFor(spec, guesses, actuals) {
   var worst = 0;
   for (var i = 0; i < spec.itemIds.length; i++) {
     var id = spec.itemIds[i];
-    var d = percentDiff(toValue(guesses[id], spec.unit), toValue(actuals[id], spec.unit), actuals[id]);
+    var unit = unitFor(spec, id);
+    var d = percentDiff(toValue(guesses[id], unit), toValue(actuals[id], unit), actuals[id]);
     if (!isFinite(d)) return Number.POSITIVE_INFINITY;
     if (d > worst) worst = d;
   }
