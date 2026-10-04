@@ -14,6 +14,7 @@ const STATIC_PATHS = [
   '/ambassadors',
   '/contact',
   '/privacy-policy',
+  '/delete-account',
   '/start-horse-profile',
   '/find-providers',
   '/directory',
