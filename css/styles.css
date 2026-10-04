@@ -1068,7 +1068,31 @@
     color: var(--text-mid);
   }
   .legal-doc ul { margin: 10px 0 18px 1.2rem; padding: 0; }
+  .legal-doc ul ul { margin-top: 8px; margin-bottom: 6px; }
   .legal-doc li { margin-bottom: 10px; }
+  .legal-doc .legal-table-wrap { overflow-x: auto; margin: 14px 0 22px; }
+  .legal-doc table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.55;
+    color: var(--text-mid);
+  }
+  .legal-doc th,
+  .legal-doc td {
+    text-align: left;
+    vertical-align: top;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(var(--gold-rgb), 0.16);
+  }
+  .legal-doc th {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
   .legal-doc .legal-meta { font-size: 0.88rem; color: var(--text-dim); margin-bottom: 8px; }
   .legal-doc strong {
     color: var(--cream);
@@ -7171,5 +7195,55 @@
   .w4-score {
     color: var(--cream);
     font-size: 1rem;
+  }
+
+  /* ===== HORSE RECORD KEEPING LANDING ===== */
+  /* Hero grows with the headline so the eyebrow label is never clipped. */
+  .page-hero--record {
+    height: auto;
+    min-height: 0;
+    align-items: center;
+    padding: 168px 60px 88px;
+  }
+  .record-page .body-text a,
+  .record-page .feature-text a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--gold-rgb), 0.45);
+    text-underline-offset: 3px;
+  }
+  .record-page .body-text a:hover,
+  .record-page .feature-text a:hover {
+    text-decoration-color: var(--gold);
+  }
+  .record-faq {
+    margin-top: 56px;
+    max-width: 860px;
+  }
+  .record-faq .funnel-panel:last-child {
+    margin-bottom: 0;
+  }
+  .record-pillar-soon {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 3px 9px;
+    border: 1px solid rgba(var(--gold-rgb), 0.4);
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  @media (max-width: 900px) {
+    .page-hero--record {
+      padding: 124px 24px 56px;
+    }
+    .record-faq {
+      margin-top: 40px;
+    }
   }
 

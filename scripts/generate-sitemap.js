@@ -16,6 +16,7 @@ const STATIC_PATHS = [
   '/privacy-policy',
   '/delete-account',
   '/start-horse-profile',
+  '/horse-record-keeping-app',
   '/find-providers',
   '/directory',
   '/directory/states',
