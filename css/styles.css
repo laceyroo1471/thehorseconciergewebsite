@@ -7216,12 +7216,22 @@
   .record-page .feature-text a:hover {
     text-decoration-color: var(--gold);
   }
-  .record-faq {
+  /* Shared FAQ block — used by the home page and the record keeping landing page. */
+  .thc-faq {
     margin-top: 56px;
     max-width: 860px;
   }
-  .record-faq .funnel-panel:last-child {
+  .thc-faq .funnel-panel:last-child {
     margin-bottom: 0;
+  }
+  .thc-faq .body-text a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--gold-rgb), 0.45);
+    text-underline-offset: 3px;
+  }
+  .thc-faq .body-text a:hover {
+    text-decoration-color: var(--gold);
   }
   .record-pillar-soon {
     display: inline-block;
@@ -7242,7 +7252,7 @@
     .page-hero--record {
       padding: 124px 24px 56px;
     }
-    .record-faq {
+    .thc-faq {
       margin-top: 40px;
     }
   }
