@@ -233,16 +233,34 @@ function hasObservation(data) {
   return text.length > 0;
 }
 
+function photoValuePresent(value) {
+  if (!value) return false;
+  if (typeof value === 'string') return value.trim().length > 0;
+  if (Array.isArray(value)) {
+    return value.some(function (entry) {
+      return photoValuePresent(entry);
+    });
+  }
+  if (typeof value === 'object') {
+    return Object.keys(value).some(function (key) {
+      return photoValuePresent(value[key]);
+    });
+  }
+  return false;
+}
+
 function hasPhoto(data) {
   if (!data || isArchived(data)) return false;
-  return !!(
-    data.photo ||
-    data.photoUrl ||
-    data.imageUrl ||
-    data.downloadUrl ||
-    data.storagePath ||
-    (Array.isArray(data.photos) && data.photos.length) ||
-    (Array.isArray(data.images) && data.images.length)
+  return (
+    photoValuePresent(data.photo) ||
+    photoValuePresent(data.photoUrl) ||
+    photoValuePresent(data.photoURL) ||
+    photoValuePresent(data.imageUrl) ||
+    photoValuePresent(data.downloadUrl) ||
+    photoValuePresent(data.downloadURL) ||
+    photoValuePresent(data.storagePath) ||
+    photoValuePresent(data.photos) ||
+    photoValuePresent(data.images)
   );
 }
 
@@ -284,8 +302,18 @@ function kindMatches(data, photoKind, collectionName) {
   if (photoKind === 'anatomy') return /anatomy|drawing|saddle\s*fit/.test(blob);
   if (photoKind === 'english') return /english|dressage|hunter|jumper|jumping/.test(blob);
   if (photoKind === 'western') return /western|ranch|barrel|reining/.test(blob);
-  if (photoKind === 'saddle') return /saddle/.test(blob);
-  if (photoKind === 'bit') return /bit|snaffle|curb|myler/.test(blob);
+  if (photoKind === 'saddle') {
+    var saddleCat = String(data.category || '').toLowerCase();
+    if (saddleCat === 'saddle') return true;
+    if (saddleCat) return false;
+    return /\bsaddle\b/.test(blob) && !/saddle[_\s-]?pad/.test(blob);
+  }
+  if (photoKind === 'bit') {
+    var bitCat = String(data.category || '').toLowerCase();
+    if (bitCat === 'bit' || bitCat === 'bit_bridle' || bitCat === 'bridle') return true;
+    if (bitCat) return false;
+    return /bit|snaffle|curb|myler/.test(blob);
+  }
   return blob.indexOf(photoKind) !== -1;
 }
 
@@ -335,6 +363,31 @@ function isDigitalPulseNote(data) {
   if (!data || isArchived(data)) return false;
   if (isHistoryNote(data)) return true;
   return mentionsDigitalPulse(data);
+}
+
+function isOwnerCheckIn(data) {
+  if (!data || isArchived(data)) return false;
+  if (String(data.source || '').toLowerCase() !== 'owner_checkin') return false;
+  var mood = String(data.checkInMood || '').toLowerCase();
+  return mood === 'great' || mood === 'normal' || mood === 'off';
+}
+
+function isQuickUpdateNote(data) {
+  if (!data || isArchived(data)) return false;
+  if (String(data.source || '').toLowerCase() === 'owner_checkin') return false;
+  if (!hasObservation(data)) return false;
+  var method = String(data.inputMethod || '').toLowerCase();
+  return method === 'typed' || method === 'voice';
+}
+
+function hasTwoMilestones(data) {
+  if (!data || isArchived(data)) return false;
+  if (!Array.isArray(data.milestones)) return false;
+  var titled = 0;
+  data.milestones.forEach(function (milestone) {
+    if (milestone && String(milestone.title || '').trim()) titled += 1;
+  });
+  return titled >= 2;
 }
 
 function nyYmd(ms) {
@@ -446,6 +499,28 @@ async function syncWeek4Swap(uid, afterData) {
   await rebuildWeek4Reveal();
 }
 
+async function withLinkedTackCategory(data, collectionName) {
+  if (!data || collectionName !== 'tackObservations') return data;
+  if (data.category) return data;
+  var itemId = String(data.tackRoomItemId || '').trim();
+  if (!itemId) return data;
+  try {
+    var snap = await db().collection('tackRoomItems').doc(itemId).get();
+    if (!snap.exists) return data;
+    var cat = String((snap.data() || {}).category || '').trim();
+    if (!cat) return data;
+    return Object.assign({}, data, { category: cat });
+  } catch (err) {
+    console.warn('tack category lookup skipped', itemId, err && err.message);
+    return data;
+  }
+}
+
+async function qualifiesDocument(action, data, collectionName) {
+  var ready = await withLinkedTackCategory(data, collectionName);
+  return qualifies(action, ready, collectionName);
+}
+
 function qualifies(action, data, collectionName) {
   if (!data || isArchived(data)) return false;
   if (action.photoKind && !kindMatches(data, action.photoKind, collectionName)) return false;
@@ -468,6 +543,12 @@ function qualifies(action, data, collectionName) {
       return isHistoryNote(data);
     case 'digitalPulseNote':
       return isDigitalPulseNote(data);
+    case 'ownerCheckIn':
+      return isOwnerCheckIn(data);
+    case 'quickUpdateNote':
+      return isQuickUpdateNote(data);
+    case 'twoMilestones':
+      return hasTwoMilestones(data);
     case 'hayCostComplete':
       return isHayCostComplete(data, collectionName);
     case 'future':
@@ -487,6 +568,7 @@ function eventMillis(data) {
       toMillis(data.activityAt) ||
       nyWallClockToUtcMs(dateVal.trim(), 12, 0, 0, 0) ||
       toMillis(data.createdAt) ||
+      toMillis(data.addedAt) ||
       toMillis(data.updatedAt)
     );
   }
@@ -496,6 +578,7 @@ function eventMillis(data) {
     toMillis(data.activityAt) ||
     toMillis(data.date) ||
     toMillis(data.createdAt) ||
+    toMillis(data.addedAt) ||
     toMillis(data.updatedAt)
   );
 }
@@ -731,7 +814,7 @@ async function scoreAppDocument(collectionName, docId, data) {
   var matches = config.actionsForCollection(collectionName);
   for (var i = 0; i < matches.length; i++) {
     var action = matches[i];
-    if (!qualifies(action, data, collectionName)) continue;
+    if (!(await qualifiesDocument(action, data, collectionName))) continue;
     if (action.credit === 'week_window' && !inWeekWindow(action, data)) continue;
     var earnedAtMs =
       action.credit === 'week_window' ? eventMillis(data) || Date.now() : Date.now();
@@ -816,7 +899,7 @@ async function backfillUser(uid, opts) {
       var docs = snap.docs || [];
       for (var d = 0; d < docs.length; d++) {
         var data = docs[d].data() || {};
-        if (!qualifies(action, data, col)) continue;
+        if (!(await qualifiesDocument(action, data, col))) continue;
         if (action.credit === 'week_window' && !inWeekWindow(action, data)) continue;
         var earnedAtMs =
           action.credit === 'week_window' ? eventMillis(data) || Date.now() : Date.now();
@@ -845,11 +928,52 @@ async function backfillUser(uid, opts) {
   return { backfilled: awarded };
 }
 
+async function saveChallengeSubmission(data) {
+  var answers = data && data.formAnswers;
+  if (!answers || typeof answers !== 'object') return;
+  var keys = Object.keys(answers).filter(function (key) {
+    return String(answers[key] || '').trim();
+  });
+  if (!keys.length) return;
+  var uid = String(data.userId || '').trim();
+  var actionId = String(data.actionId || '').trim();
+  if (!uid || !actionId) return;
+  var clean = {};
+  keys.forEach(function (key) {
+    clean[key] = String(answers[key]).trim();
+  });
+  await db()
+    .collection('challengeSubmissions')
+    .doc(uid + '__' + actionId)
+    .set(
+      {
+        userId: uid,
+        email: data.email || clean.email || '',
+        name: clean.name || '',
+        challengeId: data.challengeId || CHALLENGE_ID,
+        actionId: actionId,
+        weekNumber: data.weekNumber == null ? null : data.weekNumber,
+        label: data.label || '',
+        partner: data.verificationPartner || '',
+        answers: clean,
+        emailDelivered: data.emailDelivered === true,
+        submittedAt: data.clickedAt || FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+}
+
 async function handlePointEventWrite(data) {
   if (!data) return;
   var uid = String(data.userId || '').trim();
   var actionId = String(data.actionId || '').trim();
   if (!uid || !actionId) return;
+  try {
+    await saveChallengeSubmission(data);
+  } catch (err) {
+    console.warn('challenge submission save skipped', err && err.message);
+  }
   await scoreHubPointAction(uid, actionId, data);
 }
 
@@ -918,6 +1042,7 @@ module.exports = {
   award: award,
   awardManual: awardManual,
   qualifies: qualifies,
+  qualifiesDocument: qualifiesDocument,
   eventMillis: eventMillis,
   inWeekWindow: inWeekWindow,
   countsTowardWeeklyPrize: countsTowardWeeklyPrize,
