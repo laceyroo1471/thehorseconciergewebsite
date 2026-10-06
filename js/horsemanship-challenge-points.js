@@ -13,8 +13,9 @@
  * On click / submit (signed-in challenge user):
  *   1) Writes challengeRegistrations/{uid}.pointActions[actionId] (idempotent)
  *   2) Best-effort audit row in challengePointEvents
- *   3) Cloud Functions copy that into challengeActions / challengeScores
- *   4) Forms email via Formsubmit ajax so the page does not refresh
+ *   3) Form answers are also stored in challengeSubmissions (the copy we can pull later)
+ *   4) Cloud Functions copy that into challengeActions / challengeScores
+ *   5) Forms email via Formsubmit ajax so the page does not refresh
  *
  * Not signed in → prompt to sign in. Forms never native-POST unsigned.
  */
@@ -96,6 +97,20 @@
     if (checked) return String(checked.value || '').trim();
     var text = form.querySelector('textarea[name="q1"], input[name="q1"]:not([type="radio"])');
     return text ? String(text.value || '').trim() : '';
+  }
+
+  function formAnswersFrom(form) {
+    var answers = {};
+    if (!form) return answers;
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (!el.name || el.type === 'submit' || el.type === 'button' || el.type === 'file') return;
+      if (el.name.charAt(0) === '_') return;
+      if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) return;
+      var value = String(el.value || '').trim();
+      if (!value) return;
+      answers[el.name] = value;
+    });
+    return answers;
   }
 
   function isGradedQuiz(action) {
@@ -268,6 +283,12 @@
       clickedAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
+    if (extras.formAnswers && Object.keys(extras.formAnswers).length) {
+      actionPayload.formAnswers = extras.formAnswers;
+    }
+    if (extras.emailDelivered === true || extras.emailDelivered === false) {
+      actionPayload.emailDelivered = extras.emailDelivered;
+    }
 
     var regRef = db.collection('challengeRegistrations').doc(user.uid);
     var regWrite = regRef
@@ -287,33 +308,99 @@
       });
 
     var eventId = user.uid + '__' + action.actionId;
+    var eventPayload = {
+      userId: user.uid,
+      email: user.email || '',
+      challengeId: CHALLENGE_ID,
+      actionId: action.actionId,
+      points: isCorrect ? action.points : 0,
+      weekNumber: action.weekNumber,
+      label: action.label,
+      destinationUrl: action.href || '',
+      status: isCorrect ? 'auto_claimed' : 'incorrect',
+      correct: isCorrect,
+      selectedAnswer: extras.selectedAnswer || '',
+      verificationPartner: action.partner || '',
+      clickedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    if (actionPayload.formAnswers) eventPayload.formAnswers = actionPayload.formAnswers;
+    if (actionPayload.emailDelivered === true || actionPayload.emailDelivered === false) {
+      eventPayload.emailDelivered = actionPayload.emailDelivered;
+    }
     var eventWrite = db
       .collection('challengePointEvents')
       .doc(eventId)
-      .set(
-        {
-          userId: user.uid,
-          email: user.email || '',
-          challengeId: CHALLENGE_ID,
-          actionId: action.actionId,
-          points: isCorrect ? action.points : 0,
-          weekNumber: action.weekNumber,
-          label: action.label,
-          destinationUrl: action.href || '',
-          status: isCorrect ? 'auto_claimed' : 'incorrect',
-          correct: isCorrect,
-          selectedAnswer: extras.selectedAnswer || '',
-          verificationPartner: action.partner || '',
-          clickedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      )
+      .set(eventPayload, { merge: true })
       .catch(function (err) {
         console.warn('challengePointEvents write skipped:', err);
       });
 
-    return Promise.all([regWrite, eventWrite]);
+    var submissionWrite = Promise.resolve();
+    if (actionPayload.formAnswers) {
+      submissionWrite = db
+        .collection('challengeSubmissions')
+        .doc(eventId)
+        .set(
+          {
+            userId: user.uid,
+            email: user.email || actionPayload.formAnswers.email || '',
+            name: actionPayload.formAnswers.name || '',
+            challengeId: CHALLENGE_ID,
+            actionId: action.actionId,
+            weekNumber: action.weekNumber,
+            label: action.label,
+            partner: action.partner || '',
+            answers: actionPayload.formAnswers,
+            emailDelivered: actionPayload.emailDelivered === true,
+            submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        )
+        .catch(function (err) {
+          console.warn('challengeSubmissions write skipped:', err);
+        });
+    }
+
+    return Promise.all([regWrite, eventWrite, submissionWrite]);
+  }
+
+  function markEmailDelivered(user, action, delivered) {
+    if (!user || !action) return Promise.resolve();
+    var eventId = user.uid + '__' + action.actionId;
+    var flag = !!delivered;
+    var regWrite = db
+      .collection('challengeRegistrations')
+      .doc(user.uid)
+      .update(
+        new firebase.firestore.FieldPath('pointActions', action.actionId, 'emailDelivered'),
+        flag
+      )
+      .catch(function (err) {
+        console.warn('email delivery flag skipped:', err);
+      });
+    var eventWrite = db
+      .collection('challengePointEvents')
+      .doc(eventId)
+      .set(
+        { emailDelivered: flag, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
+        { merge: true }
+      )
+      .catch(function (err) {
+        console.warn('email delivery event skipped:', err);
+      });
+    var submissionWrite = db
+      .collection('challengeSubmissions')
+      .doc(eventId)
+      .set(
+        { emailDelivered: flag, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
+        { merge: true }
+      )
+      .catch(function (err) {
+        console.warn('email delivery submission skipped:', err);
+      });
+    return Promise.all([regWrite, eventWrite, submissionWrite]);
   }
 
   function promptSignIn(el, action) {
@@ -400,6 +487,12 @@
       if (!res.ok) throw new Error('formsubmit ' + res.status);
       return res.json().catch(function () {
         return {};
+      }).then(function (body) {
+        var flag = body && body.success;
+        if (flag === false || flag === 'false') {
+          throw new Error((body && body.message) || 'formsubmit rejected the message');
+        }
+        return body || {};
       });
     });
   }
@@ -549,7 +642,9 @@
       return;
     }
 
+    var answers = formAnswersFrom(form);
     var selectedAnswer = selectedQuizAnswer(form);
+    if (!selectedAnswer && answers.question) selectedAnswer = answers.question;
     var graded = isGradedQuiz(action);
     var correct = !graded || normalizeQuizAnswer(selectedAnswer) === normalizeQuizAnswer(action.correctAnswer);
 
@@ -560,16 +655,40 @@
       setStatus(form, 'Saving your ' + action.points + ' points…');
     }
 
-    writePointAction(user, action, { correct: correct, selectedAnswer: selectedAnswer })
+    writePointAction(user, action, {
+      correct: correct,
+      selectedAnswer: selectedAnswer,
+      formAnswers: answers,
+      emailDelivered: false,
+    })
       .then(function () {
-        return sendFormEmail(form).catch(function (err) {
-          console.warn('form email skipped', err);
-          return { emailFailed: true };
+        return sendFormEmail(form)
+          .then(function () {
+            return { emailFailed: false };
+          })
+          .catch(function (err) {
+            console.warn('form email skipped', err);
+            return { emailFailed: true };
+          });
+      })
+      .then(function (result) {
+        var failed = !!(result && result.emailFailed);
+        return markEmailDelivered(user, action, !failed).then(function () {
+          return result;
         });
       })
-      .then(function () {
+      .then(function (result) {
         if (graded) {
           showQuizResult(form, action, { correct: correct, selectedAnswer: selectedAnswer, already: false });
+          return;
+        }
+        if (result && result.emailFailed) {
+          setFormBusy(form, false);
+          setStatus(
+            form,
+            'Your points and your answer are saved. The email did not send. Submit again to resend it.',
+            true
+          );
           return;
         }
         showFormReceived(form, action, false);
@@ -598,6 +717,14 @@
       if (!action) return;
       var recorded = actions[action.actionId];
       if (!recorded) return;
+      if (recorded.emailDelivered === false && recorded.formAnswers) {
+        setStatus(
+          form,
+          'Your points and your answer are saved. The email did not send. Submit again to resend it.',
+          true
+        );
+        return;
+      }
       if (isGradedQuiz(action)) {
         var correct = recorded.correct !== false && recorded.status !== 'incorrect';
         showQuizResult(form, action, {
