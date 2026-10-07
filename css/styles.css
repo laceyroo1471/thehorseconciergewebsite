@@ -6530,6 +6530,42 @@
   .weigh-item--lb .weigh-item__fields {
     grid-template-columns: 1fr;
   }
+  .weigh-item--oz {
+    grid-template-columns: 26px 1fr 130px;
+    align-items: start;
+  }
+  .weigh-item--oz .weigh-item__fields {
+    grid-template-columns: 1fr;
+  }
+  .weigh-item--choice {
+    grid-template-columns: 26px 1fr;
+    align-items: start;
+  }
+  .weigh-item--choice .weigh-item__fields {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
+  }
+  .weigh-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .weigh-choice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--cream);
+    cursor: pointer;
+  }
+  .weigh-choice input {
+    accent-color: var(--gold);
+  }
   .weigh-item--photo {
     align-items: start;
   }

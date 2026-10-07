@@ -8,7 +8,9 @@
  * Week 3 (weigh-wednesday-w3): peak ground force (lb) on a 1,000-lb horse. Closes Sep 20, 2026 8:00 PM ET.
  * Week 4 (weigh-wednesday-w4): hidden barn/household costs. Closes Sep 27, 2026 8:00 PM ET.
  * Week 5 (weigh-wednesday-w5): saddle-fit percents plus two saddle weights.
- * Closes Oct 4, 2026 8:00 PM ET.
+ * Closed Oct 4, 2026 8:00 PM ET.
+ * Week 6 (weigh-wednesday-w6): two bit questions plus three ounce weights.
+ * Closes Oct 11, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -84,6 +86,27 @@ var CONTESTS = {
       'ludomarPortuguesa',
     ],
   },
+  'weigh-wednesday-w6': {
+    contestId: 'weigh-wednesday-w6',
+    weekNumber: 6,
+    closeMs: Date.parse('2026-10-11T20:00:00-04:00'),
+    unit: 'ounces',
+    itemUnits: {
+      leverage: 'pounds',
+      mouthpieceThickness: 'inches',
+    },
+    field: 'weighWednesdayW6',
+    placePrefix: 'week6-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    tieBreak: 'worstThenEarlier',
+    itemIds: [
+      'leverage',
+      'mouthpieceThickness',
+      'mylerThreeRing',
+      'weaverSnaffle',
+      'curbMouthpiece',
+    ],
+  },
 };
 
 var CONTEST_ID = 'weigh-wednesday-w1';
@@ -114,6 +137,13 @@ function toMillis(val) {
 
 function toOunces(row) {
   if (!row || typeof row !== 'object') return NaN;
+  var hasLb = row.lb != null && row.lb !== '';
+  var hasOz = row.oz != null && row.oz !== '';
+  if (hasOz && !hasLb) {
+    var only = Number(row.oz);
+    if (isNaN(only) || only < 0) return NaN;
+    return only;
+  }
   var lb = Number(row.lb);
   var oz = Number(row.oz);
   if (isNaN(lb) || isNaN(oz) || lb < 0 || oz < 0) return NaN;
@@ -129,6 +159,15 @@ function toPounds(row) {
   return lb;
 }
 
+function toInches(row) {
+  if (row == null) return NaN;
+  if (typeof row === 'number') return row >= 0 ? row : NaN;
+  if (typeof row !== 'object') return NaN;
+  var inches = Number(row.inches);
+  if (isNaN(inches) || inches < 0) return NaN;
+  return inches;
+}
+
 function toValue(row, unit) {
   if (unit === 'percent') {
     if (row == null) return NaN;
@@ -139,6 +178,7 @@ function toValue(row, unit) {
     return pct;
   }
   if (unit === 'pounds') return toPounds(row);
+  if (unit === 'inches') return toInches(row);
   return toOunces(row);
 }
 
