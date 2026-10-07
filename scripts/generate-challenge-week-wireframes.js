@@ -7,6 +7,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { GOOGLE_ANALYTICS_TAG } = require('../lib/google-analytics-tag');
 
 const ROOT = path.join(__dirname, '..');
 
@@ -422,6 +423,7 @@ function renderWeek(week) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+${GOOGLE_ANALYTICS_TAG}
 <title>Week ${week.num} · ${escapeHtml(week.theme)} — Horsemanship Challenge</title>
 <meta name="description" content="Week ${week.num} of The Horse Concierge Horsemanship Challenge — ${escapeHtml(week.theme)}${week.partner ? ' with ' + escapeHtml(week.partner) : ''}. ${range}.">
 <meta name="robots" content="noindex, nofollow">
