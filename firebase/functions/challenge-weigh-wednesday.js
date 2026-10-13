@@ -11,6 +11,8 @@
  * Closed Oct 4, 2026 8:00 PM ET.
  * Week 6 (weigh-wednesday-w6): two bit questions plus three ounce weights.
  * Closes Oct 11, 2026 8:00 PM ET.
+ * Week 7 (weigh-wednesday-w7): saddlebag weight, carry %, DIO cost, two recovery questions.
+ * Closes Oct 18, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -107,6 +109,24 @@ var CONTESTS = {
       'curbMouthpiece',
     ],
   },
+  'weigh-wednesday-w7': {
+    contestId: 'weigh-wednesday-w7',
+    weekNumber: 7,
+    closeMs: Date.parse('2026-10-18T20:00:00-04:00'),
+    unit: 'pounds',
+    itemUnits: {
+      saddlebags: 'pounds',
+      aspenLoad: 'percent',
+      dioCost: 'dollars',
+      restingHr: 'choice',
+      sweatLoss: 'choice',
+    },
+    field: 'weighWednesdayW7',
+    placePrefix: 'week7-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    tieBreak: 'worstThenEarlier',
+    itemIds: ['saddlebags', 'aspenLoad', 'dioCost', 'restingHr', 'sweatLoss'],
+  },
 };
 
 var CONTEST_ID = 'weigh-wednesday-w1';
@@ -168,6 +188,24 @@ function toInches(row) {
   return inches;
 }
 
+function toDollars(row) {
+  if (row == null) return NaN;
+  if (typeof row === 'number') return row >= 0 ? row : NaN;
+  if (typeof row !== 'object') return NaN;
+  var dollars = Number(row.dollars != null ? row.dollars : row.usd);
+  if (isNaN(dollars) || dollars < 0) return NaN;
+  return dollars;
+}
+
+function toChoice(row) {
+  if (row == null) return NaN;
+  if (typeof row === 'number') return row >= 0 ? row : NaN;
+  if (typeof row !== 'object') return NaN;
+  var choice = Number(row.choice != null ? row.choice : row.value);
+  if (isNaN(choice) || choice < 0) return NaN;
+  return choice;
+}
+
 function toValue(row, unit) {
   if (unit === 'percent') {
     if (row == null) return NaN;
@@ -179,6 +217,8 @@ function toValue(row, unit) {
   }
   if (unit === 'pounds') return toPounds(row);
   if (unit === 'inches') return toInches(row);
+  if (unit === 'dollars') return toDollars(row);
+  if (unit === 'choice') return toChoice(row);
   return toOunces(row);
 }
 

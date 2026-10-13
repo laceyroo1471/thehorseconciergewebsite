@@ -118,6 +118,15 @@
   </section>
 
   <section class="section" style="padding-top:0;" id="points">
+    <div class="weigh-card" data-weigh-w7-card hidden>
+      <div class="weigh-card__body">
+        <p class="weigh-card__eyebrow">Mid-week bonus</p>
+        <h3 class="weigh-card__title" data-weigh-w7-title>What’s It Weigh Wednesday</h3>
+        <p class="weigh-card__note" data-weigh-w7-note>Mid-week bonus · up to 9 points. Aspen’s load, a prepared jug cost, and two recovery questions. Closest overall wins.</p>
+      </div>
+      <button type="button" class="btn-primary" data-weigh-w7-open>Enter my guesses</button>
+    </div>
+
     <div class="section-label reveal">Week 7 scoring</div>
     <h2 class="heading-xl reveal">This week’s<br><em>points.</em></h2>
     <ul class="challenge-points-list reveal reveal-delay-1">
@@ -131,8 +140,8 @@
       <li>
         <span class="challenge-points-list__pts">10 pts</span>
         <span>
-          Add your horse’s recovery baseline to the app as a note
-          <span class="challenge-points-list__detail">Tuesday · resting pulse, respiration, or how quickly they come back after similar work</span>
+          Quick Add a resting heart rate for your horse in the app
+          <span class="challenge-points-list__detail">Tuesday · the number the Hub scores for this week</span>
         </span>
       </li>
       <li>
@@ -157,6 +166,7 @@
         </span>
       </li>
     </ul>
+    <p class="funnel-panel-note reveal" style="margin-top:16px; max-width:640px;">What’s It Weigh Wednesday adds up to 9 bonus points. Closest overall wins. It closes Sunday at 8:00 PM ET.</p>
 
     <div class="funnel-panel reveal reveal-delay-1 challenge-question-panel" id="dio-recovery-question" style="margin-top:28px; max-width:560px; scroll-margin-top:96px;">
       <div class="funnel-panel-title">Ask Draw It Out · 10 pts</div>
@@ -366,8 +376,8 @@
           </div>
           <div class="challenge-day__action">
             <p class="challenge-day__lane-label">Barn activity · 10 points</p>
-            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Add a note on your horse’s recovery baseline in the app. Resting pulse, respiration, or how quickly they come back after a workout you know well — whatever you can record today.</p>
-            <button type="button" class="btn-primary" data-thc-action="app">Log your horse’s recovery baseline in the app</button>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:12px;">Quick Add your horse’s resting heart rate in the app. That is the number the Hub scores for this week — a baseline you can come back to after similar work.</p>
+            <button type="button" class="btn-primary" data-thc-action="app">Quick Add a resting heart rate</button>
           </div>
         </div>
       </article>
@@ -380,7 +390,7 @@
             <span class="challenge-day__date">October 14</span>
           </div>
           <h3 class="challenge-day__title">Recovery Starts Before the Work</h3>
-          <p class="challenge-day__teaser">Warm-up is not a tradition to rush through. It is the first recovery decision of the day — how you prepare the body before the work starts.</p>
+          <p class="challenge-day__teaser">Warm-up is not a tradition to rush through. It is the first recovery decision of the day — how you prepare the body before the work starts. What’s It Weigh Wednesday opens today.</p>
           <p class="challenge-day__locked-note" hidden>Content unlocks Wednesday, October 14.</p>
         </header>
         <div class="challenge-day__body">
@@ -595,7 +605,8 @@
             <p class="body-text" style="font-size:0.9rem;">After today, this full schedule stays open for arrears completion. Activities this week:</p>
             <ul class="audience-list" style="margin-top:16px;">
               <li>Explore Draw It Out and submit a product pick, plus horse work and care challenge · 15 pts</li>
-              <li>Add a recovery baseline note in the app · proposed 10 pts</li>
+              <li>Quick Add a resting heart rate in the app · 10 pts</li>
+              <li>What’s It Weigh Wednesday · up to 9 bonus pts · closes Sunday 8:00 PM ET</li>
               <li>Submit a recovery question to the Draw It Out team anytime this week · 10 pts</li>
               <li>Use What Does My Horse Need?, then submit the product or routine you explored · 5 pts</li>
               <li>GPS hand walk or ride anytime this week · proposed 5 pts × 2</li>
@@ -670,6 +681,7 @@
 <script src="js/horsemanship-challenge-week.js?v=20260901c"></script>
 <script src="js/horsemanship-challenge-points.js?v=20261005a"></script>
 <script src="js/horsemanship-challenge-leaderboard.js?v=20260922a"></script>
+<script src="js/challenge-weigh-w7.js?v=20261013a"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

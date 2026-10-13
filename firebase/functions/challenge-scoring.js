@@ -365,6 +365,84 @@ function isDigitalPulseNote(data) {
   return mentionsDigitalPulse(data);
 }
 
+function heartRateBlob(data) {
+  if (!data) return '';
+  return [
+    data.type,
+    data.category,
+    data.title,
+    data.kind,
+    data.metric,
+    data.vitalType,
+    data.vital,
+    data.name,
+    data.label,
+    data.subtype,
+    data.inputType,
+    data.quickAddType,
+    data.activityType,
+    pulseText(data),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+}
+
+function numericFrom(obj) {
+  if (!obj || typeof obj !== 'object') return 0;
+  var keys = [
+    'heartRate',
+    'restingHeartRate',
+    'restingPulse',
+    'pulseRate',
+    'pulse',
+    'bpm',
+    'reading',
+    'value',
+    'amount',
+  ];
+  for (var i = 0; i < keys.length; i++) {
+    var n = Number(obj[keys[i]]);
+    if (!isNaN(n) && n > 0) return n;
+  }
+  return 0;
+}
+
+function numericHeartRate(data) {
+  if (!data) return 0;
+  var direct = numericFrom(data);
+  if (direct) return direct;
+  if (data.vitals && typeof data.vitals === 'object') {
+    var nested = numericFrom(data.vitals);
+    if (nested) return nested;
+  }
+  if (data.metrics && typeof data.metrics === 'object') {
+    var metrics = numericFrom(data.metrics);
+    if (metrics) return metrics;
+  }
+  if (data.fields && typeof data.fields === 'object') {
+    var fields = numericFrom(data.fields);
+    if (fields) return fields;
+  }
+  return 0;
+}
+
+function mentionsRestingHeartRate(data) {
+  return /resting\s*(heart\s*)?(rate|pulse)|heart\s*rate|\bbpm\b/.test(heartRateBlob(data));
+}
+
+function isRestingHeartRate(data) {
+  if (!data || isArchived(data)) return false;
+  var rate = numericHeartRate(data);
+  var type = String(
+    data.type || data.category || data.vitalType || data.metric || data.quickAddType || ''
+  ).toLowerCase();
+  if (rate > 0 && mentionsRestingHeartRate(data)) return true;
+  if (rate > 0 && /heart|pulse|vital|recovery|baseline/.test(type)) return true;
+  if (mentionsRestingHeartRate(data) && (hasObservation(data) || isHistoryNote(data))) return true;
+  return false;
+}
+
 function isOwnerCheckIn(data) {
   if (!data || isArchived(data)) return false;
   if (String(data.source || '').toLowerCase() !== 'owner_checkin') return false;
@@ -543,6 +621,8 @@ function qualifies(action, data, collectionName) {
       return isHistoryNote(data);
     case 'digitalPulseNote':
       return isDigitalPulseNote(data);
+    case 'restingHeartRate':
+      return isRestingHeartRate(data);
     case 'ownerCheckIn':
       return isOwnerCheckIn(data);
     case 'quickUpdateNote':
