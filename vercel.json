@@ -13,7 +13,9 @@
     { "source": "/horsemanship-challenge-week-11", "destination": "/horsemanship-challenge-week-11-emergency", "permanent": true },
     { "source": "/horsemanship-challenge-week-12-equine-behavior", "destination": "/horsemanship-challenge-week-08-equine-behavior", "permanent": true },
     { "source": "/find-a-horse-care-provider", "destination": "/find-providers", "permanent": true },
-    { "source": "/find-a-horse-care-provider.html", "destination": "/find-providers", "permanent": true }
+    { "source": "/find-a-horse-care-provider.html", "destination": "/find-providers", "permanent": true },
+    { "source": "/western-pa-find-a-service-provider", "destination": "/find-providers", "permanent": true },
+    { "source": "/western-pa-find-a-service-provider.html", "destination": "/find-providers", "permanent": true }
   ],
   "functions": {
     "api/**/*.js": {
