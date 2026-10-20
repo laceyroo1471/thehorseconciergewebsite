@@ -458,6 +458,40 @@ function isQuickUpdateNote(data) {
   return method === 'typed' || method === 'voice';
 }
 
+function vitalText(data) {
+  if (!data) return '';
+  return [data.title, data.type, data.category, data.vitalType, data.metric, data.quickAddType, pulseText(data)]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+}
+
+function mentionsTemperature(text) {
+  return /\btemperatures?\b|\btemps?\b|°\s*f\b|\bdegrees?\s*f\b/.test(text);
+}
+
+function mentionsRespiration(text) {
+  return /\brespirat|\bresp\b|\brr\b|\bbreathing\s*rate\b|\bbreaths?\s*(per|\/|a)\b|\b\d{1,3}\s*breaths?\b/.test(text);
+}
+
+/**
+ * Temperature and respiration are two Quick Updates. A single note that
+ * names both does not qualify for either action.
+ */
+function isSeparatedVitalQuickUpdate(data, kind) {
+  if (!data || isArchived(data)) return false;
+  if (String(data.source || '').toLowerCase() === 'owner_checkin') return false;
+  var text = vitalText(data);
+  if (!text.trim()) return false;
+  if (!hasObservation(data) && !String(data.title || '').trim()) return false;
+  var temperature = mentionsTemperature(text);
+  var respiration = mentionsRespiration(text);
+  if (temperature && respiration) return false;
+  if (kind === 'temperature') return temperature;
+  if (kind === 'respiration') return respiration;
+  return false;
+}
+
 function hasTwoMilestones(data) {
   if (!data || isArchived(data)) return false;
   if (!Array.isArray(data.milestones)) return false;
@@ -627,6 +661,10 @@ function qualifies(action, data, collectionName) {
       return isOwnerCheckIn(data);
     case 'quickUpdateNote':
       return isQuickUpdateNote(data);
+    case 'temperatureQuickUpdate':
+      return isSeparatedVitalQuickUpdate(data, 'temperature');
+    case 'respirationQuickUpdate':
+      return isSeparatedVitalQuickUpdate(data, 'respiration');
     case 'twoMilestones':
       return hasTwoMilestones(data);
     case 'hayCostComplete':

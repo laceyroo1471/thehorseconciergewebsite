@@ -79,6 +79,7 @@
       label: (el.getAttribute('data-challenge-point-label') || actionId).trim(),
       partner: (el.getAttribute('data-challenge-point-partner') || '').trim(),
       correctAnswer: (el.getAttribute('data-challenge-correct') || '').trim(),
+      explanation: (el.getAttribute('data-challenge-explain') || '').trim(),
       href: href,
       isForm: isForm,
     };
@@ -89,6 +90,13 @@
       .replace(/\s+/g, ' ')
       .trim()
       .toLowerCase();
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 
   function selectedQuizAnswer(form) {
@@ -173,12 +181,16 @@
       : correct
         ? 'Correct · ' + action.points + ' points awarded'
         : 'Not this time · no points';
+    var explain = action.explanation
+      ? '<p class="challenge-quiz-result__why">' + escapeHtml(action.explanation) + '</p>'
+      : '';
     box.innerHTML =
       '<p class="challenge-quiz-result__label">' +
-      label +
+      escapeHtml(label) +
       '</p><p class="challenge-quiz-result__answer">The right answer is: ' +
-      action.correctAnswer +
-      '</p>';
+      escapeHtml(action.correctAnswer) +
+      '</p>' +
+      explain;
 
     setStatus(
       form,
