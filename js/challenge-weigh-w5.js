@@ -380,6 +380,10 @@
       '<p class="thc-dialog__eyebrow">Mid-week bonus · up to 9 points</p>' +
       '<h2 class="thc-dialog__title">What’s It Weigh Wednesday</h2>' +
       '<p class="thc-dialog__text">Guess three saddle-fit findings as a percent, and the weight in pounds of the two saddles in the photos. Closest overall wins. Open Wednesday 6:00 AM through Sunday 8:00 PM ET. You may edit until the deadline. Official answers post here when it scores Sunday at 8:00 PM ET.</p>' +
+      '<aside class="weigh-honor" role="note">' +
+      '<p class="weigh-honor__title">Google and AI are prohibited</p>' +
+      '<p>Answer from your own knowledge. Google and other search engines, including image search, retailer or manufacturer sites, AI tools and chatbots, and help from other people are prohibited. A calculator is fine for arithmetic only. <a href="horsemanship-challenge-rules.html#wiww">Official Rules, section 4A</a>.</p>' +
+      '</aside>' +
       '<form id="weigh-w5-form" class="weigh-form" novalidate>' +
       '<div class="weigh-form__list">' +
       itemRowsHtml() +

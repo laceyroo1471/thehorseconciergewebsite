@@ -13,6 +13,8 @@
  * Closes Oct 11, 2026 8:00 PM ET.
  * Week 7 (weigh-wednesday-w7): saddlebag weight, carry %, DIO cost, two recovery questions.
  * Closes Oct 18, 2026 8:00 PM ET.
+ * Week 8 (weigh-wednesday-w8): Grazers handful in grams, plus four exact behavior questions.
+ * Closes Oct 25, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -127,6 +129,24 @@ var CONTESTS = {
     tieBreak: 'worstThenEarlier',
     itemIds: ['saddlebags', 'aspenLoad', 'dioCost', 'restingHr', 'sweatLoss'],
   },
+  'weigh-wednesday-w8': {
+    contestId: 'weigh-wednesday-w8',
+    weekNumber: 8,
+    closeMs: Date.parse('2026-10-25T20:00:00-04:00'),
+    unit: 'grams',
+    itemUnits: {
+      grazersHandful: 'grams',
+      halterApproach: 'exact',
+      mutualGrooming: 'exact',
+      pressureRelease: 'exact',
+      pawing: 'exact',
+    },
+    field: 'weighWednesdayW8',
+    placePrefix: 'week8-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    tieBreak: 'worstThenEarlier',
+    itemIds: ['grazersHandful', 'halterApproach', 'mutualGrooming', 'pressureRelease', 'pawing'],
+  },
 };
 
 var CONTEST_ID = 'weigh-wednesday-w1';
@@ -197,6 +217,15 @@ function toDollars(row) {
   return dollars;
 }
 
+function toGrams(row) {
+  if (row == null) return NaN;
+  if (typeof row === 'number') return row >= 0 ? row : NaN;
+  if (typeof row !== 'object') return NaN;
+  var grams = Number(row.grams != null ? row.grams : row.g);
+  if (isNaN(grams) || grams < 0) return NaN;
+  return grams;
+}
+
 function toChoice(row) {
   if (row == null) return NaN;
   if (typeof row === 'number') return row >= 0 ? row : NaN;
@@ -218,7 +247,8 @@ function toValue(row, unit) {
   if (unit === 'pounds') return toPounds(row);
   if (unit === 'inches') return toInches(row);
   if (unit === 'dollars') return toDollars(row);
-  if (unit === 'choice') return toChoice(row);
+  if (unit === 'grams') return toGrams(row);
+  if (unit === 'choice' || unit === 'exact') return toChoice(row);
   return toOunces(row);
 }
 
@@ -244,7 +274,11 @@ function isCompleteActualsFor(spec, actuals) {
   return isCompleteGuessesFor(spec, actuals);
 }
 
-function percentDiff(guessVal, actualVal, actualRow) {
+function percentDiff(guessVal, actualVal, actualRow, unit) {
+  if (unit === 'exact') {
+    if (isNaN(guessVal) || isNaN(actualVal)) return Number.POSITIVE_INFINITY;
+    return Math.abs(guessVal - actualVal) < 1e-9 ? 0 : 100;
+  }
   if (isNaN(guessVal)) return Number.POSITIVE_INFINITY;
   if (actualRow && typeof actualRow === 'object' && actualRow.min != null && actualRow.max != null) {
     var min = Number(actualRow.min);
@@ -264,7 +298,7 @@ function averagePercentDiffFor(spec, guesses, actuals) {
   for (var i = 0; i < spec.itemIds.length; i++) {
     var id = spec.itemIds[i];
     var unit = unitFor(spec, id);
-    sum += percentDiff(toValue(guesses[id], unit), toValue(actuals[id], unit), actuals[id]);
+    sum += percentDiff(toValue(guesses[id], unit), toValue(actuals[id], unit), actuals[id], unit);
   }
   return sum / spec.itemIds.length;
 }
@@ -278,7 +312,7 @@ function worstPercentDiffFor(spec, guesses, actuals) {
   for (var i = 0; i < spec.itemIds.length; i++) {
     var id = spec.itemIds[i];
     var unit = unitFor(spec, id);
-    var d = percentDiff(toValue(guesses[id], unit), toValue(actuals[id], unit), actuals[id]);
+    var d = percentDiff(toValue(guesses[id], unit), toValue(actuals[id], unit), actuals[id], unit);
     if (!isFinite(d)) return Number.POSITIVE_INFINITY;
     if (d > worst) worst = d;
   }
