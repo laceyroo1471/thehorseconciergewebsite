@@ -4998,6 +4998,44 @@
     color: rgba(0, 0, 0, 0.45);
     text-align: center;
   }
+  .challenge-partner-logo-well--co {
+    width: auto;
+    max-width: min(520px, 92vw);
+    height: auto;
+    min-height: 120px;
+    gap: 12px 18px;
+    flex-wrap: wrap;
+    padding: 18px 24px;
+  }
+  .challenge-partner-logo-well--co .challenge-partner-logo-well__img {
+    width: 88px;
+    height: 88px;
+    max-width: 88px;
+    max-height: 88px;
+  }
+  .challenge-partner-logo-well--co .challenge-partner-logo-well__divider {
+    flex: 0 0 auto;
+  }
+  .challenge-partner-logo-well__name {
+    margin: 0;
+    max-width: 11rem;
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+    color: #1c140c;
+    text-align: center;
+    text-decoration: none;
+  }
+  a.challenge-partner-logo-well__name:hover {
+    opacity: 0.86;
+  }
+  @media (max-width: 520px) {
+    .challenge-partner-logo-well--co .challenge-partner-logo-well__divider {
+      flex-basis: 100%;
+    }
+  }
   .challenge-partner-logo-well__link,
   .challenge-partner-card__logo-link {
     display: flex;

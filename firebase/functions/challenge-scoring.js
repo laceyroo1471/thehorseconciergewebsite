@@ -184,11 +184,35 @@ function buildPointReceipt(rows) {
 
 function userIdFrom(data) {
   if (!data) return '';
-  return String(data.userId || data.uid || data.ownerId || '').trim();
+  return String(data.userId || data.uid || data.ownerId || data.ownerScopeId || '').trim();
 }
 
 function isArchived(data) {
   return !!(data && (data.archivedAt || data.isArchived === true));
+}
+
+function handoffWasStarted(data) {
+  if (!data || isArchived(data)) return false;
+  if (data.silo && String(data.silo) !== 'emergency_handoff') return false;
+  return true;
+}
+
+function handoffWasShared(data) {
+  if (!data || isArchived(data)) return false;
+  if (!String(data.name || '').trim()) return false;
+  var invite = String(data.invitationStatus || '').toLowerCase();
+  var email = String(data.emailDelivery || '').toLowerCase();
+  var sms = String(data.smsDelivery || '').toLowerCase();
+  if (invite === 'sent' || invite === 'delivered' || invite === 'opened' || invite === 'accepted' || invite === 'received') {
+    return true;
+  }
+  if (email === 'sent' || email === 'delivered') return true;
+  if (sms === 'sent' || sms === 'delivered') return true;
+  return false;
+}
+
+function evacuationWasStarted(data) {
+  return !!(data && !isArchived(data));
 }
 
 function looksLikeGps(data) {
@@ -671,6 +695,12 @@ function qualifies(action, data, collectionName) {
       return isHayCostComplete(data, collectionName);
     case 'future':
       return isFutureCalendar(data);
+    case 'handoffStarted':
+      return handoffWasStarted(data);
+    case 'handoffShared':
+      return handoffWasShared(data);
+    case 'evacuationStarted':
+      return evacuationWasStarted(data);
     case 'exists':
     default:
       return true;
