@@ -6469,6 +6469,9 @@
     width: min(660px, calc(100vw - 24px));
     max-width: calc(100vw - 24px);
   }
+  .thc-dialog--weigh-w10 {
+    width: min(720px, calc(100vw - 24px));
+  }
   .thc-dialog__media--weigh {
     aspect-ratio: auto;
     height: 190px;
@@ -6638,6 +6641,24 @@
     max-height: 280px;
     margin: 0;
     object-fit: cover;
+  }
+  .weigh-item__photos.weigh-item__photos--contain .weigh-item__photo {
+    height: 210px;
+    max-height: none;
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.28);
+  }
+  .weigh-specs {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .weigh-specs li {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 300;
+    line-height: 1.45;
+    color: var(--cream);
   }
   .weigh-item__product a,
   .weigh-honor a {

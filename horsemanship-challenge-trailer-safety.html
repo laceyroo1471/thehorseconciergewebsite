@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=20260921a">
+<link rel="stylesheet" href="css/styles.css?v=20261022a">
 <meta property="og:title" content="Week 10 · Trailer Safety with Double D Trailers">
 <meta property="og:description" content="November 2–8, 2026 — Learn trailer safety with Double D Trailers. Daily content, app actions, and up to 50 points.">
 <meta property="og:url" content="https://www.thehorseconcierge.com/horsemanship-challenge-trailer-safety">
@@ -133,6 +133,15 @@
   </section>
 
   <section class="section" style="padding-top:0;" id="points">
+    <div class="weigh-card" data-weigh-w10-card hidden>
+      <div class="weigh-card__body">
+        <p class="weigh-card__eyebrow">Mid-week bonus</p>
+        <h3 class="weigh-card__title" data-weigh-w10-title>What’s It Weigh Wednesday</h3>
+        <p class="weigh-card__note" data-weigh-w10-note>Mid-week bonus · up to 9 points. Five trailer-weight questions. Closest overall wins. Monday’s lesson and the tongue weight calculator are allowed. Answer it yourself.</p>
+      </div>
+      <button type="button" class="btn-primary" data-weigh-w10-open>Enter my guesses</button>
+    </div>
+
     <div class="section-label reveal">Week 10 scoring</div>
     <h2 class="heading-xl reveal">Up to <em>50 points</em><br>this week.</h2>
     <ul class="challenge-points-list reveal reveal-delay-1">
@@ -154,6 +163,7 @@
       <li><span class="challenge-points-list__pts">10 pts</span> Submit a question through the form below</li>
       <li><span class="challenge-points-list__pts">5 pts × 2</span> Track up to 2 rides or hand walks with GPS in the app</li>
     </ul>
+    <p class="funnel-panel-note reveal" style="margin-top:16px; max-width:640px;">What’s It Weigh Wednesday adds up to 9 bonus points. Closest overall wins. It closes Sunday at 8:00 PM ET. Monday’s lesson and the tongue weight calculator are allowed. Answer it yourself.</p>
 
     <div class="challenge-board reveal" data-challenge-board="week" data-week="10" id="week-standings">
       <p class="section-label">This week’s standings</p>
@@ -365,7 +375,7 @@
             <span class="challenge-day__date">November 4</span>
           </div>
           <h3 class="challenge-day__title">Fall Trailer Maintenance</h3>
-          <p class="challenge-day__teaser">Tires, brakes, cleaning, lubrication, and storage — or, if you don’t own a trailer, write the emergency haul plan you’d use today.</p>
+          <p class="challenge-day__teaser">Tires, brakes, cleaning, lubrication, and storage — or, if you don’t own a trailer, write the emergency haul plan you’d use today. What’s It Weigh Wednesday opens today.</p>
           <p class="challenge-day__locked-note" hidden>Content unlocks Wednesday, November 4.</p>
         </header>
         <div class="challenge-day__body">
@@ -377,6 +387,7 @@
           <div class="challenge-day__action" id="wednesday-maintenance-lanes">
             <p class="challenge-day__action-label">Wednesday points · choose one · 10 pts</p>
             <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">Stay signed in. You can only earn these 10 points once — pick the lane that matches you.</p>
+            <p class="body-text" style="font-size:0.9rem; margin-bottom:16px;">What’s It Weigh Wednesday is open through Sunday at 8:00 PM ET. Use the card at the top of this week’s points. Monday’s lesson and the tongue weight calculator are allowed. Answer the questions yourself.</p>
             <div class="challenge-day__lanes">
               <div class="challenge-day__lane">
                 <h4 class="challenge-day__resource-title">Have a trailer?</h4>
@@ -560,6 +571,7 @@
               <li>Log maintenance, or complete the emergency haul plan and 3 checks · 10 pts</li>
               <li>Submit a question · 10 pts</li>
               <li>Track up to 2 GPS rides / hand walks · 10 pts</li>
+              <li>What’s It Weigh Wednesday · up to 9 bonus pts · closes Sunday 8:00 PM ET</li>
             </ul>
           </div>
           <div class="challenge-day__placeholder">
@@ -630,6 +642,7 @@
 <script src="js/horsemanship-challenge-week.js?v=20260901c"></script>
 <script src="js/horsemanship-challenge-points.js?v=20261005a"></script>
 <script src="js/horsemanship-challenge-leaderboard.js?v=20260922a"></script>
+<script src="js/challenge-weigh-w10.js?v=20261022a"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

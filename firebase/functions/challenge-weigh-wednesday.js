@@ -15,6 +15,8 @@
  * Closes Oct 18, 2026 8:00 PM ET.
  * Week 8 (weigh-wednesday-w8): Grazers handful in grams, plus four exact behavior questions.
  * Closes Oct 25, 2026 8:00 PM ET.
+ * Week 10 (weigh-wednesday-w10): trailer dry weight, water, gear-ratio difference,
+ * tongue weight, and hitch percentage. Closes Nov 8, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -146,6 +148,24 @@ var CONTESTS = {
     title: "What's It Weigh Wednesday",
     tieBreak: 'worstThenEarlier',
     itemIds: ['grazersHandful', 'halterApproach', 'mutualGrooming', 'pressureRelease', 'pawing'],
+  },
+  'weigh-wednesday-w10': {
+    contestId: 'weigh-wednesday-w10',
+    weekNumber: 10,
+    closeMs: Date.parse('2026-11-08T20:00:00-05:00'),
+    unit: 'pounds',
+    itemUnits: {
+      dryWeight: 'pounds',
+      waterAdded: 'pounds',
+      gearDiff: 'pounds',
+      tongueWeight: 'pounds',
+      hitchShare: 'percent',
+    },
+    field: 'weighWednesdayW10',
+    placePrefix: 'week10-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    tieBreak: 'worstThenEarlier',
+    itemIds: ['dryWeight', 'waterAdded', 'gearDiff', 'tongueWeight', 'hitchShare'],
   },
 };
 
