@@ -15,6 +15,8 @@
  * Closes Oct 18, 2026 8:00 PM ET.
  * Week 8 (weigh-wednesday-w8): Grazers handful in grams, plus four exact behavior questions.
  * Closes Oct 25, 2026 8:00 PM ET.
+ * Week 9 (weigh-wednesday-w9): Betty Pack weight in pounds, plus four exact first-aid questions.
+ * Closes Nov 1, 2026 8:00 PM ET.
  * Week 10 (weigh-wednesday-w10): trailer dry weight, water, gear-ratio difference,
  * tongue weight, and hitch percentage. Closes Nov 8, 2026 8:00 PM ET.
  *
@@ -148,6 +150,24 @@ var CONTESTS = {
     title: "What's It Weigh Wednesday",
     tieBreak: 'worstThenEarlier',
     itemIds: ['grazersHandful', 'halterApproach', 'mutualGrooming', 'pressureRelease', 'pawing'],
+  },
+  'weigh-wednesday-w9': {
+    contestId: 'weigh-wednesday-w9',
+    weekNumber: 9,
+    closeMs: Date.parse('2026-11-01T20:00:00-05:00'),
+    unit: 'pounds',
+    itemUnits: {
+      bettyPack: 'pounds',
+      bloodVolume: 'exact',
+      humanTemp: 'exact',
+      bandageMath: 'exact',
+      healing: 'exact',
+    },
+    field: 'weighWednesdayW9',
+    placePrefix: 'week9-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    tieBreak: 'worstThenEarlier',
+    itemIds: ['bettyPack', 'bloodVolume', 'humanTemp', 'bandageMath', 'healing'],
   },
   'weigh-wednesday-w10': {
     contestId: 'weigh-wednesday-w10',

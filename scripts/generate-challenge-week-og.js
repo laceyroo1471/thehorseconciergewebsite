@@ -38,7 +38,7 @@ const WEEKS = [
     html: "horsemanship-challenge-week-02-anatomy.html",
     week: 2,
     topic: "Anatomy & Conformation",
-    credit: "Presented by Equine Education Institute",
+    credit: "Presented by The Equine Institute",
     logos: [
       {
         file: "Images/challenge-partners/equine-education-institute-on-dark.svg",
@@ -113,7 +113,7 @@ const WEEKS = [
     html: "horsemanship-challenge-week-09-first-aid.html",
     week: 9,
     topic: "First Aid",
-    credit: "Presented by Equine Education Institute",
+    credit: "Presented by The Equine Institute",
     logos: [
       {
         file: "Images/challenge-partners/equine-education-institute-on-dark.svg",
@@ -315,7 +315,9 @@ async function renderWeek(week) {
 
 async function main() {
   fs.mkdirSync(CACHE, { recursive: true });
+  const only = process.argv[2];
   for (const week of WEEKS) {
+    if (only && week.slug !== only && String(week.week) !== only) continue;
     await renderWeek(week);
   }
 }

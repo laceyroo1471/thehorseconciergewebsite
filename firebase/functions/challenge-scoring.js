@@ -223,8 +223,10 @@ function looksLikeGps(data) {
   if (data.distanceMeters || data.distance || data.distanceKm) return true;
   if (data.path || data.polyline || data.coordinates || data.track) return true;
   if (data.startTime && (data.horseId || data.horseName)) return true;
-  var type = String(data.type || data.activityType || '').toLowerCase();
-  return type === 'ride' || type === 'gps' || type === 'handwalk' || type === 'hand-walk' || type === 'walk';
+  var type = String(data.type || data.activityType || data.rideType || '')
+    .toLowerCase()
+    .replace(/[\s_-]+/g, '');
+  return type === 'ride' || type === 'gps' || type === 'handwalk' || type === 'walk';
 }
 
 function hasComment(data) {
@@ -479,7 +481,9 @@ function isQuickUpdateNote(data) {
   if (String(data.source || '').toLowerCase() === 'owner_checkin') return false;
   if (!hasObservation(data)) return false;
   var method = String(data.inputMethod || '').toLowerCase();
-  return method === 'typed' || method === 'voice';
+  if (method === 'typed' || method === 'voice') return true;
+  // Typed Quick Updates are stored as care notes and often omit inputMethod.
+  return String(data.type || '').toLowerCase() === 'note';
 }
 
 function vitalText(data) {
@@ -491,16 +495,19 @@ function vitalText(data) {
 }
 
 function mentionsTemperature(text) {
-  return /\btemperatures?\b|\btemps?\b|°\s*f\b|\bdegrees?\s*f\b/.test(text);
+  if (/\btemperatures?\b|\btemps?\b|°\s*f\b|\bdegrees?\s*f\b/.test(text)) return true;
+  // 99.8 F or 101°F. "100 feet" does not match.
+  return /\b(?:9[7-9]|10[0-5])(?:\.\d{1,2})?\s*°?\s*f\b/.test(text);
 }
 
 function mentionsRespiration(text) {
-  return /\brespirat|\bresp\b|\brr\b|\bbreathing\s*rate\b|\bbreaths?\s*(per|\/|a)\b|\b\d{1,3}\s*breaths?\b/.test(text);
+  return /\brespirat|\bresp\b|\brr\b|\brpm\b|\bbreathing\s*rate\b|\bbreaths?\s*(per|\/|a)\b|\b\d{1,3}\s*breaths?\b/.test(text);
 }
 
 /**
- * Temperature and respiration are two Quick Updates. A single note that
- * names both does not qualify for either action.
+ * Temperature and respiration each score from the title or the note.
+ * A Quick Update that names both earns both. Check-ins do not.
+ * Heart-rate notes ("38 bpm") do not count as respiration.
  */
 function isSeparatedVitalQuickUpdate(data, kind) {
   if (!data || isArchived(data)) return false;
@@ -508,11 +515,8 @@ function isSeparatedVitalQuickUpdate(data, kind) {
   var text = vitalText(data);
   if (!text.trim()) return false;
   if (!hasObservation(data) && !String(data.title || '').trim()) return false;
-  var temperature = mentionsTemperature(text);
-  var respiration = mentionsRespiration(text);
-  if (temperature && respiration) return false;
-  if (kind === 'temperature') return temperature;
-  if (kind === 'respiration') return respiration;
+  if (kind === 'temperature') return mentionsTemperature(text);
+  if (kind === 'respiration') return mentionsRespiration(text);
   return false;
 }
 
@@ -707,14 +711,33 @@ function qualifies(action, data, collectionName) {
   }
 }
 
+function calendarYmd(dateVal) {
+  if (typeof dateVal !== 'string') return '';
+  var match = dateVal.trim().match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if (!match) return '';
+  var month = match[2].length === 1 ? '0' + match[2] : match[2];
+  var day = match[3].length === 1 ? '0' + match[3] : match[3];
+  return match[1] + '-' + month + '-' + day;
+}
+
+function calendarDateMs(data) {
+  var ymd = calendarYmd(data && data.date);
+  if (!ymd) return 0;
+  var wall = nyWallClockToUtcMs(ymd, 12, 0, 0, 0);
+  if (!wall) return 0;
+  var created = toMillis(data.createdAt) || toMillis(data.addedAt);
+  // A date a year away from when the record was saved is a picker typo, not the activity.
+  if (created && Math.abs(wall - created) > 366 * 24 * 60 * 60 * 1000) return 0;
+  return wall;
+}
+
 function eventMillis(data) {
-  var dateVal = data && data.date;
-  if (typeof dateVal === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateVal.trim())) {
+  if (calendarYmd(data && data.date)) {
     return (
       toMillis(data.startedAt) ||
       toMillis(data.startTime) ||
       toMillis(data.activityAt) ||
-      nyWallClockToUtcMs(dateVal.trim(), 12, 0, 0, 0) ||
+      calendarDateMs(data) ||
       toMillis(data.createdAt) ||
       toMillis(data.addedAt) ||
       toMillis(data.updatedAt)
@@ -734,9 +757,15 @@ function eventMillis(data) {
 function inWeekWindow(action, data) {
   var bounds = weekBounds(action.weekStart, action.weekEnd);
   if (!bounds) return false;
-  var ms = eventMillis(data);
-  if (!ms) return false;
-  return ms >= bounds.startMs && ms <= bounds.endMs;
+  var times = [
+    eventMillis(data),
+    toMillis(data && data.createdAt),
+    toMillis(data && data.addedAt),
+  ];
+  for (var i = 0; i < times.length; i++) {
+    if (times[i] && times[i] >= bounds.startMs && times[i] <= bounds.endMs) return true;
+  }
+  return false;
 }
 
 function actionDocId(uid, actionId, relatedDocId) {
