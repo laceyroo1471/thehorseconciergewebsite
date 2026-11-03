@@ -110,7 +110,13 @@ function isGrandPrizeOnlyAction(row) {
 
 function isAnytimeCredit(row) {
   if (!row) return false;
-  if (row.credit === 'week_window' || row.credit === 'grand_prize_only') return false;
+  if (
+    row.credit === 'week_window' ||
+    row.credit === 'from_week_start' ||
+    row.credit === 'grand_prize_only'
+  ) {
+    return false;
+  }
   if (row.credit === 'anytime') return true;
   var actionId = String(row.actionId || '');
   if (actionId.indexOf('referral-bonus') === 0) return false;
@@ -184,7 +190,9 @@ function buildPointReceipt(rows) {
 
 function userIdFrom(data) {
   if (!data) return '';
-  return String(data.userId || data.uid || data.ownerId || data.ownerScopeId || '').trim();
+  return String(
+    data.userId || data.uid || data.ownerId || data.ownerScopeId || data.submitterUserId || ''
+  ).trim();
 }
 
 function isArchived(data) {
@@ -504,6 +512,25 @@ function mentionsRespiration(text) {
   return /\brespirat|\bresp\b|\brr\b|\brpm\b|\bbreathing\s*rate\b|\bbreaths?\s*(per|\/|a)\b|\b\d{1,3}\s*breaths?\b/.test(text);
 }
 
+function isProviderReview(data) {
+  if (!data || isArchived(data)) return false;
+  var rating = Number(data.rating);
+  if (rating >= 1 && rating <= 5) return true;
+  return String(data.comment || data.reviewText || data.text || '').trim().length > 0;
+}
+
+function isTrailReview(data) {
+  if (!data || isArchived(data)) return false;
+  if (String(data.reviewText || data.comment || '').trim()) return true;
+  var rating = Number(data.rating);
+  return rating >= 1 && rating <= 5;
+}
+
+function isTrailSubmission(data) {
+  if (!data || isArchived(data)) return false;
+  return String(data.trailName || data.name || '').trim().length > 0;
+}
+
 /**
  * Temperature and respiration each score from the title or the note.
  * A Quick Update that names both earns both. Check-ins do not.
@@ -705,6 +732,12 @@ function qualifies(action, data, collectionName) {
       return handoffWasShared(data);
     case 'evacuationStarted':
       return evacuationWasStarted(data);
+    case 'providerReview':
+      return isProviderReview(data);
+    case 'trailReview':
+      return isTrailReview(data);
+    case 'trailSubmission':
+      return isTrailSubmission(data);
     case 'exists':
     default:
       return true;
@@ -732,26 +765,64 @@ function calendarDateMs(data) {
 }
 
 function eventMillis(data) {
-  if (calendarYmd(data && data.date)) {
-    return (
-      toMillis(data.startedAt) ||
-      toMillis(data.startTime) ||
-      toMillis(data.activityAt) ||
-      calendarDateMs(data) ||
-      toMillis(data.createdAt) ||
-      toMillis(data.addedAt) ||
-      toMillis(data.updatedAt)
-    );
+  if (!data) return 0;
+  var ordered = calendarYmd(data.date)
+    ? [
+        toMillis(data.startedAt),
+        toMillis(data.startTime),
+        toMillis(data.activityAt),
+        calendarDateMs(data),
+        toMillis(data.createdAt),
+        toMillis(data.addedAt),
+        toMillis(data.submittedAt),
+        toMillis(data.timestamp),
+        toMillis(data.updatedAt),
+      ]
+    : [
+        toMillis(data.startedAt),
+        toMillis(data.startTime),
+        toMillis(data.activityAt),
+        toMillis(data.date),
+        toMillis(data.createdAt),
+        toMillis(data.addedAt),
+        toMillis(data.submittedAt),
+        toMillis(data.timestamp),
+        toMillis(data.updatedAt),
+      ];
+  for (var i = 0; i < ordered.length; i++) {
+    if (ordered[i]) return ordered[i];
   }
-  return (
-    toMillis(data.startedAt) ||
-    toMillis(data.startTime) ||
-    toMillis(data.activityAt) ||
-    toMillis(data.date) ||
-    toMillis(data.createdAt) ||
-    toMillis(data.addedAt) ||
-    toMillis(data.updatedAt)
-  );
+  return 0;
+}
+
+function onOrAfterWeekStart(action, data) {
+  var bounds = weekBounds(action.weekStart, action.weekEnd);
+  if (!bounds) return false;
+  var ms = eventMillis(data);
+  return !!(ms && ms >= bounds.startMs);
+}
+
+function creditAllows(action, data) {
+  if (action.credit === 'week_window') return inWeekWindow(action, data);
+  if (action.credit === 'from_week_start') return onOrAfterWeekStart(action, data);
+  return true;
+}
+
+function earnedAtFor(action, data) {
+  if (action.credit === 'week_window' || action.credit === 'from_week_start') {
+    return eventMillis(data) || Date.now();
+  }
+  return Date.now();
+}
+
+function sameDayAwardExists(rows, actionId, activityDay) {
+  if (!activityDay) return false;
+  return (rows || []).some(function (row) {
+    if (row.actionId !== actionId) return false;
+    var prior = String(row.activityDay || '').trim();
+    if (!prior) prior = nyYmd(actionEarnedMs(row));
+    return prior === activityDay;
+  });
 }
 
 function inWeekWindow(action, data) {
@@ -885,7 +956,7 @@ async function award(uid, action, opts) {
   if (existing.exists) return { awarded: false, reason: 'duplicate' };
 
   var exclusiveWith = action.exclusiveWith || [];
-  if (maxCount > 1 || exclusiveWith.length) {
+  if (maxCount > 1 || exclusiveWith.length || action.distinctDay) {
     var rows = await loadApprovedActions(uid);
     if (maxCount > 1) {
       var already = rows.filter(function (row) {
@@ -898,6 +969,9 @@ async function award(uid, action, opts) {
         return exclusiveWith.indexOf(row.actionId) !== -1;
       });
       if (blocked) return { awarded: false, reason: 'exclusive' };
+    }
+    if (action.distinctDay && sameDayAwardExists(rows, action.actionId, opts.activityDay)) {
+      return { awarded: false, reason: 'same_day' };
     }
   }
 
@@ -919,6 +993,7 @@ async function award(uid, action, opts) {
     relatedCollection: opts.collectionName || null,
     relatedDocId: relatedDocId || null,
     credit: action.credit,
+    activityDay: opts.activityDay || null,
     earnedAt: earnedAt,
     testPreview: !!opts.testPreview,
     createdAt: FieldValue.serverTimestamp(),
@@ -992,14 +1067,14 @@ async function scoreAppDocument(collectionName, docId, data) {
   for (var i = 0; i < matches.length; i++) {
     var action = matches[i];
     if (!(await qualifiesDocument(action, data, collectionName))) continue;
-    if (action.credit === 'week_window' && !inWeekWindow(action, data)) continue;
-    var earnedAtMs =
-      action.credit === 'week_window' ? eventMillis(data) || Date.now() : Date.now();
+    if (!creditAllows(action, data)) continue;
+    var earnedAtMs = earnedAtFor(action, data);
     await award(uid, action, {
       relatedDocId: docId,
       collectionName: collectionName,
       source: 'app',
       earnedAtMs: earnedAtMs,
+      activityDay: action.distinctDay ? nyYmd(earnedAtMs) : '',
     });
   }
 }
@@ -1077,14 +1152,14 @@ async function backfillUser(uid, opts) {
       for (var d = 0; d < docs.length; d++) {
         var data = docs[d].data() || {};
         if (!(await qualifiesDocument(action, data, col))) continue;
-        if (action.credit === 'week_window' && !inWeekWindow(action, data)) continue;
-        var earnedAtMs =
-          action.credit === 'week_window' ? eventMillis(data) || Date.now() : Date.now();
+        if (!creditAllows(action, data)) continue;
+        var earnedAtMs = earnedAtFor(action, data);
         var result = await award(uid, action, {
           relatedDocId: docs[d].id,
           collectionName: col,
           source: 'app',
           earnedAtMs: earnedAtMs,
+          activityDay: action.distinctDay ? nyYmd(earnedAtMs) : '',
         });
         if (result.awarded) awarded += 1;
       }
@@ -1222,6 +1297,8 @@ module.exports = {
   qualifiesDocument: qualifiesDocument,
   eventMillis: eventMillis,
   inWeekWindow: inWeekWindow,
+  onOrAfterWeekStart: onOrAfterWeekStart,
+  sameDayAwardExists: sameDayAwardExists,
   countsTowardWeeklyPrize: countsTowardWeeklyPrize,
   isGrandPrizeOnlyAction: isGrandPrizeOnlyAction,
 };

@@ -71,7 +71,8 @@
     if (!actionId) return null;
     var href = (el.getAttribute('href') || '').trim();
     var isForm = el.tagName === 'FORM';
-    if (!isForm && !href) return null;
+    var markComplete = el.getAttribute('data-challenge-point-complete') === '1';
+    if (!isForm && !href && !markComplete) return null;
     return {
       actionId: actionId,
       points: parseInt(el.getAttribute('data-challenge-point-points') || '0', 10) || 0,
@@ -82,6 +83,7 @@
       explanation: (el.getAttribute('data-challenge-explain') || '').trim(),
       href: href,
       isForm: isForm,
+      markComplete: markComplete,
     };
   }
 
@@ -428,6 +430,65 @@
     }, 1200);
   }
 
+  function showCompleteLogged(el, action, already) {
+    if (el) {
+      el.setAttribute('data-challenge-points-logged', '1');
+      if (el.tagName === 'BUTTON') el.disabled = true;
+      el.textContent = 'Completed · ' + action.points + ' pts';
+    }
+    setStatus(
+      el,
+      action.points +
+        ' points ' +
+        (already ? 'already logged' : 'logged') +
+        ' for “' +
+        action.label +
+        '”.',
+      false,
+      true
+    );
+  }
+
+  function claimComplete(user, action, el) {
+    if (!user || !action) return;
+    if (el && el.getAttribute('data-challenge-points-logged') === '1') {
+      showCompleteLogged(el, action, true);
+      return;
+    }
+    var recorded =
+      latestRegistration &&
+      latestRegistration.pointActions &&
+      latestRegistration.pointActions[action.actionId];
+    if (recorded) {
+      clearPending();
+      showCompleteLogged(el, action, true);
+      return;
+    }
+    setStatus(el, 'Saving your ' + action.points + ' points…');
+    if (el && el.tagName === 'BUTTON') el.disabled = true;
+    return writePointAction(user, action)
+      .then(function () {
+        if (latestRegistration) {
+          if (!latestRegistration.pointActions) latestRegistration.pointActions = {};
+          latestRegistration.pointActions[action.actionId] = {
+            actionId: action.actionId,
+            points: action.points,
+          };
+        }
+        clearPending();
+        showCompleteLogged(el, action, false);
+      })
+      .catch(function (err) {
+        console.error(err);
+        if (el && el.tagName === 'BUTTON') el.disabled = false;
+        setStatus(
+          el,
+          'Could not save points automatically. Stay signed in and try again, or email info@thehorseconcierge.com.',
+          true
+        );
+      });
+  }
+
   function claimAndOpen(user, action, el) {
     setStatus(el, 'Saving your ' + action.points + ' points…');
     return writePointAction(user, action)
@@ -520,6 +581,11 @@
     if (!user) {
       savePending(action);
       promptSignIn(el, action);
+      return;
+    }
+
+    if (action.markComplete) {
+      claimComplete(user, action, el);
       return;
     }
 
@@ -750,6 +816,15 @@
     });
   }
 
+  function markClaimedCompletes(registration) {
+    var actions = (registration && registration.pointActions) || {};
+    document.querySelectorAll('[data-challenge-point-complete="1"]').forEach(function (el) {
+      var action = readActionFromEl(el);
+      if (!action || !actions[action.actionId]) return;
+      showCompleteLogged(el, action, true);
+    });
+  }
+
   function wireLinksAndForms() {
     document.querySelectorAll('[data-challenge-point-action]').forEach(function (el) {
       if (el.tagName === 'FORM') {
@@ -763,7 +838,18 @@
   function resumePendingIfAny(user) {
     if (!user) return;
     var pending = loadPending();
-    if (!pending || !pending.actionId || !pending.href || pending.isForm) return;
+    if (!pending || !pending.actionId) return;
+    if (pending.markComplete) {
+      var el = null;
+      if (/^[a-z0-9-]+$/.test(pending.actionId)) {
+        el = document.querySelector(
+          '[data-challenge-point-complete="1"][data-challenge-point-action="' + pending.actionId + '"]'
+        );
+      }
+      claimComplete(user, pending, el);
+      return;
+    }
+    if (!pending.href || pending.isForm) return;
     claimAndOpen(user, pending, null);
   }
 
@@ -794,6 +880,7 @@
       latestRegistration = registration;
       fillAutofillForms(user, registration);
       markClaimedForms(registration);
+      markClaimedCompletes(registration);
       resumePendingIfAny(user);
     });
   });

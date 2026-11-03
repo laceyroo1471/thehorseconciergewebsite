@@ -142,7 +142,7 @@ const WEEKS = [
     slug: "week-12-ride-catchup",
     html: "horsemanship-challenge-week-12-ride-catchup.html",
     week: 12,
-    topic: "Ride Week & Catch Up",
+    topic: "Care With Intention",
     credit: "The Horse Concierge in partnership with Draw It Out",
     logos: [
       { file: "Images/ColorLogo.svg", maxW: 280, maxH: 130 },

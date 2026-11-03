@@ -206,14 +206,15 @@ const WEEKS = [
     num: 12,
     slug: 'week-12-ride-catchup',
     start: '2026-11-16',
-    theme: 'Ride Week & Catch Up',
+    theme: 'Care With Intention',
     host: true,
+    handBuilt: true,
     partner: 'The Horse Concierge',
     partnerShort: 'The Horse Concierge',
     logo: LOGOS.thc,
     website: 'index.html',
     about:
-      'Week 12 is hosted by The Horse Concierge — a Ride Week and catch-up window to finish activities, revisit earlier partner content, and stay on the board before the final week.',
+      'Week 12 is hosted by The Horse Concierge. Care With Intention is hand-built in horsemanship-challenge-week-12-ride-catchup.html.',
   },
   {
     num: 13,
@@ -604,6 +605,10 @@ let written = 0;
 for (const week of WEEKS) {
   const file = `horsemanship-challenge-${week.slug}.html`;
   const outPath = path.join(ROOT, file);
+  if (week.handBuilt) {
+    console.log('Skip hand-built', file);
+    continue;
+  }
   fs.writeFileSync(outPath, renderWeek(week), 'utf8');
   console.log('Wrote', file);
   written += 1;
