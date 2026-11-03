@@ -21,9 +21,6 @@ const DENVER =
   "https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2Fdenver%20uni.svg?alt=media&token=a5e0bbb8-7bae-47a6-b2d8-ab9f001dabc9";
 const DDT =
   "https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FDouble%20D%20Horse%20Trailers%20Logo.png?alt=media&token=c6c26f68-aa70-4d21-be4d-7d0c5b9e178e";
-const FOUR =
-  "https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2F4Hooves.webp?alt=media&token=26f97c59-1887-4b68-b7f7-3562b304a679";
-
 const WEEKS = [
   {
     slug: "week-01-nutrition",
@@ -135,8 +132,8 @@ const WEEKS = [
     html: "horsemanship-challenge-week-11-emergency.html",
     week: 11,
     topic: "Emergency Preparedness",
-    credit: "Presented by 4 Hooves Large Animal Services",
-    logos: [{ url: FOUR, plate: true, maxW: 360, maxH: 160 }],
+    credit: "Hosted by The Horse Concierge, with lessons from Dr. Rebecca Husted",
+    logos: [{ file: "Images/ColorLogo.svg", maxW: 280, maxH: 120 }],
   },
   {
     slug: "week-12-ride-catchup",

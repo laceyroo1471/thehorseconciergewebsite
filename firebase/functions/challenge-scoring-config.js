@@ -1527,7 +1527,7 @@ var WEEKS = [
       source: 'hub',
       credit: 'anytime',
       requireCorrect: true,
-      correctAnswer: 'Repositioning may allow the horse to regain a position from which it can stand independently.',
+      correctAnswer: 'The incident requires specialized equipment and training beyond standard emergency response.',
     }),
     action({
       actionId: 'week11-weigh-place-1',

@@ -19,6 +19,8 @@
  * Closes Nov 1, 2026 8:00 PM ET.
  * Week 10 (weigh-wednesday-w10): trailer dry weight, water, gear-ratio difference,
  * tongue weight, and hitch percentage. Closes Nov 8, 2026 8:00 PM ET.
+ * Week 11 (weigh-wednesday-w11): OG kit weight, evacuation water, hay-fire range,
+ * floodwater depth, and theoretical pulley force. Closes Nov 15, 2026 8:00 PM ET.
  *
  * Score: lowest average % difference. Tie-break: earlier submittedAt.
  * Sunday 8:00 p.m. Eastern scores any closed, unscored contest with actuals.
@@ -186,6 +188,24 @@ var CONTESTS = {
     title: "What's It Weigh Wednesday",
     tieBreak: 'worstThenEarlier',
     itemIds: ['dryWeight', 'waterAdded', 'gearDiff', 'tongueWeight', 'hitchShare'],
+  },
+  'weigh-wednesday-w11': {
+    contestId: 'weigh-wednesday-w11',
+    weekNumber: 11,
+    closeMs: Date.parse('2026-11-15T20:00:00-05:00'),
+    unit: 'pounds',
+    itemUnits: {
+      ogKit: 'pounds',
+      waterWeight: 'pounds',
+      hayFire: 'exact',
+      floodDepth: 'inches',
+      pulleyForce: 'pounds',
+    },
+    field: 'weighWednesdayW11',
+    placePrefix: 'week11-weigh-place-',
+    title: "What's It Weigh Wednesday",
+    tieBreak: 'worstThenEarlier',
+    itemIds: ['ogKit', 'waterWeight', 'hayFire', 'floodDepth', 'pulleyForce'],
   },
 };
 

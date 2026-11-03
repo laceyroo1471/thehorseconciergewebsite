@@ -5013,6 +5013,12 @@
     max-width: 88px;
     max-height: 88px;
   }
+  .challenge-partner-logo-well--co .challenge-partner-logo-well__img--wordmark {
+    width: auto;
+    height: auto;
+    max-width: 168px;
+    max-height: 48px;
+  }
   .challenge-partner-logo-well--co .challenge-partner-logo-well__divider {
     flex: 0 0 auto;
   }

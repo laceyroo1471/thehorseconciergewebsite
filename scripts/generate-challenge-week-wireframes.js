@@ -71,8 +71,6 @@ const LOGOS = {
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2FMyler%20Bits.jpg?alt=media&token=29eed792-20a4-4861-9112-565fddf0107a',
   toklat:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2F0000165_Toklat-Vertical.png?alt=media&token=b759e6e5-f986-41e0-9ee8-1ec66a905d60',
-  fourH:
-    'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2F4Hooves.webp?alt=media&token=26f97c59-1887-4b68-b7f7-3562b304a679',
   denver:
     'https://firebasestorage.googleapis.com/v0/b/thc-native.firebasestorage.app/o/Horsemanship%20Challenge%2Fdenver%20uni.svg?alt=media&token=a5e0bbb8-7bae-47a6-b2d8-ab9f001dabc9',
   thc: 'Images/ColorLogo.svg',
@@ -195,12 +193,14 @@ const WEEKS = [
     slug: 'week-11-emergency',
     start: '2026-11-09',
     theme: 'Emergency Preparedness',
-    partner: '4 Hooves Large Animal Services',
-    partnerShort: '4HLAS',
-    logo: LOGOS.fourH,
-    website: 'https://4hoovessmart.com/',
+    host: true,
+    handBuilt: true,
+    partner: 'The Horse Concierge',
+    partnerShort: 'The Horse Concierge',
+    logo: LOGOS.thc,
+    website: 'index.html',
     about:
-      'Partner copy for 4 Hooves Large Animal Services will go here — emergency preparedness focus for Week 11.',
+      'Week 11 is hosted by The Horse Concierge, with lessons from Dr. Rebecca Husted. The public page is hand-built in horsemanship-challenge-week-11-emergency.html.',
   },
   {
     num: 12,
