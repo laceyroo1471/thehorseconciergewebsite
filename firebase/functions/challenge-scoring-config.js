@@ -8,6 +8,8 @@
  *   week_window      — only events whose timestamp falls on that week's dates (GPS / rides)
  *   from_week_start  — event on or after that Monday; after Sunday it still awards
  *                      toward the grand prize and does not count for the weekly prize
+ *   updated_from_week_start — updatedAt on or after that Monday (profile / barn edits)
+ *   generated_from_week_start — summary generatedAt or ownerEditedAt on or after Monday
  *   grand_prize_only — totalPoints / overall standings only; never weeklyPoints
  *
  * Weekly prize cutoff:
@@ -1690,11 +1692,48 @@ var WEEKS = [
     }),
   ]),
 
-  week(13, '2026-11-23', '2026-11-29', 'Horse history and competition wrap', 'Equifacts', [
+  week(13, '2026-11-23', '2026-11-29', 'Putting It All Together & Catching Up on Anything You Missed', 'Records', [
     action({
-      actionId: 'week13-horse-history',
-      label: 'Create a shareable horse history',
-      collections: ['horseHistories', 'equifacts'],
+      actionId: 'week13-profile-or-barn',
+      label: 'A Little Update Goes a Long Way — horse profile or barn',
+      points: 5,
+      status: 'live',
+      collections: ['horseProfiles', 'horseKeeping'],
+      qualify: 'profileOrBarnUpdate',
+      credit: 'updated_from_week_start',
+    }),
+    action({
+      actionId: 'week13-equifacts',
+      label: 'Put Your Records to Work — Equifacts',
+      points: 15,
+      status: 'live',
+      collections: ['aiSummaries'],
+      qualify: 'equifacts',
+      credit: 'generated_from_week_start',
+    }),
+    action({
+      actionId: 'week13-feedback',
+      label: 'Help Shape the Next Challenge — feedback',
+      points: 10,
+      status: 'live',
+      source: 'hub',
+      credit: 'anytime',
+    }),
+    action({
+      actionId: 'week13-situational-summary',
+      label: 'Create a Summary for a Real-Life Situation',
+      points: 15,
+      status: 'live',
+      collections: ['aiSummaries'],
+      qualify: 'situationalSummary',
+      credit: 'generated_from_week_start',
+    }),
+    action({
+      actionId: 'week13-reflection',
+      label: 'What Will You Take Forward?',
+      points: 5,
+      status: 'live',
+      source: 'hub',
       credit: 'anytime',
     }),
   ]),
@@ -1747,10 +1786,12 @@ function bonusActionById(actionId) {
 }
 
 function watchedCollections() {
+  // aiSummaries is a subcollection of horseProfiles, not a top-level collection.
+  var skip = { aiSummaries: true };
   var set = {};
   allActions().forEach(function (a) {
     (a.collections || []).forEach(function (name) {
-      set[name] = true;
+      if (!skip[name]) set[name] = true;
     });
   });
   return Object.keys(set);

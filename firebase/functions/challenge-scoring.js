@@ -683,12 +683,121 @@ async function withLinkedTackCategory(data, collectionName) {
   }
 }
 
-async function qualifiesDocument(action, data, collectionName) {
-  var ready = await withLinkedTackCategory(data, collectionName);
-  return qualifies(action, ready, collectionName);
+var HORSE_PROFILE_FIELDS = [
+  'name',
+  'photo',
+  'breed',
+  'color',
+  'age',
+  'gender',
+  'height',
+  'weight',
+  'discipline',
+  'description',
+  'purchaseDate',
+  'purchasePrice',
+  'priorHistorySummary',
+];
+var BARN_FIELDS = ['name', 'address', 'contactName', 'contactPhone', 'horsesAtBarn'];
+
+function valuesEqual(a, b) {
+  if (a == null && b == null) return true;
+  if (typeof a === 'object' || typeof b === 'object') {
+    try {
+      return JSON.stringify(a == null ? null : a) === JSON.stringify(b == null ? null : b);
+    } catch (e) {
+      return String(a) === String(b);
+    }
+  }
+  return String(a == null ? '' : a).trim() === String(b == null ? '' : b).trim();
 }
 
-function qualifies(action, data, collectionName) {
+function profileContentChanged(before, after) {
+  return HORSE_PROFILE_FIELDS.some(function (field) {
+    return !valuesEqual(before && before[field], after && after[field]);
+  });
+}
+
+function barnContentChanged(before, after) {
+  if (!valuesEqual(before && before.keeping, after && after.keeping)) return true;
+  var previous = before && before.boardingBarn && typeof before.boardingBarn === 'object' ? before.boardingBarn : {};
+  var next = after && after.boardingBarn && typeof after.boardingBarn === 'object' ? after.boardingBarn : {};
+  return BARN_FIELDS.some(function (field) {
+    return !valuesEqual(previous[field], next[field]);
+  });
+}
+
+function streakHeartbeatOnly(action, data) {
+  var updated = toMillis(data && data.updatedAt);
+  var streak = toMillis(data && data.streak && data.streak.updatedAt);
+  var created = toMillis(data && data.createdAt);
+  if (!updated || !streak || Math.abs(updated - streak) >= 5000) return false;
+  var bounds = weekBounds(action.weekStart, action.weekEnd);
+  if (created && bounds && created >= bounds.startMs) return false;
+  return true;
+}
+
+function isProfileOrBarnUpdate(action, data, collectionName, before) {
+  if (!data) return false;
+  if (before) {
+    if (collectionName === 'horseKeeping') return barnContentChanged(before, data);
+    if (collectionName === 'horseProfiles') return profileContentChanged(before, data);
+    return false;
+  }
+  if (collectionName === 'horseProfiles') return !streakHeartbeatOnly(action, data);
+  if (collectionName === 'horseKeeping') {
+    var keeping = String(data.keeping || '').trim();
+    var barn = data.boardingBarn && typeof data.boardingBarn === 'object' ? data.boardingBarn : null;
+    var hasBarn = !!(
+      barn &&
+      BARN_FIELDS.some(function (field) {
+        return String(barn[field] || '').trim();
+      })
+    );
+    return !!(keeping || hasBarn);
+  }
+  return false;
+}
+
+function summaryTypeOf(data) {
+  return String((data && (data.summaryType || data.summaryId)) || '')
+    .trim()
+    .toLowerCase();
+}
+
+function hasSummaryBody(data) {
+  if (!data) return false;
+  if (String(data.summaryText || '').trim()) return true;
+  var sections = data.structuredFindings && data.structuredFindings.sections;
+  return !!(sections && sections.length);
+}
+
+function isEquifactsSummary(data) {
+  if (!hasSummaryBody(data)) return false;
+  var type = summaryTypeOf(data);
+  return type === 'equifacts_new_owner' || type.indexOf('equifacts') === 0;
+}
+
+function isSituationalSummary(data) {
+  if (!hasSummaryBody(data)) return false;
+  var type = summaryTypeOf(data);
+  if (type.indexOf('equifacts') === 0) return false;
+  return type === 'something_wrong' || type === 'provider_handoff' || type.indexOf('provider_handoff') === 0;
+}
+
+function summaryActivityMs(data) {
+  var generated = toMillis(data && data.generatedAt);
+  var edited = toMillis(data && data.ownerEditedAt);
+  if (generated && edited) return Math.max(generated, edited);
+  return generated || edited || toMillis(data && data.updatedAt) || toMillis(data && data.createdAt);
+}
+
+async function qualifiesDocument(action, data, collectionName, beforeData) {
+  var ready = await withLinkedTackCategory(data, collectionName);
+  return qualifies(action, ready, collectionName, beforeData);
+}
+
+function qualifies(action, data, collectionName, beforeData) {
   if (!data || isArchived(data)) return false;
   if (action.photoKind && !kindMatches(data, action.photoKind, collectionName)) return false;
 
@@ -738,6 +847,12 @@ function qualifies(action, data, collectionName) {
       return isTrailReview(data);
     case 'trailSubmission':
       return isTrailSubmission(data);
+    case 'profileOrBarnUpdate':
+      return isProfileOrBarnUpdate(action, data, collectionName, beforeData);
+    case 'equifacts':
+      return isEquifactsSummary(data);
+    case 'situationalSummary':
+      return isSituationalSummary(data);
     case 'exists':
     default:
       return true;
@@ -805,14 +920,31 @@ function onOrAfterWeekStart(action, data) {
 function creditAllows(action, data) {
   if (action.credit === 'week_window') return inWeekWindow(action, data);
   if (action.credit === 'from_week_start') return onOrAfterWeekStart(action, data);
+  if (action.credit === 'updated_from_week_start') {
+    var updatedBounds = weekBounds(action.weekStart, action.weekEnd);
+    var updatedMs = toMillis(data && data.updatedAt);
+    return !!(updatedBounds && updatedMs && updatedMs >= updatedBounds.startMs);
+  }
+  if (action.credit === 'generated_from_week_start') {
+    var generatedBounds = weekBounds(action.weekStart, action.weekEnd);
+    var generatedMs = summaryActivityMs(data);
+    return !!(generatedBounds && generatedMs && generatedMs >= generatedBounds.startMs);
+  }
   return true;
 }
 
 function earnedAtFor(action, data) {
+  if (action.credit === 'updated_from_week_start') return toMillis(data && data.updatedAt) || Date.now();
+  if (action.credit === 'generated_from_week_start') return summaryActivityMs(data) || Date.now();
   if (action.credit === 'week_window' || action.credit === 'from_week_start') {
     return eventMillis(data) || Date.now();
   }
   return Date.now();
+}
+
+function awardIdFor(uid, action, relatedDocId) {
+  var maxCount = (action && action.maxCount) || 1;
+  return actionDocId(uid, action.actionId, maxCount > 1 ? relatedDocId || '' : '');
 }
 
 function sameDayAwardExists(rows, actionId, activityDay) {
@@ -950,7 +1082,7 @@ async function award(uid, action, opts) {
 
   var relatedDocId = opts.relatedDocId || '';
   var maxCount = action.maxCount || 1;
-  var id = actionDocId(uid, action.actionId, maxCount > 1 ? relatedDocId : '');
+  var id = awardIdFor(uid, action, relatedDocId);
   var ref = db().collection('challengeActions').doc(id);
   var existing = await ref.get();
   if (existing.exists) return { awarded: false, reason: 'duplicate' };
@@ -1057,7 +1189,7 @@ async function awardManual(uid, action, opts) {
   return { awarded: true, points: points, actionId: action.actionId, docId: id };
 }
 
-async function scoreAppDocument(collectionName, docId, data) {
+async function scoreAppDocument(collectionName, docId, data, beforeData) {
   var uid = userIdFrom(data);
   if (!uid) return;
   var registration = await loadRegistration(uid);
@@ -1066,7 +1198,7 @@ async function scoreAppDocument(collectionName, docId, data) {
   var matches = config.actionsForCollection(collectionName);
   for (var i = 0; i < matches.length; i++) {
     var action = matches[i];
-    if (!(await qualifiesDocument(action, data, collectionName))) continue;
+    if (!(await qualifiesDocument(action, data, collectionName, beforeData || null))) continue;
     if (!creditAllows(action, data)) continue;
     var earnedAtMs = earnedAtFor(action, data);
     await award(uid, action, {
@@ -1119,6 +1251,34 @@ function backfillInProgress(registration) {
   return !!(started && Date.now() - started < BACKFILL_LOCK_MS);
 }
 
+async function loadActionDocs(uid, col) {
+  if (col === 'aiSummaries') {
+    var horses = await db().collection('horseProfiles').where('userId', '==', uid).get();
+    var summaries = [];
+    var horseDocs = horses.docs || [];
+    for (var h = 0; h < horseDocs.length; h++) {
+      var horse = horseDocs[h];
+      var snap = await horse.ref.collection('aiSummaries').get();
+      var summaryDocs = snap.docs || [];
+      for (var s = 0; s < summaryDocs.length; s++) {
+        summaries.push({
+          id: summaryDocs[s].id,
+          data: Object.assign({}, summaryDocs[s].data() || {}, {
+            userId: uid,
+            horseId: horse.id,
+            summaryId: summaryDocs[s].id,
+          }),
+        });
+      }
+    }
+    return summaries;
+  }
+  var snap = await db().collection(col).where('userId', '==', uid).get();
+  return (snap.docs || []).map(function (doc) {
+    return { id: doc.id, data: doc.data() || {} };
+  });
+}
+
 async function backfillUser(uid, opts) {
   opts = opts || {};
   var registration = await loadRegistration(uid);
@@ -1141,16 +1301,15 @@ async function backfillUser(uid, opts) {
     var collections = action.collections || [];
     for (var c = 0; c < collections.length; c++) {
       var col = collections[c];
-      var snap;
+      var docs;
       try {
-        snap = await db().collection(col).where('userId', '==', uid).get();
+        docs = await loadActionDocs(uid, col);
       } catch (err) {
         console.warn('backfill skip', col, err && err.message);
         continue;
       }
-      var docs = snap.docs || [];
       for (var d = 0; d < docs.length; d++) {
-        var data = docs[d].data() || {};
+        var data = docs[d].data || {};
         if (!(await qualifiesDocument(action, data, col))) continue;
         if (!creditAllows(action, data)) continue;
         var earnedAtMs = earnedAtFor(action, data);
@@ -1295,6 +1454,9 @@ module.exports = {
   awardManual: awardManual,
   qualifies: qualifies,
   qualifiesDocument: qualifiesDocument,
+  creditAllows: creditAllows,
+  earnedAtFor: earnedAtFor,
+  awardIdFor: awardIdFor,
   eventMillis: eventMillis,
   inWeekWindow: inWeekWindow,
   onOrAfterWeekStart: onOrAfterWeekStart,

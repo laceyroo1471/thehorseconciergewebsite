@@ -220,14 +220,15 @@ const WEEKS = [
     num: 13,
     slug: 'week-13-horse-history',
     start: '2026-11-23',
-    theme: 'Horse History & Competition Wrap',
+    theme: 'Putting It All Together & Catching Up on Anything You Missed',
     host: true,
+    handBuilt: true,
     partner: 'The Horse Concierge',
     partnerShort: 'The Horse Concierge',
     logo: LOGOS.thc,
     website: 'index.html',
     about:
-      'Week 13 is led by The Horse Concierge — generate a horse’s history in the app and wrap the competition. Daily content and wrap details TBD.',
+      'Week 13 is hosted by The Horse Concierge with no education partner. The page is hand-built in horsemanship-challenge-week-13-horse-history.html.',
   },
 ];
 

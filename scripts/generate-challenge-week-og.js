@@ -150,12 +150,9 @@ const WEEKS = [
     slug: "week-13-horse-history",
     html: "horsemanship-challenge-week-13-horse-history.html",
     week: 13,
-    topic: "Horse History & Competition Wrap",
-    credit: "The Horse Concierge in partnership with Draw It Out",
-    logos: [
-      { file: "Images/ColorLogo.svg", maxW: 280, maxH: 130 },
-      { file: "Images/challenge-partners/draw-it-out.png", maxW: 280, maxH: 80 },
-    ],
+    topic: "Putting It All Together & Catching Up on Anything You Missed",
+    credit: "Hosted by The Horse Concierge",
+    logos: [{ file: "Images/ColorLogo.svg", maxW: 280, maxH: 120 }],
   },
 ];
 
@@ -239,14 +236,29 @@ async function plateLogo(fitted, padX = 28, padY = 20) {
   return { buffer, width, height };
 }
 
+function topicLines(topic) {
+  const text = String(topic || "");
+  const splitAt = text.indexOf(" & ");
+  if (text.length > 36 && splitAt > 0) {
+    return [text.slice(0, splitAt), text.slice(splitAt + 3)];
+  }
+  return [text];
+}
+
 function textSvg(week, topic, credit) {
-  const size = topicSize(topic);
+  const lines = topicLines(topic);
+  const title =
+    lines.length === 1
+      ? `<text x="600" y="220" text-anchor="middle" fill="#F5EDDC" font-family="Georgia, 'Times New Roman', serif" font-size="${topicSize(topic)}">${escapeXml(lines[0])}</text>
+    <line x1="420" y1="252" x2="780" y2="252" stroke="#8a7a4d" stroke-width="1"/>`
+      : `<text x="600" y="188" text-anchor="middle" fill="#F5EDDC" font-family="Georgia, 'Times New Roman', serif" font-size="42">${escapeXml(lines[0])}</text>
+    <text x="600" y="242" text-anchor="middle" fill="#F5EDDC" font-family="Georgia, 'Times New Roman', serif" font-size="32">${escapeXml(lines[1])}</text>
+    <line x1="420" y1="268" x2="780" y2="268" stroke="#8a7a4d" stroke-width="1"/>`;
   return Buffer.from(`<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
     <rect width="1200" height="630" fill="#0a0a0a"/>
     <text x="600" y="92" text-anchor="middle" fill="#cbb26a" font-family="Georgia, 'Times New Roman', serif" font-size="20" letter-spacing="5">WEEK ${week}</text>
     <text x="600" y="122" text-anchor="middle" fill="#8a7a4d" font-family="Georgia, 'Times New Roman', serif" font-size="15" letter-spacing="3">HORSEMANSHIP CHALLENGE</text>
-    <text x="600" y="220" text-anchor="middle" fill="#F5EDDC" font-family="Georgia, 'Times New Roman', serif" font-size="${size}">${escapeXml(topic)}</text>
-    <line x1="420" y1="252" x2="780" y2="252" stroke="#8a7a4d" stroke-width="1"/>
+    ${title}
     <text x="600" y="548" text-anchor="middle" fill="#cbb26a" font-family="Georgia, 'Times New Roman', serif" font-size="20">${escapeXml(credit)}</text>
     <text x="600" y="586" text-anchor="middle" fill="rgba(245,237,220,0.45)" font-family="Georgia, 'Times New Roman', serif" font-size="14" letter-spacing="3">THE HORSE CONCIERGE</text>
   </svg>`);

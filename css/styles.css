@@ -3292,6 +3292,16 @@
   .page-hero--challenge .challenge-partner-logo-well {
     margin: 22px auto 8px;
   }
+  .page-hero--challenge .challenge-host-logo {
+    display: block;
+    width: auto;
+    height: 128px;
+    max-width: min(420px, 88vw);
+    margin: 22px auto 10px;
+    background: transparent;
+    border: 0;
+    object-fit: contain;
+  }
   .page-hero--challenge .section-label {
     justify-content: center;
   }
@@ -5787,6 +5797,53 @@
   .challenge-question-form textarea.form-input {
     min-height: 110px;
     resize: vertical;
+  }
+  .form-help {
+    margin: -4px 0 14px;
+    max-width: 40rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--text-dim);
+  }
+  .challenge-question-form--feedback {
+    max-width: 640px;
+    width: 100%;
+  }
+  .challenge-question-form--feedback .form-label,
+  .challenge-question-form--feedback legend.form-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.35;
+    text-transform: none;
+  }
+  .challenge-question-form--feedback .form-input,
+  .challenge-question-form--feedback .form-select {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .challenge-question-form--feedback .form-select {
+    min-height: 48px;
+    cursor: pointer;
+  }
+  .challenge-question-form--feedback .challenge-choice {
+    min-height: 44px;
+    padding: 6px 0;
+  }
+  .challenge-review-invite {
+    margin-top: 28px;
+    max-width: 720px;
+    padding: 22px 22px 8px;
+    border: 1px solid rgba(var(--gold-rgb), 0.28);
+    border-radius: 4px;
+  }
+  @media (max-width: 720px) {
+    .challenge-question-form--feedback .form-group {
+      margin-bottom: 22px;
+    }
+    .challenge-review-invite {
+      padding: 18px 16px 4px;
+    }
   }
   .challenge-week-card--link {
     text-decoration: none;

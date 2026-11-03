@@ -18,6 +18,7 @@
 const { onDocumentWritten } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { initializeApp } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
 
 initializeApp();
 
@@ -84,10 +85,42 @@ config.watchedCollections().forEach(function (collectionName) {
     async function (event) {
       const after = event.data && event.data.after;
       if (!after || !after.exists) return;
-      await scoring.scoreAppDocument(collectionName, event.params.docId, after.data() || {});
+      const before = event.data && event.data.before;
+      const beforeData = before && before.exists ? before.data() || {} : null;
+      await scoring.scoreAppDocument(collectionName, event.params.docId, after.data() || {}, beforeData);
     }
   );
 });
+
+exports.onChallengeScore_horseAiSummaries = onDocumentWritten(
+  {
+    document: 'horseProfiles/{horseId}/aiSummaries/{summaryId}',
+    memory: '256MiB',
+  },
+  async function (event) {
+    const after = event.data && event.data.after;
+    if (!after || !after.exists) return;
+    const before = event.data && event.data.before;
+    const beforeRaw = before && before.exists ? before.data() || {} : null;
+    const horseSnap = await getFirestore().collection('horseProfiles').doc(event.params.horseId).get();
+    const horse = horseSnap.exists ? horseSnap.data() || {} : {};
+    const uid = String(horse.userId || horse.uid || horse.ownerId || '').trim();
+    if (!uid) return;
+    const data = Object.assign({}, after.data() || {}, {
+      userId: uid,
+      horseId: event.params.horseId,
+      summaryId: event.params.summaryId,
+    });
+    const prior = beforeRaw
+      ? Object.assign({}, beforeRaw, {
+          userId: uid,
+          horseId: event.params.horseId,
+          summaryId: event.params.summaryId,
+        })
+      : null;
+    await scoring.scoreAppDocument('aiSummaries', event.params.summaryId, data, prior);
+  }
+);
 
 exports.onChallengePointEventWrite = onDocumentWritten(
   {

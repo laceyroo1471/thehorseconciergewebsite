@@ -123,6 +123,67 @@
     return answers;
   }
 
+  function allowsResubmit(form) {
+    return !!(form && form.getAttribute('data-challenge-allow-resubmit') === '1');
+  }
+
+  function fieldsNamed(form, name) {
+    var out = [];
+    if (!form) return out;
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (el.name === name) out.push(el);
+    });
+    return out;
+  }
+
+  function restoreFormAnswers(form, answers) {
+    if (!form || !answers) return;
+    Object.keys(answers).forEach(function (name) {
+      if (answers[name] == null) return;
+      var value = String(answers[name]);
+      var fields = fieldsNamed(form, name);
+      if (!fields.length) return;
+      var first = fields[0];
+      if (first.type === 'hidden') return;
+      if (first.type === 'checkbox' || first.type === 'radio') {
+        var parts = value.split(',').map(function (part) {
+          return part.trim();
+        });
+        fields.forEach(function (el) {
+          var fieldValue = String(el.value || '').trim();
+          el.checked = parts.indexOf(fieldValue) !== -1 || fieldValue === value.trim();
+        });
+        return;
+      }
+      first.value = value;
+    });
+    try {
+      form.dispatchEvent(new CustomEvent('thc-challenge-answers-restored', { bubbles: true }));
+    } catch (e) {}
+  }
+
+  function extraFormError(form) {
+    if (!form) return '';
+    var group = form.querySelector('[data-challenge-require-one]');
+    if (group) {
+      var boxes = group.querySelectorAll('input[type="checkbox"], input[type="radio"]');
+      var any = Array.prototype.some.call(boxes, function (el) {
+        return el.checked;
+      });
+      if (!any) {
+        return group.getAttribute('data-challenge-require-one-message') || 'Choose at least one option.';
+      }
+    }
+    var toggle = form.querySelector('[data-challenge-reveals]');
+    if (toggle && toggle.checked) {
+      var field = form.querySelector(toggle.getAttribute('data-challenge-reveals') || '');
+      if (field && !String(field.value || '').trim()) {
+        return field.getAttribute('data-challenge-required-message') || 'Add a short note for Other.';
+      }
+    }
+    return '';
+  }
+
   function isGradedQuiz(action) {
     return !!(action && action.correctAnswer);
   }
@@ -267,13 +328,27 @@
     if (!form || !action) return;
     form.setAttribute('data-challenge-points-logged', '1');
     form.classList.add('challenge-question-form--received');
-    form.querySelectorAll('input, textarea, select, button').forEach(function (el) {
-      if (el.type === 'hidden') return;
-      el.disabled = true;
-    });
-    var msg = already
-      ? action.points + ' points already logged for “' + action.label + '”.'
-      : action.points + ' points received for “' + action.label + '”. You’re all set.';
+    var editable = allowsResubmit(form);
+    if (!editable) {
+      form.querySelectorAll('input, textarea, select, button').forEach(function (el) {
+        if (el.type === 'hidden') return;
+        el.disabled = true;
+      });
+    }
+    var msg = editable
+      ? already
+        ? 'Your updated feedback is saved. The ' +
+          action.points +
+          ' points for “' +
+          action.label +
+          '” were already logged.'
+        : action.points +
+          ' points received for “' +
+          action.label +
+          '”. You can update your answers later. Updating does not add points.'
+      : already
+        ? action.points + ' points already logged for “' + action.label + '”.'
+        : action.points + ' points received for “' + action.label + '”. You’re all set.';
     setStatus(form, msg, false, true);
   }
 
@@ -676,7 +751,8 @@
     if (form.getAttribute('data-challenge-quiz-graded') === '1') {
       return;
     }
-    if (form.getAttribute('data-challenge-points-logged') === '1') {
+    var alreadyLogged = form.getAttribute('data-challenge-points-logged') === '1';
+    if (alreadyLogged && !allowsResubmit(form)) {
       setStatus(form, 'Already received — your points are logged.', false, true);
       return;
     }
@@ -707,6 +783,12 @@
       return;
     }
 
+    var extraError = extraFormError(form);
+    if (extraError) {
+      setStatus(form, extraError, true);
+      return;
+    }
+
     var user = auth.currentUser;
     if (!user) {
       promptSignIn(form, action);
@@ -729,6 +811,8 @@
     setFormBusy(form, true);
     if (graded) {
       setStatus(form, correct ? 'Checking your answer…' : 'Saving your answer…');
+    } else if (alreadyLogged && allowsResubmit(form)) {
+      setStatus(form, 'Saving your updated feedback…');
     } else {
       setStatus(form, 'Saving your ' + action.points + ' points…');
     }
@@ -769,7 +853,8 @@
           );
           return;
         }
-        showFormReceived(form, action, false);
+        if (allowsResubmit(form)) setFormBusy(form, false);
+        showFormReceived(form, action, alreadyLogged);
       })
       .catch(function (err) {
         console.error(err);
@@ -795,10 +880,23 @@
       if (!action) return;
       var recorded = actions[action.actionId];
       if (!recorded) return;
+      if (allowsResubmit(form) && recorded.formAnswers) restoreFormAnswers(form, recorded.formAnswers);
       if (recorded.emailDelivered === false && recorded.formAnswers) {
         setStatus(
           form,
           'Your points and your answer are saved. The email did not send. Submit again to resend it.',
+          true
+        );
+        return;
+      }
+      if (allowsResubmit(form)) {
+        form.setAttribute('data-challenge-points-logged', '1');
+        setStatus(
+          form,
+          'Your feedback is saved. You can update it. The ' +
+            action.points +
+            ' points stay as they are.',
+          false,
           true
         );
         return;
